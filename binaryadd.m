@@ -31,6 +31,12 @@ function b=binaryadd(d,f,n)
         
         uet=0;
         
+
+% TEST TEST TEST
+
+
+
+
         for z=0:1:n-1
                                  
             if uet==0
