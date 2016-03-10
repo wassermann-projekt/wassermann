@@ -12,22 +12,14 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-public class MyGdxGame extends ApplicationAdapter implements KeyListener, ActionListener{
+public class MyGdxGame extends ApplicationAdapter{
 	SpriteBatch batch;
-	Texture img;
-	
-//Variablen
-	private int swimmer_position;
-	
-	public void keyPressed(KeyEvent e) {
-        System.out.println("Tastenposition: " + e.getKeyLocation());
-    }  
+	Texture img; 
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
-		swimmer_position = 4;
 	}
 
 	@Override
@@ -37,6 +29,5 @@ public class MyGdxGame extends ApplicationAdapter implements KeyListener, Action
 		batch.begin();
 		batch.draw(img, 0, 0);
 		batch.end();
-		
 	}
 }
