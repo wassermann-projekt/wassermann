@@ -10,13 +10,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class MyGdxGame extends ApplicationAdapter {
 	private Sprite wellen1;
 	private Sprite wellen2;
+
+	private Sprite swimmer;
+	private SpriteBatch batch;
+
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
 	//Test-Hindernis 
 	//TODO: Hindernisse nicht hardcoden, sondern dynamisch?
 	private Sprite felsen;
-	private SpriteBatch batch; 
 	
+
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
 
@@ -29,10 +33,23 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float hinderniss_y_pos;
 	
 	private float geschwindigkeit;
+	private float beschleunigung;
+	//swimmer variables
+	private int swimmer_position;
+	//swimmer constants
+	private float swimmer_width;
+	private float swimmer_offset;
+	// game variables
+	private int score;
+	private int level;
+	private int health;
 	
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
+	
+	
+	private EventListener steuerung;
 	
 	@Override
 	public void create () {
@@ -49,6 +66,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
 		
+
+		//init Swimmer_Grafik
+		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
+		swimmer_offset = (width / 7) * 1/8;
+		swimmer_width = (width / 7) * 3/4;
+		
 		//init Ufertextur
 		ufer_links = new Sprite(new Texture("ufer.png"));
 		ufer_links.setSize(width/9, height);
@@ -62,12 +85,36 @@ public class MyGdxGame extends ApplicationAdapter {
 		felsen.setSize(width/9, height/9);
 		felsen_x_pos = 0.0f;
 	
-	
+
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
+		beschleunigung = 0;
+		
+		//init swimmer_position
+		swimmer_position = 4;
+		
+		//init score
+		score = 0;
+		level = 1;
+		health = 5;
+		
+		//erstelle und registriere Steuerung
+		steuerung = new EventListener();
+		steuerung.setGame(this);
+		Gdx.input.setInputProcessor(steuerung);
 	}
-
-	@Override
+	public void changeSwimmerPosition(int change){
+		swimmer_position += change;	
+		if(swimmer_position < 1){
+			swimmer_position = 1;
+		}
+		if(swimmer_position > 7)
+		{
+			swimmer_position = 7;
+		}
+	}
+	
+	@Override 
 	public void render () {
 		
 		// Hindernisse generieren
@@ -82,12 +129,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(wellen1, 0, wellen_x_pos % height, width, height);
 		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
+
+		batch.draw(swimmer, width / 7 * (swimmer_position-1) + swimmer_offset, 0, swimmer_width, swimmer_width);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);
-		batch.end();
 		
+		update_variables();
 		update_graphics();
+		batch.end();
+
 	}
 	
 	//Helpermethods
@@ -101,5 +152,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		height = Gdx.graphics.getHeight();
 		ppiX = Gdx.graphics.getPpiX();
 		ppiY = Gdx.graphics.getPpiY();
+	}
+	
+	private void update_variables() {
+		geschwindigkeit += beschleunigung;
+		score += 1;
+		level = (score/10);
 	}
 }
