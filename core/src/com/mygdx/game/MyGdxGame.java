@@ -28,13 +28,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite ufer_rechts;
 	//Test-Hindernis 
 	//TODO: Hindernisse nicht hardcoden, sondern dynamisch?
-	private Sprite felsen;
+	private Obstacle felsen;
 	
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
 
-	//Position Test-Hindernis
-	private float felsen_x_pos;
 	
 	// Variablen für Schwimmer, Hinderniss
 	
@@ -77,7 +75,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		health = 5;
 		
 		//Schrift
-	//	font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
+		//	font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
 		//font.setColor(Color.BLACK);
 		
 		//init Wellentextur
@@ -102,9 +100,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
 		
 		//Test Hindernis
-		felsen = new Sprite(new Texture("hindernis_felsen.png"));
-		felsen.setSize(width/9, height/9);
-		felsen_x_pos = 0.0f;
+		Sprite felsen_sprite = new Sprite(new Texture("hindernis_felsen.png"));
+		felsen_sprite.setSize(width/9, height/9);
+		felsen = new Obstacle(felsen_sprite, 0, 2, 0.0f);
 	
 
 		//init geschwindigkeit
@@ -156,7 +154,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(swimmer, width / 7 * (swimmer_position-1) + swimmer_offset, 0, swimmer_width, swimmer_width);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
-		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);
+		batch.draw(felsen.getSprite(), felsen.getPosition()*width/9, height-felsen.getY(), width/9, width/9);
 		
 		update_variables();
 		update_graphics();
@@ -219,7 +217,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		}
 
-		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
+		felsen.setPosition((felsen.getY() + geschwindigkeit)%(height+felsen.getSprite().getHeight()));
 
 	}
 	

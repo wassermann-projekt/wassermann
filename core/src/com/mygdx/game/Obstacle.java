@@ -41,4 +41,8 @@ public class Obstacle {
 		return sprite;
 	}
 	
+	public void setPosition(float new_pos){
+		posy = new_pos;
+	}
+	
 }
