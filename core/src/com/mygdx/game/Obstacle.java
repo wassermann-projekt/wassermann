@@ -6,17 +6,22 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Obstacle {
 	private Sprite sprite;
 	private int type;
-	private float posx;
+	private int bahn;
 	private float posy;
 	
 	
-	public Obstacle(Sprite s, int t, float px, float py){
+	public Obstacle(Sprite s, int t, int b, float py){
 		sprite = s;
 		type = t;
-		posx = px;
+		bahn = b;
 		posy = py;
 		
-		
+		if(bahn < 1){
+			bahn = 1;
+		}
+		if(bahn > 7){
+			bahn = 7;
+		}	
 	}
 	
 	
@@ -24,23 +29,16 @@ public class Obstacle {
 		return type;
 	}
 	
-	/*public boolean blocks(int b){
-		if(b < 1 || b > 7){
-			// error
-		}
-		
-	}*/
-	
-	
 	public float getY(){
 		return posy;
 	}
 	
-	public void draw(SpriteBatch batch){
-		batch.draw(sprite, posx, posy);
+	public int getPosition(){
+		return bahn;
 	}
 	
+	public Sprite getSprite(){
+		return sprite;
+	}
 	
-	
-
 }
