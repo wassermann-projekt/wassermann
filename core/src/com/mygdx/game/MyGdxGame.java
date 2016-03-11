@@ -55,18 +55,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	//swimmer constants
 	private float swimmer_width;
 	private float swimmer_offset;
-	// game variables
+	//game variables
 	private int score;
 	private int level;
 	private int health;
+	//Ufer constant
+	private int dist_ufer;
 	
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
 
-	
-	
-	private EventListener steuerung;
 	
 	
 	private EventListener steuerung;
@@ -98,11 +97,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
 		
+		//init distance Ufer
+				dist_ufer = width/9;
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
-		swimmer_offset = (width / 7) * 1/8;
-		swimmer_width = (width / 7) * 3/4;
+		swimmer_offset = ((width-2*dist_ufer) / 7) * 1/8;
+		swimmer_width = ((width-2*dist_ufer) / 7) * 3/4;
 		
 		//init Ufertextur
 		ufer_links = new Sprite(new Texture("ufer.png"));
@@ -128,6 +129,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		//init score
 		score = 0;
 		level = 1;
+		
+		//init health
 		health = 5;
 		
 		//erstelle und registriere Steuerung
@@ -164,7 +167,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(wellen1, 0, wellen_x_pos % height, width, height);
 		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
 
-		batch.draw(swimmer, width / 7 * (swimmer_position-1) + swimmer_offset, 0, swimmer_width, swimmer_width);
+		batch.draw(swimmer, (width-2*dist_ufer) / 7 * (swimmer_position-1) + swimmer_offset + dist_ufer, 0, swimmer_width, swimmer_width);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);
