@@ -48,6 +48,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	//swimmer constants
 	private float swimmer_width;
 	private float swimmer_offset;
+	private float swimmer_height;
+	
 	// game variables
 	private int score;
 	private int level;
@@ -59,6 +61,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	
 	private EventListener steuerung;
+	
+	private boolean accident;
 	
 	@Override
 	public void create () {
@@ -92,7 +96,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
 		swimmer_offset = (width / 7) * 1/8;
 		swimmer_width = (width / 7) * 3/4;
-		
+		swimmer_height= (width/7) * 3/4;
+				
 		//init Ufertextur
 		ufer_links = new Sprite(new Texture("ufer.png"));
 		ufer_links.setSize(width/9, height);
@@ -134,6 +139,28 @@ public class MyGdxGame extends ApplicationAdapter {
 			swimmer_position = 7;
 		}
 	}
+	
+	
+	public boolean meetObstacle(Obstacle obs, int swimmer_position){
+		if(swimmer_position == obs.getPosition()){
+			if(swimmer_height == obs.getY()){
+				accident = true;
+			}else{
+				accident = false;
+			}
+		}
+		return accident;
+	
+	}
+	
+	public void loseLife(){
+		if(accident == true){
+			health--;
+			accident=false;
+		}
+	}
+
+
 	
 	@Override 
 	public void render () {
@@ -230,10 +257,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		ppiY = Gdx.graphics.getPpiY();
 	}
 	
+	
 
 	private void update_variables() {
 		geschwindigkeit += beschleunigung;
 		score += 1;
 		level = (score/10);
+
 	}
 }
