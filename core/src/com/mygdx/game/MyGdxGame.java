@@ -68,6 +68,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private EventListener steuerung;
 	
+	
+	private EventListener steuerung;
+	
 	@Override
 	public void create () {
 		//Infos Screen;
