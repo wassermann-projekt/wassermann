@@ -8,7 +8,7 @@ public class Obstacle {
 	private int type;
 	private float posx;
 	private float posy;
-	private boolean[] blocked;
+	
 	
 	public Obstacle(Sprite s, int t, float px, float py){
 		sprite = s;
@@ -24,12 +24,12 @@ public class Obstacle {
 		return type;
 	}
 	
-	public boolean blocks(int b){
+	/*public boolean blocks(int b){
 		if(b < 1 || b > 7){
 			// error
 		}
 		
-	}
+	}*/
 	
 	
 	public float getY(){
