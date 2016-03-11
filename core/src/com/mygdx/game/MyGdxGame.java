@@ -73,4 +73,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		ppiX = Gdx.graphics.getPpiX();
 		ppiY = Gdx.graphics.getPpiY();
 	}
+	
+	public boolean collision(isBlocked&&po){
+		
+	}
 }
