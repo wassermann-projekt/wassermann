@@ -56,7 +56,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float swimmer_height;
 	//Abstand zur Bahn
 	private float swimmer_offset;
-	
+
+	// game variables
 	private int score;
 	private int level;
 	private int health;
@@ -106,10 +107,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
 
+
 		//TODO: Width/9 statt width/7
-		swimmer_offset = (width / 7) * 1/8;
-		swimmer_width = (width / 7) * 3/4;
-		swimmer_height= (width/7) * 3/4;
+		swimmer_offset = ((width-2) / 9) * 1/8;
+		swimmer_width = ((width-2) / 9) * 3/4;
+		swimmer_height= ((width-2)/9) * 3/4;
+
+
 
 		//init Ufertextur
 		ufer_links = new Sprite(new Texture("ufer.png"));
