@@ -43,6 +43,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Position Test-Hindernis
 	private float felsen_x_pos;
 	
+	//Hindernis-Array
+	//private Obstacle obs;
+	private Obstacle[] hindernis = new Obstacle[40];
+	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
 	//Aenderung der Geschwindigkeit
@@ -158,7 +162,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
-		
+		Hindernis_Generator();
 		// Hindernisse bewegen
 				
 		// Kollisionsabfrage
@@ -232,6 +236,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 	
 	//Helpermethods
+	
+	private void Hindernis_Generator(){
+		
+	}
 	
 	public void changeSwimmerPosition(int change){
 		swimmer_position += change;	
