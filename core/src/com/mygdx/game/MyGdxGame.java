@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.*;
 
 
 import java.awt.BorderLayout;
@@ -30,6 +31,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite swimmer;
 	
 	private SpriteBatch batch;
+	
+	private World world;
+	private Body taucher;
 		
 	// Schrift
 	private BitmapFont font;
@@ -90,6 +94,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2 = new Sprite(new Texture("wellen.png"));
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
+		
+		
 		
 		//Anzeigen
 		//init Lebens-Anzeige
