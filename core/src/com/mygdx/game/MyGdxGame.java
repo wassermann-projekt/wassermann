@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+
 
 
 import java.awt.BorderLayout;
@@ -56,6 +59,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float swimmer_height;
 	//Abstand zur Bahn
 	private float swimmer_offset;
+
 
 	// game variables
 	private int score;
@@ -106,14 +110,17 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
-
+		
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("STONB___.TTF"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = 12;
+		parameter.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
+		font = generator.generateFont(parameter);
 
 		//TODO: Width/9 statt width/7
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
-		swimmer_height= ((width-2)/9) * 3/4;
-
-
+		swimmer_height= ((width-2)/ 9) * 3/4;
 
 		//init Ufertextur
 		ufer_links = new Sprite(new Texture("ufer.png"));
@@ -177,6 +184,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		
+		
+		font.setColor(Color.GRAY);
+		font.draw(batch, "Score:", 40, 40);
+		
 		// Herzen update
 		
 		if (health == 5){
@@ -185,6 +196,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
 			batch.draw(herz_voll, 125, 440, width/18, height/18);
 			batch.draw(herz_voll, 160, 440, width/18, height/18);
+
 				
 		} else if (health == 4) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
@@ -245,26 +257,19 @@ public class MyGdxGame extends ApplicationAdapter {
 			swimmer_position = 7;
 		}
 	}
+//	Obstacle ob = new Obstacle(Sprite s, int t, int b, float py);
 	
-	public boolean meetObstacle(Obstacle obs, int swimmer_position){
+	public int meetObstacle(Obstacle obs, int swimmer_position){
 		if(swimmer_position == obs.getPosition()){
 			if(swimmer_height == obs.getY()){
-				accident = true;
-			}else{
-				accident = false;
+				health --;
 			}
 		}
-		return accident;
+		return health;
 	
 	}
 	
-	public void loseLife(){
-		if(accident == true){
-			health--;
-			accident=false;
-		}
-	}
-	
+
 	private void update_graphics(){
 		wellen_x_pos -= geschwindigkeit;
 		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
