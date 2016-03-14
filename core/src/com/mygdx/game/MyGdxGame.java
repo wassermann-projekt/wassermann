@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -66,12 +65,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
+	
+	// menu
+	private Menu menu;
 
 		
 	private EventListener steuerung;
 	
 	//Kollisionserkennung -> TODO: Ohne Variable loesen
 	private boolean accident;
+	
 	
 	@Override
 	public void create () {
@@ -137,6 +140,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		score = 0;
 		level = 1;
 		
+		// erstelle menu
+		menu = new Menu();
+		menu.loadMainMenu();
+		
+		// TODO: mehrere InputProcessors funktionieren nicht
+		
 		//erstelle und registriere Steuerung
 		steuerung = new EventListener();
 		steuerung.setGame(this);
@@ -146,6 +155,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	@Override 
 	public void render () {
+		
+		if(state == 1){
+			menu.render();
+		}
+		
 		if(state == 1)render_upperworld();
 		
 		//Game-Variablen updaten
@@ -153,7 +167,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		//Graphik-Variablem updaten
 		update_graphics();
-
+		
 	}
 	
 	private void render_upperworld(){
@@ -284,4 +298,5 @@ public class MyGdxGame extends ApplicationAdapter {
 		level = (score/10);
 
 	}
+	
 }
