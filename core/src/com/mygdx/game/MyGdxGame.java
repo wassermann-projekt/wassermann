@@ -27,6 +27,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite wellen2;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
+
 	private Sprite herz_leer;
 	private Sprite herz_voll;
 	private Sprite swimmer;
@@ -38,13 +39,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	//Test-Hindernis 
 	//TODO: Hindernisse nicht hardcoden, sondern dynamisch?
-	private Sprite felsen;
+	private Obstacle felsen;
+	private Obstacle hai;
+	private Sprite haikinn;
 	
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
 
-	//Position Test-Hindernis
-	private float felsen_x_pos;
 	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
@@ -86,7 +87,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		//New Sprite Batch
 		batch = new SpriteBatch();
-		
 		
 		//init Wellentextur
 		wellen1 = new Sprite(new Texture("wellen.png"));
@@ -131,9 +131,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
 		
 		//Test Hindernis
-		felsen = new Sprite(new Texture("hindernis_felsen.png"));
-		felsen.setSize(width/9, height/9);
-		felsen_x_pos = 0.0f;
+		Sprite felsen_sprite = new Sprite(new Texture("hindernis_felsen.png"));
+		felsen_sprite.setSize(width/9, height/9);
+		felsen = new Obstacle(felsen_sprite, 0, 4, 0.0f);
+		
+		Sprite hai_sprite = new Sprite(new Texture("hai_1.png"));
+		hai_sprite.setSize(width/9, height/9);
+		hai = new Obstacle(hai_sprite, 0, 6, 0.0f);
+		haikinn = new Sprite(new Texture("hai_2.png")); 
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -184,9 +189,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		
+
 		
 		font.setColor(Color.GRAY);
 		font.draw(batch, "Score:", 40, 40);
+		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
+//		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
+		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
+
 		
 		// Herzen update
 		
@@ -197,22 +207,26 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_voll, 125, 440, width/18, height/18);
 			batch.draw(herz_voll, 160, 440, width/18, height/18);
 
+
 				
+		} else if (health == 4) {
+
+						
 		} else if (health == 4) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
 			batch.draw(herz_voll, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
-					
+							
 		}else if (health == 3) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
-				
-				
+						
+						
 		}else if (health == 2) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
@@ -227,8 +241,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
 			
-		}
-		else if (health == 0) {
+		}else if (health == 0) {
 			batch.draw(herz_leer, 19, 440, width/18, height/18);
 			batch.draw(herz_leer, 55, 440, width/18, height/18);
 			batch.draw(herz_leer, 90, 440, width/18, height/18);
@@ -236,11 +249,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
 				
 		}		
+				
 		
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
-		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
-					
 		batch.end();
 		
 	}
@@ -252,33 +262,35 @@ public class MyGdxGame extends ApplicationAdapter {
 		if(swimmer_position < 1){
 			swimmer_position = 1;
 		}
+		
 		if(swimmer_position > 7)
 		{
 			swimmer_position = 7;
 		}
 	}
-//	Obstacle ob = new Obstacle(Sprite s, int t, int b, float py);
+
+//	Obstacle obs = new Obstacle (herz_voll, 1, 3, 20);
 	
-	public int meetObstacle(Obstacle obs, int swimmer_position){
-		if(swimmer_position == obs.getPosition()){
-			if(swimmer_height == obs.getY()){
+	public int meetObstacle(Obstacle obs, int currentPosition){
+		if(currentPosition == obs.getBahn()){
+			if(Math.abs(swimmer_height-obs.getY())<0.1){
 				health --;
 			}
 		}
 		return health;
-	
 	}
+	
 	
 
 	private void update_graphics(){
 		wellen_x_pos -= geschwindigkeit;
-		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
+//		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
 
 	}
 	
 	private void readGraphics() {
 		width = Gdx.graphics.getWidth();
-		height = Gdx.graphics.getHeight();
+		height= Gdx.graphics.getHeight();
 		ppiX = Gdx.graphics.getPpiX();
 		ppiY = Gdx.graphics.getPpiY();
 	}
