@@ -233,6 +233,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Helpermethods
 	
+	public void changeDiveState(){
+		
+		if(state == 1){
+			state = 2;
+		}
+		else{
+			state = 1;
+		}
+		
+	}
+	
 	public void changeSwimmerPosition(int change){
 		swimmer_position += change;	
 		if(swimmer_position < 1){
