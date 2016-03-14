@@ -45,8 +45,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	
 	//Hindernis-Array
-	//private Obstacle obs;
 	private Obstacle[] hindernis = new Obstacle[40];
+	
+	//Hilfsvariable für den Hindernisgenerator
+	//Bei Aufruf von Hindernis-Generator wird h auf 0 gesetzt
+	//Bei jedem Aufruf von render wird geschwindigkeit auf h addiert
+	//Bis h größer gleich der Länge eines Hindernisses ist, dann starte Hindernisgenerator
+	private float h;
 	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
@@ -167,7 +172,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
-		Hindernis_Generator();
+		if (h >= width/9){
+		Hindernis_Generator();}
+		h += geschwindigkeit;
 		// Hindernisse bewegen
 				
 		// Kollisionsabfrage
@@ -185,7 +192,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
+		batch.draw(felsen.getSprite(), (width/9)*2, height-felsen.getY(), width/9, width/9);				
 		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
 		
 		// Herzen update
@@ -243,7 +250,19 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Helpermethods
 	
 	private void Hindernis_Generator(){
-		
+		h = 0;
+		//erste einfache Version des Hindernisgenerators
+		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
+		if (Math.random()<0.5){
+		int random_bahn = (int)(Math.random()*7+1);
+		int random_hindernis = (int)(Math.random()*3);
+		int i = 0;
+		while (!hindernis_aktiv[i]){
+			i++;
+		}
+		hindernis[i] = init_Obstacle(random_hindernis,random_bahn);
+		hindernis_aktiv[i]=false;
+		}
 	}
 	
 	public void changeSwimmerPosition(int change){
@@ -259,7 +278,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 	
 	public boolean meetObstacle(Obstacle obs, int swimmer_position){
-		if(swimmer_position == obs.getPosition()){
+		if(swimmer_position == obs.getY()){
 			if(swimmer_height == obs.getY()){
 				accident = true;
 			}else{
@@ -279,7 +298,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void update_graphics(){
 		wellen_x_pos -= geschwindigkeit;
-		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
+		felsen.setY((felsen.getY() + geschwindigkeit)%(height + felsen.getSprite().getHeight())); 
 
 	}
 	
