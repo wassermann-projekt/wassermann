@@ -5,28 +5,50 @@ import com.badlogic.gdx.Input.Keys;
 
 public class EventListener implements InputProcessor {
 	private MyGdxGame game;
-
+	
 	@Override
 	public boolean keyDown(int keycode) {
-		switch(keycode)
-		{
-		case Keys.LEFT:
-			game.changeSwimmerPosition(-1);
-			break;
-		case Keys.RIGHT:
-			game.changeSwimmerPosition(1);
-			break;
-		case Keys.UP:
-			break;
-		case Keys.DOWN:
-			break;
-		case Keys.ALT_LEFT:
-			game.changeDiveState();
 		
+		if(game.getState() == 1){
+		
+			switch(keycode)
+			{
+			case Keys.LEFT:
+				game.changeSwimmerPosition_swim(-1);
+				break;
+			case Keys.RIGHT:
+				game.changeSwimmerPosition_swim(1);
+				break;
+			case Keys.UP:
+				break;
+			case Keys.DOWN:
+				break;
+			case Keys.ALT_LEFT:
+				game.changeDiveState();
+			}
 			
 		}
+		
+		else if (game.getState() == 2){
+			
+			switch(keycode)
+			{
+			case Keys.UP:
+				game.changeSwimmerPosition_dive(-1);
+				break;
+			case Keys.DOWN:
+				game.changeSwimmerPosition_dive(1);
+				break;
+			case Keys.ALT_LEFT:
+				game.changeDiveState();
+			}
+			
+		}
+		
 		return false;
-	}
+
+		}
+		
 
 	@Override
 	public boolean keyUp(int keycode) {
