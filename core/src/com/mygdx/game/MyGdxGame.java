@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -102,9 +103,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		health = 5;
 		
-		//Schrift
-		//	font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
-		//font.setColor(Color.BLACK);
+		//init Schrift
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mecha_Bold.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = 20;
+		parameter.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
+		font = generator.generateFont(parameter);
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
@@ -188,7 +192,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
-		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
+		
+		//Schrift
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Score: " + score, 40, 40);
+
 		
 		// Herzen update
 		
