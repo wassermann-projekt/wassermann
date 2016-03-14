@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -23,6 +25,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private Sprite wellen1;
 	private Sprite wellen2;
+	private Sprite tauchersprite;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
 
@@ -33,7 +36,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private SpriteBatch batch;
 	
 	private World world;
-	private Body taucher;
+	public Body body;
 		
 	// Schrift
 	private BitmapFont font;
@@ -95,7 +98,29 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
 		
+		//init Taucher
 		
+		tauchersprite = new Sprite(new Texture("schwimmer_aufsicht.png"));
+		
+		world = new World(new Vector2(0, -1), true);
+		BodyDef diver = new BodyDef();
+		diver.type = BodyDef.BodyType.DynamicBody;
+		
+		diver.position.set(0,0);
+		body = world.createBody(diver);
+		
+		CircleShape circle = new CircleShape();
+		circle.setRadius(6f);
+		
+		FixtureDef diverfixture = new FixtureDef();
+		diverfixture.shape = circle;
+		diverfixture.density = 0.5f;
+		diverfixture.friction = 0.4f;
+		diverfixture.restitution = 0.6f;
+		
+		body.createFixture(diverfixture);
+		
+		circle.dispose();
 		
 		//Anzeigen
 		//init Lebens-Anzeige
@@ -106,9 +131,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		health = 5;
 		
-		//Schrift
-		//	font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
-		//font.setColor(Color.BLACK);
+		//init Schrift
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mecha_Bold.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = 20;
+		parameter.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
+		font = generator.generateFont(parameter);
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
@@ -155,13 +183,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
 		if(state == 1)render_upperworld();
 		
+		if(state == 2)render_lowerworld();
+		
 		//Game-Variablen updaten
 		update_variables();
 		
 		//Graphik-Variablem updaten
 		update_graphics();
 		
-		if(state == 2)render_lowerworld();
+		
 		
 
 	}
@@ -188,6 +218,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
+
+				
+		
+		//Schrift
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Score: " + score, 40, 40);
+
 		
 		//Hindernisse
 		for(int i = 0; i<40; i++){
@@ -266,6 +303,15 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void render_lowerworld(){
 		
+		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
+		
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.begin();
+        batch.draw(tauchersprite, tauchersprite.getX(), tauchersprite.getY());
+        batch.end();
+		
 	}
 	
 	//Helpermethods
@@ -278,14 +324,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		if(state == 1){
 			state = 2;
-			swimmer_position_dive = 0;
+			body.setLinearVelocity(0, 0);
+			body.setTransform(0, 100, 0);
+			
+			// TODO Dispose einfügen
 		}
 		else{
 			state = 1;
 		}
 		
 	}
-	
+		
 	protected void changeSwimmerPosition_swim(int change){
 		swimmer_position_swim += change;	
 		if(swimmer_position_swim < 1){
@@ -297,12 +346,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 	
 	protected void changeSwimmerPosition_dive(int change){
-		swimmer_position_dive += change;
-		if(swimmer_position_dive < 0){
+		
+		// TODO 
+		
+		body.applyForceToCenter(0, change, true);
+		
+		if(body.getPosition().y > 200){
 			changeDiveState();
 		}
-		if(swimmer_position_dive > 100){
-			swimmer_position_dive = 100;
+		if(body.getPosition().y < 0){
+			body.getPosition().y = 0;
 		}
 	}
 	

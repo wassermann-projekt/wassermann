@@ -34,13 +34,11 @@ public class EventListener implements InputProcessor {
 			switch(keycode)
 			{
 			case Keys.UP:
-				game.changeSwimmerPosition_dive(-1);
+				game.changeSwimmerPosition_dive(5);
 				break;
 			case Keys.DOWN:
-				game.changeSwimmerPosition_dive(1);
+				game.changeSwimmerPosition_dive(-5);
 				break;
-			case Keys.ALT_LEFT:
-				game.changeDiveState();
 			}
 			
 		}
