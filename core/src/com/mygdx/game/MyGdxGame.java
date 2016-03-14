@@ -180,6 +180,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		
+		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
+		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
+		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
+		
 		// Herzen update
 		
 		if (health == 5){
@@ -188,22 +192,22 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
 			batch.draw(herz_voll, 125, 440, width/18, height/18);
 			batch.draw(herz_voll, 160, 440, width/18, height/18);
-				
-		} else if (health == 4) {
+						
+		}else if (health == 4) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
 			batch.draw(herz_voll, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
-					
+							
 		}else if (health == 3) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
-				
-				
+						
+						
 		}else if (health == 2) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
@@ -218,8 +222,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
 			
-		}
-		else if (health == 0) {
+		}else if (health == 0) {
 			batch.draw(herz_leer, 19, 440, width/18, height/18);
 			batch.draw(herz_leer, 55, 440, width/18, height/18);
 			batch.draw(herz_leer, 90, 440, width/18, height/18);
@@ -227,11 +230,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
 				
 		}		
+				
 		
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
-		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
-					
 		batch.end();
 		
 	}
