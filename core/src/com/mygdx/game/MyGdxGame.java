@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 public class MyGdxGame extends ApplicationAdapter {
-	private int state;
+	protected int state;
 	
 	private Sprite wellen1;
 	private Sprite wellen2;
@@ -50,7 +50,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//swimmer variables
 	//Bahn des Schwimmers
-	private int swimmer_position;
+	private int swimmer_position_swim;
+	private int swimmer_position_dive;
 	//swimmer Groesse
 	private float swimmer_width;
 	private float swimmer_height;
@@ -130,7 +131,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		beschleunigung = 0;
 		
 		//init swimmer_position
-		swimmer_position = 4;
+		swimmer_position_swim = 4;
 		
 		//init score
 		score = 0;
@@ -153,8 +154,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		//Graphik-Variablem updaten
 		update_graphics();
+		
+		if(state == 2)render_lowerworld();
+		
 
 	}
+	
+	// Methode um die Schwimmwelt zu rendern
 	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
@@ -175,7 +181,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 		
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
+		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 		
 		//Hindernisse
 		for(int i = 0; i<40; i++){
@@ -250,22 +256,53 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	}
 	
+	// Methode um die Tauchwelt zu rendern
+	
+	private void render_lowerworld(){
+		
+	}
+	
 	//Helpermethods
 	
-	public void changeSwimmerPosition(int change){
-		swimmer_position += change;	
-		if(swimmer_position < 1){
-			swimmer_position = 1;
+	public int getState(){
+		return state;
+	}
+	
+	public void changeDiveState(){
+		
+		if(state == 1){
+			state = 2;
+			swimmer_position_dive = 0;
+		}
+		else{
+			state = 1;
 		}
 		
-		if(swimmer_position > 7)
-		{
-			swimmer_position = 7;
+	}
+	
+	protected void changeSwimmerPosition_swim(int change){
+		swimmer_position_swim += change;	
+		if(swimmer_position_swim < 1){
+			swimmer_position_swim = 1;
+		}
+		if(swimmer_position_swim > 7){
+			swimmer_position_swim = 7;
+		}
+	}
+	
+	protected void changeSwimmerPosition_dive(int change){
+		swimmer_position_dive += change;
+		if(swimmer_position_dive < 0){
+			changeDiveState();
+		}
+		if(swimmer_position_dive > 100){
+			swimmer_position_dive = 100;
 		}
 	}
 	
 	public boolean meetObstacle(Obstacle obs, int swimmer_position){
 		if(swimmer_position == obs.getBahn()){
+
 			if(swimmer_height == obs.getY()){
 				accident = true;
 			}else{
