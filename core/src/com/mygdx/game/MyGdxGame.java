@@ -24,6 +24,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite wellen2;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
+
 	private Sprite herz_leer;
 	private Sprite herz_voll;
 	private Sprite swimmer;
@@ -35,13 +36,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	//Test-Hindernis 
 	//TODO: Hindernisse nicht hardcoden, sondern dynamisch?
-	private Sprite felsen;
+	private Obstacle felsen;
+	private Obstacle hai;
+	private Sprite haikinn;
 	
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
 
-	//Position Test-Hindernis
-	private float felsen_x_pos;
 	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
@@ -85,7 +86,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		//New Sprite Batch
 		batch = new SpriteBatch();
 		
-		
 		//init Wellentextur
 		wellen1 = new Sprite(new Texture("wellen.png"));
 		wellen1.setSize(width, height);
@@ -123,9 +123,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
 		
 		//Test Hindernis
-		felsen = new Sprite(new Texture("hindernis_felsen.png"));
-		felsen.setSize(width/9, height/9);
-		felsen_x_pos = 0.0f;
+		Sprite felsen_sprite = new Sprite(new Texture("hindernis_felsen.png"));
+		felsen_sprite.setSize(width/9, height/9);
+		felsen = new Obstacle(felsen_sprite, 0, 4, 0.0f);
+		
+		Sprite hai_sprite = new Sprite(new Texture("hai_1.png"));
+		hai_sprite.setSize(width/9, height/9);
+		hai = new Obstacle(hai_sprite, 0, 6, 0.0f);
+		haikinn = new Sprite(new Texture("hai_2.png")); 
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -266,8 +271,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		if(swimmer_position_swim < 1){
 			swimmer_position_swim = 1;
 		}
-		if(swimmer_position_swim > 7)
-		{
+		if(swimmer_position_swim > 7){
 			swimmer_position_swim = 7;
 		}
 	}
