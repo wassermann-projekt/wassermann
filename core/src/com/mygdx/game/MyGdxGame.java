@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 public class MyGdxGame extends ApplicationAdapter {
 	private Sprite wellen1;
 	private Sprite wellen2;
-
+	
 	private Sprite swimmer;
 	private SpriteBatch batch;
 	
@@ -36,6 +36,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Test-Hindernis 
 	//TODO: Hindernisse nicht hardcoden, sondern dynamisch?
 	private Obstacle felsen;
+	private Obstacle hai;
+	private Sprite haikinn;
 	
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
@@ -114,7 +116,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Test Hindernis
 		Sprite felsen_sprite = new Sprite(new Texture("hindernis_felsen.png"));
 		felsen_sprite.setSize(width/9, height/9);
-		felsen = new Obstacle(felsen_sprite, 0, 2, 0.0f);
+		felsen = new Obstacle(felsen_sprite, 0, 4, 0.0f);
+		
+		Sprite hai_sprite = new Sprite(new Texture("hai_1.png"));
+		hai_sprite.setSize(width/9, height/9);
+		hai = new Obstacle(hai_sprite, 0, 6, 0.0f);
+		haikinn = new Sprite(new Texture("hai_2.png")); 
 	
 
 		//init geschwindigkeit
@@ -168,7 +175,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(swimmer, (width-2*dist_ufer) / 7 * (swimmer_position-1) + swimmer_offset + dist_ufer, 0, swimmer_width, swimmer_width);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
-		batch.draw(felsen.getSprite(), felsen.getPosition()*width/9, height-felsen.getY(), width/9, width/9);
+		batch.draw(felsen.getSprite(), felsen.getBahn()*width/9, height-felsen.getY(), width/9, width/9);
+		batch.draw(hai.getSprite(), hai.getBahn()*width/9, height - hai.getY(), width/9, width/9);
+		batch.draw(haikinn, hai.getBahn()*width/9 + width/17 + (hai.getY()%10), height - hai.getY() + height/100, width/18, width/18);
 		
 		update_variables();
 		update_graphics();
@@ -231,8 +240,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		}
 
-		felsen.setPosition((felsen.getY() + geschwindigkeit)%(height+felsen.getSprite().getHeight()));
-
+		felsen.setY((felsen.getY() + geschwindigkeit)%(height+felsen.getSprite().getHeight()));
+		hai.setY((hai.getY() + geschwindigkeit)%(height+hai.getSprite().getHeight()));
 	}
 	
 	private void readGraphics() {
