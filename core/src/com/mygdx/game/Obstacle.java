@@ -8,7 +8,14 @@ public class Obstacle {
 	private Sprite[] sprites_anim;
 	//Anzahl der animierten Teile
 	private int num_parts;
+	
+	/*0 := Felsen
+	 *1 := Seerose
+	 *2	:= Hai
+	 *3	:= Schwan 
+	 * */
 	private int type;
+
 	//Obstacle animiert?
 	private boolean anim;
 	private int bahn;
@@ -65,8 +72,24 @@ public class Obstacle {
 		return sprite;
 	}
 	
+	public Sprite[] getSpritesAnim(){
+		return sprites_anim;
+	}
+	
 	public void setY(float new_pos){
 		posY = new_pos;
+		return;
+	}
+	
+	public void dispose(){
+		//Speicherplatz von Texturen freigeben
+		sprite.getTexture().dispose();
+		if(anim){
+			for(int i = 0; i<num_parts; i++){
+				sprites_anim[i].getTexture().dispose();
+			}
+		}
+		return;
 	}
 	
 }
