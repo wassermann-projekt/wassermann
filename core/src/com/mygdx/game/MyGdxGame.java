@@ -340,16 +340,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Hintergrundfarbe
 		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		batch.begin();
-		//Hintergrundanimation
-		batch.draw(hintergrund1, 0, -10 - unter_wasser_textur_pos, width, height - height/8);
-		batch.draw(hintergrund2, 0, -10 - 3*unter_wasser_textur_pos, width, height - height/8);
-		batch.draw(hintergrund3, 0, -10 - 7*unter_wasser_textur_pos, width, height - height/8);
-		batch.draw(hintergrund4, 0, -10 - 10*unter_wasser_textur_pos, width, height - height/8);
-
-		batch.end();
-		
+				
 		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 		
@@ -363,8 +354,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
         batch.begin();
+        
+        //Hintergrundanimation
+  		batch.draw(hintergrund1, 0, -10 - unter_wasser_textur_pos, width, height - height/8);
+  		batch.draw(hintergrund2, 0, -10 - 3*unter_wasser_textur_pos, width, height - height/8);
+  		batch.draw(hintergrund3, 0, -10 - 7*unter_wasser_textur_pos, width, height - height/8);
+  		batch.draw(hintergrund4, 0, -10 - 10*unter_wasser_textur_pos, width, height - height/8);
+  		
+        // Taucher
         batch.draw(tauchersprite, tauchersprite.getX(), tauchersprite.getY());
+        
         batch.end();
 		
 	}
