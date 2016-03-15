@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.InputMultiplexer;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -97,17 +98,22 @@ public class MyGdxGame extends ApplicationAdapter {
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
+	
+	// input
+	private boolean paused;
+	private InputMultiplexer multiplexer;
 
-		
+	private Menu menu;	
 	private EventListener steuerung;
 	
 	//Kollisionserkennung -> TODO: Ohne Variable loesen
 	private boolean accident;
 	
+	
 	@Override
 	public void create () {
 		//init state
-		state = 1;
+		state = 0;
 		
 		//Infos Screen;
 		readGraphics();
@@ -204,25 +210,43 @@ public class MyGdxGame extends ApplicationAdapter {
 		score = 0;
 		level = 1;
 		
+		//input
+		paused = false;
+		multiplexer = new InputMultiplexer();
+		// erstelle menu
+		menu = new Menu(multiplexer, this, font);
+		menu.loadMainMenu();
+		
 		//erstelle und registriere Steuerung
 		steuerung = new EventListener();
 		steuerung.setGame(this);
-		Gdx.input.setInputProcessor(steuerung);
+		multiplexer.addProcessor(steuerung);
+		Gdx.input.setInputProcessor(multiplexer);
 	}
 
 	
 	@Override 
 	public void render () {
-		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
-		if(state == 1)render_upperworld();		
-		
-		if(state == 2)render_lowerworld();
 
-		//Game-Variablen updaten
-		update_variables();
-				
-		//Graphik-Variablem updaten
-		update_graphics();
+		
+		if(state == 0 || paused){
+			menu.render();
+		}
+
+		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
+		if(!paused){
+			
+			if(state == 1)render_upperworld();		
+	
+			
+			if(state == 2)render_lowerworld();
+	
+			//Game-Variablen updaten
+			update_variables();
+					
+			//Graphik-Variablem updaten
+			update_graphics();
+		}
 
 	}
 	
@@ -425,6 +449,29 @@ public class MyGdxGame extends ApplicationAdapter {
 		return state;
 	}
 	
+	public void startGame(){
+		//TODO: init game variables
+		state = 1;
+	}
+	
+	public void pauseGame(boolean p){
+		if(p && p != paused){
+			menu.loadPauseMenu();
+		}
+		paused = p;
+	}
+	
+	public void returnToMainMenu(){
+		//TODO: cleanup ?
+		paused = false;
+		menu.loadMainMenu();
+		state = 0;
+	}
+	
+	public void endApplication(){
+		Gdx.app.exit();
+	}
+	
 	public void changeDiveState(){
 		
 		if(state == 1){
@@ -546,10 +593,12 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	}
 	
+
 	//init Klasse, um Obstacle-Objekte zu erzeugen 
 	private Obstacle init_obstacle (int type, int bahn){
 		Obstacle new_obstacle;
-		//Je nach Typ wird ein anderes Obstacle erzeugt
+
+		
 		switch(type){
 			case 0: 
 				Sprite felsen_sprite = new Sprite(new Texture("hindernis_felsen.png"));
@@ -586,4 +635,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		
 	}
+	
+
 }
