@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
-
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -181,7 +180,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
 		
-
 		//TODO: Width/9 statt width/7
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
@@ -259,14 +257,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
-		
 
-		
 		font.setColor(Color.GRAY);
 		font.draw(batch, "Score:", 40, 40);
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-
-				
+	
 		
 		//Score-Anzeige
 		font.setColor(Color.BLACK);
@@ -361,16 +356,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Hintergrundfarbe
 		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		batch.begin();
-		//Hintergrundanimation
-		batch.draw(hintergrund1, 0, -10 - unter_wasser_textur_pos, width, height - height/8);
-		batch.draw(hintergrund2, 0, -10 - 3*unter_wasser_textur_pos, width, height - height/8);
-		batch.draw(hintergrund3, 0, -10 - 7*unter_wasser_textur_pos, width, height - height/8);
-		batch.draw(hintergrund4, 0, -10 - 10*unter_wasser_textur_pos, width, height - height/8);
-
-		batch.end();
-		
+				
 		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 		
@@ -381,11 +367,19 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
-		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
         batch.begin();
+        
+        
+        //Hintergrundanimation
+  		batch.draw(hintergrund1, 0, -10 - unter_wasser_textur_pos, width, height - height/8);
+  		batch.draw(hintergrund2, 0, -10 - 3*unter_wasser_textur_pos, width, height - height/8);
+  		batch.draw(hintergrund3, 0, -10 - 7*unter_wasser_textur_pos, width, height - height/8);
+  		batch.draw(hintergrund4, 0, -10 - 10*unter_wasser_textur_pos, width, height - height/8);
+  		
+        // Taucher
         batch.draw(tauchersprite, tauchersprite.getX(), tauchersprite.getY());
+        
         batch.end();
 		
 	}
