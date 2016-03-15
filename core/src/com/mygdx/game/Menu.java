@@ -9,16 +9,22 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 public class Menu {
 	private Skin skin;
 	private Stage stage;
+	private MyGdxGame game;
 	
-	public Menu(){
+	public Menu(InputMultiplexer mp, MyGdxGame g){
 		stage = new Stage();
+		game = g;
 		loadSkin();
-		Gdx.input.setInputProcessor(stage);
-		
+		//Gdx.input.setInputProcessor(stage);
+		mp.addProcessor(stage);
 	}
 	
 	public void loadSkin(){
@@ -47,6 +53,12 @@ public class Menu {
 		
 		TextButton startButton = new TextButton("START", skin);
 		startButton.setPosition(0, 60);
+		startButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				game.startGame();
+			}
+		});
 		TextButton exitButton = new TextButton("EXIT", skin);
 		exitButton.setPosition(0, 0);
 		
