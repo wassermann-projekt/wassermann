@@ -307,6 +307,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 		
+		if(body.getPosition().y > 200){
+			changeDiveState();
+		}
+		if(body.getPosition().y < 0){
+			body.getPosition().y = 0;
+		}
+		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
@@ -374,12 +381,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		body.applyForceToCenter(0, change, true);
 		
-		if(body.getPosition().y > 200){
-			changeDiveState();
-		}
-		if(body.getPosition().y < 0){
-			body.getPosition().y = 0;
-		}
 	}
 	
 	public boolean meetObstacle(Obstacle obs, int swimmer_position){
