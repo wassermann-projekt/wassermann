@@ -70,12 +70,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float swimmer_height;
 	//Abstand zur Bahn
 	private float swimmer_offset;
-	
+
 	// game variables
 	private int score;
 	private int level;
 	private int health;
-		
+	
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
@@ -146,11 +146,11 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
-
+		
 		//TODO: Width/9 statt width/7
-		swimmer_offset = (width / 7) * 1/8;
-		swimmer_width = (width / 7) * 3/4;
-		swimmer_height= (width/7) * 3/4;
+		swimmer_offset = ((width-2) / 9) * 1/8;
+		swimmer_width = ((width-2) / 9) * 3/4;
+		swimmer_height= ((width-2)/ 9) * 3/4;
 
 		//init Ufertextur
 		ufer_links = new Sprite(new Texture("ufer.png"));
@@ -206,6 +206,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Hindernisse bewegen
 				
 		// Kollisionsabfrage
+		for (int i=0; i<40; i++){
+			if (hindernis_aktiv[i]){
+				if (meetObstacle(hindernis[i],swimmer)){
+					health--;
+					hindernis[i].dispose();
+				    hindernis_aktiv[i]=false;	
+				}
+			}
+		}
 		
 		//Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
@@ -218,6 +227,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
+
+		font.setColor(Color.GRAY);
+		font.draw(batch, "Score:", 40, 40);
+		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
+//		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
+		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
+
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 
 				
@@ -258,7 +274,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_voll, 125, 440, width/18, height/18);
 			batch.draw(herz_voll, 160, 440, width/18, height/18);
 						
-		}else if (health == 4) {
+		} else if (health == 4) {
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
 			batch.draw(herz_voll, 90, 440, width/18, height/18);
@@ -287,7 +303,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
 			
-		}else if (health == 0) {
+		}else if (health < 1) {
 			batch.draw(herz_leer, 19, 440, width/18, height/18);
 			batch.draw(herz_leer, 55, 440, width/18, height/18);
 			batch.draw(herz_leer, 90, 440, width/18, height/18);
@@ -384,30 +400,22 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	}
 	
-	public boolean meetObstacle(Obstacle obs, int swimmer_position){
-		if(swimmer_position_swim == obs.getY()){
+			
+	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
 		if(swimmer_position_swim == obs.getBahn()){
-			if(swimmer_height == obs.getY()){
-				accident = true;
-			}else{
-				accident = false;
+//		if(Math.abs(swimmer_height-obs.getY())<0.1){
+		if(width*8/9-obs.getY()<swimmer_height){
+				return true;
 			}
-		}
-		return accident;
-	
 		}
 		return false;
 	}
 	
-	public void loseLife(){
-		if(accident == true){
-			health--;
-			accident=false;
-		}
-	}
-	
 	private void update_graphics(){
 		wellen_x_pos -= geschwindigkeit;
+
+//		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
+
 		//Update Hindernisse
 		for(int i = 0; i<40; i++){
 			if(hindernis_aktiv[i]){
@@ -437,7 +445,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void readGraphics() {
 		width = Gdx.graphics.getWidth();
-		height = Gdx.graphics.getHeight();
+		height= Gdx.graphics.getHeight();
 		ppiX = Gdx.graphics.getPpiX();
 		ppiY = Gdx.graphics.getPpiY();
 	}
