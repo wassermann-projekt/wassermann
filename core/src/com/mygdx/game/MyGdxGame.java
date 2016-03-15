@@ -367,11 +367,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
-		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
         batch.begin();
+        
         
         //Hintergrundanimation
   		batch.draw(hintergrund1, 0, -10 - unter_wasser_textur_pos, width, height - height/8);
