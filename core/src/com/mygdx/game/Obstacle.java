@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Obstacle {
 	private Sprite sprite;
 	private Sprite[] sprites_anim;
+	
 	//Anzahl der animierten Teile
 	private int num_parts;
 	
@@ -18,8 +19,13 @@ public class Obstacle {
 
 	//Obstacle animiert?
 	private boolean anim;
+	// Von 1 bis 7
 	private int bahn;
 	private float posY;
+	//0 := keine Richtung
+	//1 := schwimmt nach rechts
+	//2 := schwimmt nach links
+	private int richtung = 0;
 	
 	//Konstruktor fuer nicht-animierte Hindernisse
 	public Obstacle(Sprite s, int t, int b, float py){
@@ -76,8 +82,27 @@ public class Obstacle {
 		return sprites_anim;
 	}
 	
+	public int getRichtung(){
+		return richtung;
+	}
+	
 	public void setY(float new_pos){
 		posY = new_pos;
+		return;
+	}
+	
+	public void setBahn(int new_bahn){
+		bahn = new_bahn;
+		return;
+	}
+	
+	public void setSprite(Sprite new_sprite){
+		sprite = new_sprite;
+		return;
+	}
+	
+	public void setRichtung(int new_richtung){
+		richtung = new_richtung;
 		return;
 	}
 	
