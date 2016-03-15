@@ -51,6 +51,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	// Schrift
 	private BitmapFont font;
+	private BitmapFont gameover; 
 
 	
 	//Graphics Updates -> Variables to update positions
@@ -88,7 +89,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int score;
 	private int level;
 	private int health;
-	
+
+	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses 
+	private long Zeile; 
+		
+
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
@@ -162,12 +167,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		health = 5;
 		
-		//init Schrift
+		//init Schrift für alle Anzeigen
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mecha_Bold.ttf"));
-		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		parameter.size = 20;
-		parameter.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
-		font = generator.generateFont(parameter);
+		FreeTypeFontParameter parameter1 = new FreeTypeFontParameter();
+		FreeTypeFontParameter parameter2 = new FreeTypeFontParameter();
+		parameter1.size = 25;
+		parameter2.size = 50;
+		parameter1.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
+		font = generator.generateFont(parameter1);
+		gameover = generator.generateFont(parameter2);
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
@@ -255,9 +263,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 	
 		
-		//Schrift
+		//Score-Anzeige
 		font.setColor(Color.BLACK);
-		font.draw(batch, "Score: " + score, 40, 40);
+		font.draw(batch, "Score: " + score, 470, 465);
+		
+		//Level-Anzeigen
+	//	if (level == 1){
+		//	font.draw(batch, "Level " + level, 470, 300);
+		//}
+		
 
 		
 		//Hindernisse
@@ -321,16 +335,18 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 90, 440, width/18, height/18);
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
-			
-		}else if (health < 1) {
-			batch.draw(herz_leer, 19, 440, width/18, height/18);
-			batch.draw(herz_leer, 55, 440, width/18, height/18);
-			batch.draw(herz_leer, 90, 440, width/18, height/18);
-			batch.draw(herz_leer, 125, 440, width/18, height/18);
-			batch.draw(herz_leer, 160, 440, width/18, height/18);
+		}
 				
-		}		
-						
+		// Game Over Anzeige
+		else {gameover.draw(batch, "GAME OVER", width /2, height/2);	
+		gameover.setColor(Color.WHITE);
+		batch.draw(herz_leer, 19, 440, width/18, height/18);
+		batch.draw(herz_leer, 55, 440, width/18, height/18);
+		batch.draw(herz_leer, 90, 440, width/18, height/18);
+		batch.draw(herz_leer, 125, 440, width/18, height/18);
+		batch.draw(herz_leer, 160, 440, width/18, height/18);
+		geschwindigkeit = 0;}
+		
 		batch.end();
 		
 	}
@@ -502,6 +518,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			zeit_unter_wasser = (zeit_unter_wasser + 1)%200;
 		}
 
+
 	}
 	
 	private void readGraphics() {
@@ -514,8 +531,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void update_variables() {
 		geschwindigkeit += beschleunigung;
-		score += 1;
-		level = (score/10);
+		score =+ 1;	
+		level = (score/100);
 
 	}
 	
@@ -556,5 +573,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				break;
 		}
 		return new_obstacle;
+		
+		
 	}
 }
