@@ -113,9 +113,44 @@ public class Menu {
 		
 	}
 	
+	public void loadGameOverMenu(){
+		stage.clear();
+		
+		int num_buttons = 2;
+		int w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
+		int left = (w - button_w) / 2;
+		int top = (h + (num_buttons * button_h + (num_buttons - 1) * button_space)) / 2 - button_h;
+		
+		TextButton mainMenuButton = new TextButton("MAIN MENU", skin);
+		mainMenuButton.setPosition(left, top);
+		mainMenuButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				game.returnToMainMenu();
+			}
+		});
+		
+		top -= button_h + button_space;
+		
+		TextButton newGameButton = new TextButton("TRY AGAIN", skin);
+		newGameButton.setPosition(left, top);
+		newGameButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				game.startGame();
+			}
+		});
+		
+		stage.addActor(mainMenuButton);
+		stage.addActor(newGameButton);
+		
+	}
+	
 	public void render(){
-		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		if(game.getState() == GameState.MAINMENU){
+			Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		}
 		
 		stage.act();
 		stage.draw();

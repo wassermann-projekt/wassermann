@@ -8,42 +8,47 @@ public class EventListener implements InputProcessor {
 	
 	@Override
 	public boolean keyDown(int keycode) {
-		
-		if(game.getState() == 1){
-		
-			switch(keycode)
-			{
-			case Keys.LEFT:
-				game.changeSwimmerPosition_swim(-1);
-				break;
-			case Keys.RIGHT:
-				game.changeSwimmerPosition_swim(1);
-				break;
-			case Keys.UP:
-				break;
-			case Keys.DOWN:
-				break;
-			case Keys.ALT_LEFT:
-				game.changeDiveState();
+		// keine Steuerung wenn das Spiel pausiert ist
+		if(!game.isPaused()){
+			
+			// Überwasser
+			if(game.getState() == GameState.UPPERWORLD){
+			
+				switch(keycode)
+				{
+				case Keys.LEFT:
+					game.changeSwimmerPosition_swim(-1);
+					break;
+				case Keys.RIGHT:
+					game.changeSwimmerPosition_swim(1);
+					break;
+				case Keys.UP:
+					break;
+				case Keys.DOWN:
+					break;
+				case Keys.ALT_LEFT:
+					game.changeDiveState();
+				}
+				
 			}
 			
-		}
-		
-		else if (game.getState() == 2){
-			
-			switch(keycode)
-			{
-			case Keys.UP:
-				game.changeSwimmerPosition_dive(5000);
-				break;
-			case Keys.DOWN:
-				game.changeSwimmerPosition_dive(-5000);
-				break;
+			// Unterwasser
+			else if (game.getState() == GameState.LOWERWORLD){
+				
+				switch(keycode)
+				{
+				case Keys.UP:
+					game.changeSwimmerPosition_dive(5000);
+					break;
+				case Keys.DOWN:
+					game.changeSwimmerPosition_dive(-5000);
+					break;
+				}
+				
 			}
-			
 		}
 		
-		if(game.getState() != 0){
+		if(game.getState() != GameState.MAINMENU){
 			if(keycode == Keys.ESCAPE){
 				game.pauseGame(true);
 			}
