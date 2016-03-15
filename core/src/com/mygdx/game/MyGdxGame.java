@@ -38,14 +38,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite hintergrund2;
 	private Sprite hintergrund3;
 	private Sprite hintergrund4;
-	private Sprite hintergrund5;
-	private Sprite hintergrund6;
-	private Sprite hintergrund7;
-
 
 	private Sprite herz_leer;
 	private Sprite herz_voll;
 	private Sprite swimmer;
+	private Sprite swimmer_rechter_arm;
+	private Sprite swimmer_linker_arm;
 	
 	private SpriteBatch batch;
 	
@@ -91,6 +89,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float swimmer_height;
 	//Abstand zur Bahn
 	private float swimmer_offset;
+	//Position der Arme
+	private float arm_pos_x = 0.0f;
+	private float arm_pos_y = 0.0f;
 
 	// game variables
 	private long score;
@@ -186,7 +187,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		gameover = generator.generateFont(parameter2);
 
 		//init Swimmer_Grafik
-		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
+		swimmer = new Sprite(new Texture("schwimmer_aufsicht_body.png"));
+		swimmer_linker_arm = new Sprite(new Texture("schwimmer_aufsicht_linker_arm.png"));
+		swimmer_rechter_arm = new Sprite(new Texture("schwimmer_aufsicht_rechter_arm.png"));
 		
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
@@ -285,18 +288,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
+
+		//Animation Schwimmer
+		batch.draw(swimmer_rechter_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f + (swimmer_width/5.5f) - arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
+		batch.draw(swimmer_linker_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f - (swimmer_width/5.5f) + arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
+
+		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 		
 		//Score-Anzeige
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
-		
-		//Level-Anzeigen
-	//	if (level == 1){
-		//	font.draw(batch, "Level " + level, 470, 300);
-		//}
-		
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-
 		
 		//Hindernisse
 		for(int i = 0; i<40; i++){
@@ -426,12 +427,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Helpermethods
 	
-	//Test Hindernis
-			//hindernis[0] = init_obstacle(0,4);
-			//hindernis[1] = init_obstacle(3,6);
-			//hindernis_aktiv[0] = true;
-			//hindernis_aktiv[1] = true;
-	
 	private void Hindernis_Generator(){
 		h = 0;
 		//erste einfache Version des Hindernisgenerators
@@ -543,6 +538,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		if(state == 1){
 			wellen_x_pos -= geschwindigkeit;
+			arm_pos_x += Math.sin(0.1*wellen_x_pos -0.5);
+			arm_pos_y -= Math.sin(0.1*wellen_x_pos);
 			//Update Hindernisse
 			for(int i = 0; i<40; i++){
 				if(hindernis_aktiv[i]){
@@ -615,8 +612,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	
 	private void update_variables() {
-		geschwindigkeit += beschleunigung;	
-//		level = (score/100);
+		geschwindigkeit += beschleunigung;
+		swimmer_offset = ((width-2) / 9) * 1/8;
+		swimmer_width = ((width-2) / 9) * 3/4;
+		swimmer_height= ((width-2)/ 9) * 3/4;
 		}
 	
 	
@@ -633,7 +632,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		
 	}
-	
 
 	//init Klasse, um Obstacle-Objekte zu erzeugen 
 	private Obstacle init_obstacle (int type, int bahn){
