@@ -283,8 +283,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 
-		font.setColor(Color.GRAY);
-		font.draw(batch, "Score:", 40, 40);
+		//font.setColor(Color.GRAY);
+		//font.draw(batch, "Score:", 40, 40);
 	
 		
 		//Score-Anzeige
