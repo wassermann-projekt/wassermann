@@ -311,7 +311,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			changeDiveState();
 		}
 		if(body.getPosition().y < 0){
-			body.getPosition().y = 0;
+			body.setLinearVelocity(0, 0);
+			body.setTransform(0, 0, 0);
 		}
 		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
