@@ -368,7 +368,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
         
-        batch.begin();
+        batch.begin(); 	
         
         
         //Hintergrundanimation
@@ -379,6 +379,7 @@ public class MyGdxGame extends ApplicationAdapter {
   		
         // Taucher
         batch.draw(tauchersprite, tauchersprite.getX(), tauchersprite.getY());
+        
         
         batch.end();
 		
