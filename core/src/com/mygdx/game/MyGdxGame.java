@@ -148,8 +148,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Test Hindernis
 		hindernis[0] = init_obstacle(0,4);
 		hindernis[1] = init_obstacle(2,6);
+		hindernis[2] = init_obstacle(3,2);
 		hindernis_aktiv[0] = true;
 		hindernis_aktiv[1] = true;		
+		hindernis_aktiv[2] = true;	
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -172,21 +174,18 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override 
 	public void render () {
 		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
-		if(state == 1)render_upperworld();
+		if(state == 1)render_upperworld();		
 		
+		if(state == 2)render_lowerworld();		
+
 		//Game-Variablen updaten
 		update_variables();
-		
+				
 		//Graphik-Variablem updaten
 		update_graphics();
-		
-		if(state == 2)render_lowerworld();
-		
-
 	}
 	
-	// Methode um die Schwimmwelt zu rendern
-	
+	// Methode um die Schwimmwelt zu rendern	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
 		
@@ -368,8 +367,33 @@ public class MyGdxGame extends ApplicationAdapter {
 					switch(aktiv_type){
 						case 0:
 						case 1:
-						case 2:
+						case 2: 
+							aktiv.setY(aktiv.getY() + geschwindigkeit);
+							break;
 						case 3:
+							//Richtungswechsel?
+							
+							//Bahn wechseln -> nach rechts oder nach links? 
+							if(aktiv.getY()%10 == 0 && aktiv.getRichtung() == 1) {
+								//Richtungswechsel
+								if(aktiv.getBahn()==7) {
+									aktiv.setRichtung(2);
+									Sprite temp = aktiv.getSprite();
+									temp.flip(true, false);
+									aktiv.setSprite(temp);
+								}
+								else aktiv.setBahn(aktiv.getBahn()+1);
+							}
+							else if(aktiv.getY()%10 == 0 && aktiv.getRichtung() == 2) {
+								//Richtungswechsel
+								if(aktiv.getBahn()==1) {
+									aktiv.setRichtung(1);
+									Sprite temp = aktiv.getSprite();
+									temp.flip(true, false);
+									aktiv.setSprite(temp);
+								}
+								else aktiv.setBahn(aktiv.getBahn()-1);
+							}
 							aktiv.setY(aktiv.getY() + geschwindigkeit);
 							break;
 						default:
@@ -436,6 +460,8 @@ public class MyGdxGame extends ApplicationAdapter {
 				Sprite schwan_sprite = new Sprite(new Texture("rennschwan.png"));
 				schwan_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
+				//Richtung auf links setzen
+				new_obstacle.setRichtung(2);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(new Texture("hindernis_felsen.png"));
