@@ -231,12 +231,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.setColor(Color.GRAY);
 		font.draw(batch, "Score:", 40, 40);
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-//		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
-		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
-
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-
-				
+	
 		
 		//Schrift
 		font.setColor(Color.BLACK);
@@ -400,10 +395,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	}
 	
-			
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
 		if(swimmer_position_swim == obs.getBahn()){
-//		if(Math.abs(swimmer_height-obs.getY())<0.1){
 		if(width*8/9-obs.getY()<swimmer_height){
 				return true;
 			}
@@ -411,6 +404,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		return false;
 	}
 	
+
 	private void update_graphics(){
 		wellen_x_pos -= geschwindigkeit;
 
