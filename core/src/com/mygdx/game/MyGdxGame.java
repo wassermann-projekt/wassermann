@@ -23,11 +23,22 @@ import javax.swing.JTextField;
 public class MyGdxGame extends ApplicationAdapter {
 	protected int state;
 	
+	//Hintergrund Schwimmwelt
 	private Sprite wellen1;
 	private Sprite wellen2;
 	private Sprite tauchersprite;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
+	
+	//Hintergrund Tauchwelt
+	private Sprite hintergrund1;
+	private Sprite hintergrund2;
+	private Sprite hintergrund3;
+	private Sprite hintergrund4;
+	private Sprite hintergrund5;
+	private Sprite hintergrund6;
+	private Sprite hintergrund7;
+
 
 	private Sprite herz_leer;
 	private Sprite herz_voll;
@@ -44,6 +55,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
+	private float unter_wasser_textur_pos;
+	private float zeit_unter_wasser;
 
 	//Hindernis-Array
 	private Obstacle[] hindernis = new Obstacle[40];
@@ -104,6 +117,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
 		
+		//init Unterwasserwelt Hintergrund
+		hintergrund1 = new Sprite(new Texture("unter_wasser_textur_1.png"));
+		hintergrund1.setSize(width, height);
+		hintergrund2 = new Sprite(new Texture("unter_wasser_textur_2.png"));
+		hintergrund2.setSize(width, height);
+		hintergrund3 = new Sprite(new Texture("unter_wasser_textur_3.png"));
+		hintergrund3.setSize(width, height);
+		hintergrund4 = new Sprite(new Texture("unter_wasser_textur_4.png"));
+		hintergrund4.setSize(width, height);
+		unter_wasser_textur_pos = 0.0f;
+		zeit_unter_wasser = 0.0f;
+
 		//init Taucher
 		
 		tauchersprite = new Sprite(new Texture("schwimmer_aufsicht.png"));
@@ -127,7 +152,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		body.createFixture(diverfixture);
 		
 		circle.dispose();
-		
+
 		//Anzeigen
 		//init Lebens-Anzeige
 		herz_leer = new Sprite(new Texture("herz_leer.png"));
@@ -181,25 +206,22 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override 
 	public void render () {
 		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
-		if(state == 1)render_upperworld();
+		if(state == 1)render_upperworld();		
 		
 		if(state == 2)render_lowerworld();
-		
+
 		//Game-Variablen updaten
 		update_variables();
-		
+				
 		//Graphik-Variablem updaten
 		update_graphics();
-		
-		
-		
 
 	}
 	
-	// Methode um die Schwimmwelt zu rendern
-	
+	// Methode um die Schwimmwelt zu rendern	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
+		
 		if (h >= width/9){
 		Hindernis_Generator();}
 		h += geschwindigkeit;
@@ -246,12 +268,14 @@ public class MyGdxGame extends ApplicationAdapter {
 				switch(aktiv_type){
 					case 0:
 					case 1:
-					case 2:
 						batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
 						break;
-					case 3:
-						batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
+					case 2:
+						batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);
 						batch.draw(aktiv.getSpritesAnim()[0], (width/9)*aktiv.getBahn() + 40 + (aktiv.getY()%10), height - aktiv.getY() + (width/9)/15, width/18, width/18);						
+						break;
+					case 3:	
+						batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
 						break;
 					default:
 						batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
@@ -311,9 +335,20 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	}
 	
-	// Methode um die Tauchwelt zu rendern
-	
+	// Methode um die Tauchwelt zu rendern	
 	private void render_lowerworld(){
+		//Hintergrundfarbe
+		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		batch.begin();
+		//Hintergrundanimation
+		batch.draw(hintergrund1, 0, -10 - unter_wasser_textur_pos, width, height - height/8);
+		batch.draw(hintergrund2, 0, -10 - 3*unter_wasser_textur_pos, width, height - height/8);
+		batch.draw(hintergrund3, 0, -10 - 7*unter_wasser_textur_pos, width, height - height/8);
+		batch.draw(hintergrund4, 0, -10 - 10*unter_wasser_textur_pos, width, height - height/8);
+
+		batch.end();
 		
 		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
@@ -406,34 +441,65 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 
 	private void update_graphics(){
-		wellen_x_pos -= geschwindigkeit;
 
-//		felsen_x_pos = (felsen_x_pos + geschwindigkeit)%(height+felsen.getHeight());
-
-		//Update Hindernisse
-		for(int i = 0; i<40; i++){
-			if(hindernis_aktiv[i]){
-				Obstacle aktiv = hindernis[i];
-				int aktiv_type = aktiv.getType();
-				switch(aktiv_type){
-					case 0:
-					case 1:
-					case 2:
-					case 3:
-						aktiv.setY(aktiv.getY() + geschwindigkeit);
-						break;
-					default:
-						batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
-						break;
-				}
-				//Wenn Hindernis Fenster verlassen hat -> dispose
-				if(aktiv.getY() > (height + height/9)){
-					aktiv.dispose();
-					hindernis_aktiv[i] = false;
+		if(state == 1){
+			wellen_x_pos -= geschwindigkeit;
+			//Update Hindernisse
+			for(int i = 0; i<40; i++){
+				if(hindernis_aktiv[i]){
+					Obstacle aktiv = hindernis[i];
+					int aktiv_type = aktiv.getType();
+					switch(aktiv_type){
+						case 0:
+						case 1:
+						case 2: 
+							aktiv.setY(aktiv.getY() + geschwindigkeit);
+							break;
+						case 3:
+							//Richtungswechsel?
+							
+							//Bahn wechseln -> nach rechts oder nach links? 
+							if(aktiv.getY()%10 == 0 && aktiv.getRichtung() == 1) {
+								//Richtungswechsel
+								if(aktiv.getBahn()==7) {
+									aktiv.setRichtung(2);
+									Sprite temp = aktiv.getSprite();
+									temp.flip(true, false);
+									aktiv.setSprite(temp);
+								}
+								else aktiv.setBahn(aktiv.getBahn()+1);
+							}
+							else if(aktiv.getY()%10 == 0 && aktiv.getRichtung() == 2) {
+								//Richtungswechsel
+								if(aktiv.getBahn()==1) {
+									aktiv.setRichtung(1);
+									Sprite temp = aktiv.getSprite();
+									temp.flip(true, false);
+									aktiv.setSprite(temp);
+								}
+								else aktiv.setBahn(aktiv.getBahn()-1);
+							}
+							aktiv.setY(aktiv.getY() + geschwindigkeit);
+							break;
+						default:
+							batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
+							break;
+					}
+					//Wenn Hindernis Fenster verlassen hat -> dispose
+					if(aktiv.getY() > (height + height/9)){
+						aktiv.dispose();
+						hindernis_aktiv[i] = false;
+					}
 				}
 			}
 		}
-		//felsen.setY((felsen.getY() + geschwindigkeit)%(height+felsen.getSprite().getHeight()));
+		else if(state == 2){
+			//Bewegung Hintergrundtextur
+			unter_wasser_textur_pos = ((float) Math.sin((double)0.05f* zeit_unter_wasser));
+			//if(zeit_unter_wasser < 100 ) unter_wasser_textur_pos = (float) (unter_wasser_textur_pos + 0.1); 
+			//else if(zeit_unter_wasser > 99) unter_wasser_textur_pos = (float) (unter_wasser_textur_pos - 0.1);
+			zeit_unter_wasser = (zeit_unter_wasser + 1)%200;
+		}
 
 	}
 	
@@ -468,17 +534,19 @@ public class MyGdxGame extends ApplicationAdapter {
 				new_obstacle = new Obstacle(seerosen_sprite, 1, bahn, 0.0f);
 				break;
 			case 2:
-				Sprite schwan_sprite = new Sprite(new Texture("rennschwan.png"));
-				schwan_sprite.setSize(width/9, height/9);
-				new_obstacle = new Obstacle(schwan_sprite, 2, bahn, 0.0f);
-				break;
-			case 3:
 				Sprite hai_sprite = new Sprite(new Texture("hai_1.png"));
 				hai_sprite.setSize(width/9, height/9);
 				Sprite haikinn = new Sprite(new Texture("hai_2.png")); 
 				Sprite[] sprites_anim = new Sprite[1];
 				sprites_anim[0] = haikinn;
-				new_obstacle = new Obstacle(hai_sprite, 3, bahn, 0.0f, 1, sprites_anim);
+				new_obstacle = new Obstacle(hai_sprite, 2, bahn, 0.0f, 1, sprites_anim);
+				break;
+			case 3:
+				Sprite schwan_sprite = new Sprite(new Texture("rennschwan.png"));
+				schwan_sprite.setSize(width/9, height/9);
+				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
+				//Richtung auf links setzen
+				new_obstacle.setRichtung(2);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(new Texture("hindernis_felsen.png"));
