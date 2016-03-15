@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 
-
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -45,6 +44,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Obstacle[] hindernis = new Obstacle[40];
 	//Positionen aktiver Hindernisse in array
 	private boolean[] hindernis_aktiv = new boolean[40];
+	
+	//Hilfsvariable für den Hindernisgenerator
+	//Bei Aufruf von Hindernis-Generator wird h auf 0 gesetzt
+	//Bei jedem Aufruf von render wird geschwindigkeit auf h addiert
+	//Bis h größer gleich der Länge eines Hindernisses ist, dann starte Hindernisgenerator
+	private float h;
 	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
@@ -103,9 +108,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		health = 5;
 		
-		//Schrift
-		//	font = new BitmapFont(Gdx.files.internal("arial-15.fnt"), false);
-		//font.setColor(Color.BLACK);
+		//init Schrift
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mecha_Bold.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = 20;
+		parameter.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
+		font = generator.generateFont(parameter);
 
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
@@ -127,13 +135,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts = new Sprite(new Texture("ufer.png"));
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
-		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
-		
-		//Test Hindernis
-		hindernis[0] = init_obstacle(0,4);
-		hindernis[1] = init_obstacle(3,6);
-		hindernis_aktiv[0] = true;
-		hindernis_aktiv[1] = true;		
+		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);		
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -173,7 +175,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
-		
+		if (h >= width/9){
+		Hindernis_Generator();}
+		h += geschwindigkeit;
 		// Hindernisse bewegen
 				
 		// Kollisionsabfrage
@@ -204,10 +208,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.setColor(Color.GRAY);
 		font.draw(batch, "Score:", 40, 40);
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-//		batch.draw(felsen, (width/9)*2, height-felsen_x_pos, width/9, width/9);				
-		//	batch.draw(herz_leer, 5, 5, width/17, height/17 ); 
 
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
+				
+		
+		//Schrift
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Score: " + score, 40, 40);
+
 		
 		//Hindernisse
 		for(int i = 0; i<40; i++){
@@ -290,6 +297,28 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Helpermethods
 	
+	//Test Hindernis
+			//hindernis[0] = init_obstacle(0,4);
+			//hindernis[1] = init_obstacle(3,6);
+			//hindernis_aktiv[0] = true;
+			//hindernis_aktiv[1] = true;
+	
+	private void Hindernis_Generator(){
+		h = 0;
+		//erste einfache Version des Hindernisgenerators
+		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
+		if (Math.random()<0.5){
+		int random_bahn = (int)(Math.random()*7+1);
+		int random_hindernis = (int)(Math.random()*3);
+		int i = 0;
+		while (hindernis_aktiv[i]){
+			i++;
+		}
+		hindernis[i] = init_obstacle(random_hindernis,random_bahn);
+		hindernis_aktiv[i]=true;
+		}
+	}
+	
 	public int getState(){
 		return state;
 	}
@@ -328,7 +357,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
 		if(swimmer_position_swim == obs.getBahn()){
-//		if(Math.abs(swimmer_height-obs.getY())<0.1){
 		if(width*8/9-obs.getY()<swimmer_height){
 				return true;
 			}
@@ -336,6 +364,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		return false;
 	}
 	
+
 	private void update_graphics(){
 		wellen_x_pos -= geschwindigkeit;
 
