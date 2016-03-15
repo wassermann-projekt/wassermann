@@ -50,6 +50,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Positionen aktiver Hindernisse in array
 	private boolean[] hindernis_aktiv = new boolean[40];
 	
+	//Hilfsvariable für den Hindernisgenerator
+	//Bei Aufruf von Hindernis-Generator wird h auf 0 gesetzt
+	//Bei jedem Aufruf von render wird geschwindigkeit auf h addiert
+	//Bis h größer gleich der Länge eines Hindernisses ist, dann starte Hindernisgenerator
+	private float h;
+	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
 	//Aenderung der Geschwindigkeit
@@ -152,13 +158,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts = new Sprite(new Texture("ufer.png"));
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
-		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
-		
-		//Test Hindernis
-		hindernis[0] = init_obstacle(0,4);
-		hindernis[1] = init_obstacle(3,6);
-		hindernis_aktiv[0] = true;
-		hindernis_aktiv[1] = true;		
+		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);		
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -200,7 +200,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
-		
+		if (h >= width/9){
+		Hindernis_Generator();}
+		h += geschwindigkeit;
 		// Hindernisse bewegen
 				
 		// Kollisionsabfrage
@@ -216,7 +218,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width/9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
-		
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 
 				
@@ -316,6 +317,28 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Helpermethods
 	
+	//Test Hindernis
+			//hindernis[0] = init_obstacle(0,4);
+			//hindernis[1] = init_obstacle(3,6);
+			//hindernis_aktiv[0] = true;
+			//hindernis_aktiv[1] = true;
+	
+	private void Hindernis_Generator(){
+		h = 0;
+		//erste einfache Version des Hindernisgenerators
+		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
+		if (Math.random()<0.5){
+		int random_bahn = (int)(Math.random()*7+1);
+		int random_hindernis = (int)(Math.random()*3);
+		int i = 0;
+		while (hindernis_aktiv[i]){
+			i++;
+		}
+		hindernis[i] = init_obstacle(random_hindernis,random_bahn);
+		hindernis_aktiv[i]=true;
+		}
+	}
+	
 	public int getState(){
 		return state;
 	}
@@ -360,8 +383,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 	
 	public boolean meetObstacle(Obstacle obs, int swimmer_position){
-		if(swimmer_position == obs.getBahn()){
-
+		if(swimmer_position_swim == obs.getY()){
+		if(swimmer_position_swim == obs.getBahn()){
 			if(swimmer_height == obs.getY()){
 				accident = true;
 			}else{
@@ -370,6 +393,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		return accident;
 	
+		}
+		return false;
 	}
 	
 	public void loseLife(){
