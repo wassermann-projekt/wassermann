@@ -118,11 +118,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht.png"));
 		
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("STONB___.TTF"));
-		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		parameter.size = 12;
-		parameter.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
-		font = generator.generateFont(parameter);
 
 		//TODO: Width/9 statt width/7
 		swimmer_offset = ((width-2) / 9) * 1/8;
