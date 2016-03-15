@@ -86,8 +86,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float swimmer_offset;
 
 	// game variables
-	private int score;
-	private int level;
+	private long score;
+	private long level;
 	private int health;
 
 	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses 
@@ -171,7 +171,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mecha_Bold.ttf"));
 		FreeTypeFontParameter parameter1 = new FreeTypeFontParameter();
 		FreeTypeFontParameter parameter2 = new FreeTypeFontParameter();
-		parameter1.size = 25;
+		parameter1.size = 27;
 		parameter2.size = 50;
 		parameter1.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
 		font = generator.generateFont(parameter1);
@@ -231,7 +231,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// TODO: Hindernisse generieren
 		
 		if (h >= width/9){
-		Hindernis_Generator();}
+		Hindernis_Generator();
+		score++;}
 		h += geschwindigkeit;
 		// Hindernisse bewegen
 				
@@ -260,7 +261,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		font.setColor(Color.GRAY);
 		font.draw(batch, "Score:", 40, 40);
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 	
 		
 		//Score-Anzeige
@@ -272,6 +272,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//	font.draw(batch, "Level " + level, 470, 300);
 		//}
 		
+		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 
 		
 		//Hindernisse
@@ -297,6 +298,17 @@ public class MyGdxGame extends ApplicationAdapter {
 				}
 			}
 		}
+		
+		
+		//Score-Anzeige
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Score: " + score, 470, 465);
+		
+		//Level-Anzeigen
+	//if (level == 1){
+	//	font.draw(batch, "Level " + level, 40, 40);
+	//	}
+		
 		
 		// Herzen update
 		
@@ -448,7 +460,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
 		if(swimmer_position_swim == obs.getBahn()){
-		if(width*8/9-obs.getY()<swimmer_height){
+		if(width*8/9-obs.getY()<2.5*swimmer_height){
 				return true;
 			}
 		}
@@ -529,9 +541,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	
 	private void update_variables() {
-		geschwindigkeit += beschleunigung;
-		score =+ 1;	
-		level = (score/100);
+		geschwindigkeit += beschleunigung;	
+//		level = (score/100);
 
 	}
 	
