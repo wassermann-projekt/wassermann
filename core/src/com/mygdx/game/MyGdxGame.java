@@ -101,9 +101,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	private EventListener steuerung;
 	
-	//Kollisionserkennung -> TODO: Ohne Variable loesen
-	private boolean accident;
-	
+	//Kollisionerkennung: freeze time
+	private float elapsedTime;
+	long actionBeginTime;
+	boolean collisionDetected = false;
+
 	@Override
 	public void create () {
 		//init state
@@ -237,7 +239,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		Hindernis_Generator();}
 		h += geschwindigkeit;
 		// Hindernisse bewegen
-				
+		
+		 
 		// Kollisionsabfrage
 		for (int i=0; i<40; i++){
 			if (hindernis_aktiv[i]){
@@ -245,9 +248,13 @@ public class MyGdxGame extends ApplicationAdapter {
 					health--;
 					hindernis[i].dispose();
 				    hindernis_aktiv[i]=false;
+				    elapsedTime=(System.nanoTime()-actionBeginTime)/100000.0f;
+				    
+				    
 				}
 			}
 		}
+
 		
 		//Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
@@ -449,8 +456,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 	
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
+		
 		if(swimmer_position_swim == obs.getBahn()){
-		if(width*8/9-obs.getY()<2.5*swimmer_height){
+			if(width*8/9-obs.getY()<2.5*swimmer_height){
 				return true;
 			}
 		}
