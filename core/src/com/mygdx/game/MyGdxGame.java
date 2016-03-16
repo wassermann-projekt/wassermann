@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
@@ -11,8 +12,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -22,8 +25,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Timer;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
@@ -60,9 +63,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private BitmapFont font;
 	private BitmapFont gameover; 
 
-
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
+	private float loop;
 	private float unter_wasser_textur_pos;
 	private float zeit_unter_wasser;
 	private float hindernis_x_pos;
@@ -111,11 +114,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sound sound; 
 	private Music music; 
 	private Music bewegungmusic;
+	private Music shark;
 
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
-	
+	private float width2; 
 	// input
 	private boolean paused;
 	private InputMultiplexer multiplexer;
@@ -124,13 +128,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private EventListener steuerung;
 
 	
-	private FreeTypeFontGenerator generator; 
-	
 	//Kollisionserkennung -> TODO: Ohne Variable loesen
 	private boolean accident;
 	
+	//Luftanzeige
+	private Sprite luftanzeige;
 
-		
 
 	@Override
 	public void create () {
@@ -140,9 +143,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		music = Gdx.audio.newMusic(Gdx.files.internal("super-mario-bros.mp3"));
 		music.setLooping(true);
 		music.setVolume(0.3f);
-		
-		bewegungmusic = Gdx.audio.newMusic(Gdx.files.internal("wave.mp3"));
-		bewegungmusic.setVolume(0.1f);
+		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
+		shark.setVolume(0.3f);
 		
 		//init state
 		state = 0;
@@ -159,6 +161,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2 = new Sprite(new Texture("wellen.png"));
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
+		loop = 0;
 		
 		//init Unterwasserwelt Hintergrund
 		hintergrund1 = new Sprite(new Texture("unter_wasser_textur_1.png"));
@@ -172,6 +175,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		unter_wasser_textur_pos = 0.0f;
 		zeit_unter_wasser = 0.0f;
 
+		//Luftanzeige
+		luftanzeige = new Sprite(new Texture("image.png"));
+		luftanzeige.setSize(width/18, height/18);
+		
 		//init Taucher
 		tauchersprite = new Sprite(new Texture("schwimmer_aufsicht.png"));
 		
@@ -214,7 +221,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		parameter1.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
 		font = generator.generateFont(parameter1);
 		gameover = generator.generateFont(parameter2);
-
+		
 		//init Swimmer_Grafik
 		swimmer = new Sprite(new Texture("schwimmer_aufsicht_body.png"));
 		swimmer_linker_arm = new Sprite(new Texture("schwimmer_aufsicht_linker_arm.png"));
@@ -268,21 +275,14 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
 		if(!paused){
-			
 			if(state == 1){
 				render_upperworld();
-				update_variables();
-			}
-	
-			
+				update_variables();}
 			if(state == 2){
 				render_lowerworld();
-				update_variables_dive();
-			}
-					
+				update_variables_dive();}			
 			//Graphik-Variablem updaten
-			update_graphics();
-		}
+			update_graphics();}
 
 	}
 	
@@ -302,6 +302,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i=0; i<40; i++){
 			if (hindernis_aktiv[i]){
 				if (meetObstacle(hindernis[i],swimmer)){
+					shark.play();
 					health--;
 					hindernis[i].dispose();
 				    hindernis_aktiv[i]=false;	
@@ -312,9 +313,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		
-				
+			
 		batch.begin();
 				
 		//Hintergrund		
@@ -324,23 +323,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 
 
-		//batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-
-
-
 		//Animation Schwimmer
 		batch.draw(swimmer_rechter_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f + (swimmer_width/5.5f) - arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
 		batch.draw(swimmer_linker_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f - (swimmer_width/5.5f) + arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
-
-
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 		
 
-		//Score-Anzeige
-		font.setColor(Color.BLACK);
-		font.draw(batch, "Score: " + score, 470, 465);
-
-		
 		//Hindernisse
 		for(int i = 0; i<40; i++){
 			if(hindernis_aktiv[i]){
@@ -374,8 +362,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (score%30 < 2){
 			gameover.draw(batch, "Level " + level, width/2, height/2);
 		}
-
 		
+		//Luft-Anzeige
+		width2 = width/2 + (loop*0.5f);
+		if (width2 > 0){
+			batch.draw(luftanzeige, 40, 40, width2, height/18);
+			}
+		else {gameover.draw(batch, "GAME OVER", width /2, height/2);	
+		gameover.setColor(Color.WHITE);
+			geschwindigkeit = 0;
+			music.stop();
+		}
 		
 		// Herzen update
 		if (health == 5){
@@ -590,6 +587,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		if(state == 1){
 			wellen_x_pos -= geschwindigkeit;
+			loop -= geschwindigkeit;
 			arm_pos_x += Math.sin(0.1*wellen_x_pos -0.5);
 			arm_pos_y -= Math.sin(0.1*wellen_x_pos);
 			//Update Hindernisse
@@ -660,6 +658,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		height= Gdx.graphics.getHeight();
 		ppiX = Gdx.graphics.getPpiX();
 		ppiY = Gdx.graphics.getPpiY();
+
 	}
 	
 	
@@ -668,6 +667,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
 		swimmer_height= ((width-2)/ 9) * 3/4;
+		width2 = luftanzeige.getHeight ();
 		}
 	
 	
@@ -729,9 +729,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		super.dispose();
 		music.dispose();
-		generator.dispose();
+		//generator.dispose();
 	}
 
 }
