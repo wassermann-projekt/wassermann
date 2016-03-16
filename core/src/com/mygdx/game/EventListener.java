@@ -1,10 +1,13 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.Input.Keys;
 
 public class EventListener implements InputProcessor {
 	private MyGdxGame game;
+	private Music bewegungmusic; 
 	
 	@Override
 	public boolean keyDown(int keycode) {
@@ -15,9 +18,15 @@ public class EventListener implements InputProcessor {
 			{
 			case Keys.LEFT:
 				game.changeSwimmerPosition_swim(-1);
+				bewegungmusic = Gdx.audio.newMusic(Gdx.files.internal("button-21.mp3"));
+				bewegungmusic.setVolume(0.05f);
+				bewegungmusic.play();
 				break;
 			case Keys.RIGHT:
 				game.changeSwimmerPosition_swim(1);
+				bewegungmusic = Gdx.audio.newMusic(Gdx.files.internal("button-21.mp3"));
+				bewegungmusic.setVolume(0.05f);
+				bewegungmusic.play();
 				break;
 			case Keys.UP:
 				break;
@@ -25,6 +34,7 @@ public class EventListener implements InputProcessor {
 				break;
 			case Keys.ALT_LEFT:
 				game.changeDiveState();
+				
 			}
 			
 		}

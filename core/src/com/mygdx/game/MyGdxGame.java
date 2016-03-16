@@ -3,6 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.backends.lwjgl.audio.Mp3.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,8 +19,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Timer;
+
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+
+
 
 public class MyGdxGame extends ApplicationAdapter {
 	protected int state;
@@ -53,7 +59,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private BitmapFont font;
 	private BitmapFont gameover; 
 
-	
+
 	//Graphics Updates -> Variables to update positions
 	private float wellen_x_pos;
 	private float unter_wasser_textur_pos;
@@ -92,7 +98,11 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses 
 	private long Zeile; 
-		
+	
+	//Musik & Sound
+	private Sound sound; 
+	private Music music; 
+	private Music bewegungmusic;
 
 	// shortcuts for graphics fields
 	private int width, height;
@@ -101,11 +111,23 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	private EventListener steuerung;
 	
+	private FreeTypeFontGenerator generator; 
+	
 	//Kollisionserkennung -> TODO: Ohne Variable loesen
 	private boolean accident;
 	
 	@Override
 	public void create () {
+		
+		
+		//init Sounds
+		music = Gdx.audio.newMusic(Gdx.files.internal("super-mario-bros.mp3"));
+		music.setLooping(true);
+		music.setVolume(0.3f);
+		
+		bewegungmusic = Gdx.audio.newMusic(Gdx.files.internal("wave.mp3"));
+		bewegungmusic.setVolume(0.1f);
+		
 		//init state
 		state = 1;
 		
@@ -135,7 +157,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		zeit_unter_wasser = 0.0f;
 
 		//init Taucher
-		
 		tauchersprite = new Sprite(new Texture("schwimmer_aufsicht.png"));
 		
 		world = new World(new Vector2(0, -1), true);
@@ -166,6 +187,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		herz_leer.setSize(width/18, height/18);
 		
 		health = 5;
+		
 		
 		//init Schrift für alle Anzeigen
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mecha_Bold.ttf"));
@@ -230,6 +252,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private void render_upperworld(){
 		// TODO: Hindernisse generieren
 		
+		//Musik 
+		music.play();
+		
 		if (h >= width/9){
 		Hindernis_Generator();
 		score++;}
@@ -250,6 +275,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		
 				
 		batch.begin();
 				
@@ -261,22 +288,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 
-
-		font.setColor(Color.GRAY);
-		font.draw(batch, "Score:", 40, 40);
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 	
 		
-		//Score-Anzeige
-		font.setColor(Color.BLACK);
-		font.draw(batch, "Score: " + score, 470, 465);
-		
-		//Level-Anzeigen
-	//	if (level == 1){
-		//	font.draw(batch, "Level " + level, 470, 300);
-		//}
-		
-
 		
 		//Hindernisse
 		for(int i = 0; i<40; i++){
@@ -307,14 +321,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
 		
-		//Level-Anzeigen
-	//if (level == 1){
-	//	font.draw(batch, "Level " + level, 40, 40);
-	//	}
+		//Level-Anzeigen 
+		if (score%30 < 2){
+			gameover.draw(batch, "Level " + level, width/2, height/2);
+		}
+
 		
 		
 		// Herzen update
-		
 		if (health == 5){
 			batch.draw(herz_voll, 19, 440, width/18, height/18);
 			batch.draw(herz_voll, 55, 440, width/18, height/18);
@@ -351,6 +365,14 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(herz_leer, 125, 440, width/18, height/18);
 			batch.draw(herz_leer, 160, 440, width/18, height/18);
 		}
+		
+		else if (health == 0) {
+		batch.draw(herz_leer, 19, 440, width/18, height/18);
+		batch.draw(herz_leer, 55, 440, width/18, height/18);
+		batch.draw(herz_leer, 90, 440, width/18, height/18);
+		batch.draw(herz_leer, 125, 440, width/18, height/18);
+		batch.draw(herz_leer, 160, 440, width/18, height/18);
+		}
 				
 		// Game Over Anzeige
 		else {gameover.draw(batch, "GAME OVER", width /2, height/2);	
@@ -360,11 +382,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(herz_leer, 90, 440, width/18, height/18);
 		batch.draw(herz_leer, 125, 440, width/18, height/18);
 		batch.draw(herz_leer, 160, 440, width/18, height/18);
-		geschwindigkeit = 0;}
+		geschwindigkeit = 0;
+		music.stop();}
 		
 		batch.end();
+		}
 		
-	}
+
 	
 	// Methode um die Tauchwelt zu rendern	
 	private void render_lowerworld(){
@@ -587,5 +611,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		return new_obstacle;
 		
 		
+	}
+	@Override
+	public void dispose() {
+		super.dispose();
+		music.dispose();
+		generator.dispose();
 	}
 }
