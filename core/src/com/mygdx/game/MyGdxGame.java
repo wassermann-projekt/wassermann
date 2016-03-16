@@ -24,10 +24,32 @@ import javax.swing.JTextField;
 public class MyGdxGame extends ApplicationAdapter {
 	protected int state;
 	
+	//Textures
+	Texture anzeige;
+	Texture hai_1;
+	Texture hai_2;
+	Texture herz_leer_tex;
+	Texture herz_voll_tex;
+	Texture hindernis_felsen;
+	Texture rennschwan;
+	Texture schwimmer_aufsicht_body;
+	Texture schwimmer_aufsicht_linker_arm;
+	Texture schwimmer_aufsicht_rechter_arm;
+	Texture schwimmer_seitlich_body;
+	Texture schwimmer_seitlich_rechtes_bein;
+	Texture schwimmer_seitlich_linkes_bein;
+	Texture seerosen;
+	Texture ufer;
+	Texture unter_wasser_textur_1;
+	Texture unter_wasser_textur_2;
+	Texture unter_wasser_textur_3;
+	Texture unter_wasser_textur_4;
+	Texture wellen;
+
+	
 	//Hintergrund Schwimmwelt
 	private Sprite wellen1;
 	private Sprite wellen2;
-	private Sprite tauchersprite;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
 	
@@ -42,6 +64,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite swimmer;
 	private Sprite swimmer_rechter_arm;
 	private Sprite swimmer_linker_arm;
+	private Sprite tauchersprite;
+	private Sprite taucher_rechtes_bein;
+	private Sprite taucher_linkes_bein;
 	
 	private SpriteBatch batch;
 	
@@ -80,12 +105,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int swimmer_position_dive;
 	//swimmer Groesse
 	private float swimmer_width;
-	private float swimmer_height;
 	//Abstand zur Bahn
 	private float swimmer_offset;
 	//Position der Arme
+	private float arm_pos;
 	private float arm_pos_x = 0.0f;
 	private float arm_pos_y = 0.0f;
+	
+	//taucher variables
+	//taucher Groesse
+	private float taucher_width;
 
 	// game variables
 	private long score;
@@ -122,6 +151,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		//New Sprite Batch
 		batch = new SpriteBatch();
 		
+		//Textures laden
+		anzeige = new Texture("anzeige.png");
+		hai_1 = new Texture("hai_1.png");
+		hai_2 = new Texture("hai_2.png");
+		herz_leer_tex = new Texture("herz_leer.png");
+		herz_voll_tex = new Texture("herz_voll.png");
+		hindernis_felsen = new Texture("hindernis_felsen.png");
+		rennschwan = new Texture("rennschwan.png");
+		schwimmer_aufsicht_body = new Texture("schwimmer_aufsicht_body.png");
+		schwimmer_aufsicht_linker_arm = new Texture("schwimmer_aufsicht_linker_arm.png");
+		schwimmer_aufsicht_rechter_arm = new Texture("schwimmer_aufsicht_rechter_arm.png");
+		schwimmer_seitlich_body = new Texture("schwimmer_seitlich_body.png");
+		schwimmer_seitlich_rechtes_bein = new Texture("schwimmer_seitlich_rechtes_bein.png");
+		schwimmer_seitlich_linkes_bein = new Texture("schwimmer_seitlich_linkes_bein.png");
+		seerosen = new Texture("seerosen.png");
+		ufer = new Texture("ufer.png");
+		unter_wasser_textur_1 = new Texture("unter_wasser_textur_1.png");
+		unter_wasser_textur_2 = new Texture("unter_wasser_textur_2.png");
+		unter_wasser_textur_3 = new Texture("unter_wasser_textur_3.png");
+		unter_wasser_textur_4 = new Texture("unter_wasser_textur_4.png");
+		wellen = new Texture("wellen.png");
+	
 		//init Wellentextur
 		wellen1 = new Sprite(new Texture("wellen.png"));
 		wellen1.setSize(width, height);
@@ -142,8 +193,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		zeit_unter_wasser = 0.0f;
 
 		//init Taucher
-		
-		tauchersprite = new Sprite(new Texture("schwimmer_aufsicht.png"));
+		tauchersprite = new Sprite(schwimmer_seitlich_body);
+		taucher_rechtes_bein = new Sprite(schwimmer_seitlich_rechtes_bein);
+		taucher_linkes_bein = new Sprite(schwimmer_seitlich_linkes_bein);
+
+		taucher_width = width/7;
 		
 		world = new World(new Vector2(0, -1), true);
 		BodyDef diver = new BodyDef();
@@ -167,8 +221,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//Anzeigen
 		//init Lebens-Anzeige
-		herz_leer = new Sprite(new Texture("herz_leer.png"));
-		herz_voll = new Sprite(new Texture ("herz_voll.png"));		
+		herz_leer = new Sprite(herz_leer_tex);
+		herz_voll = new Sprite(herz_voll_tex);		
 		herz_voll.setSize(width/18, height/18);
 		herz_leer.setSize(width/18, height/18);
 		
@@ -185,19 +239,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		gameover = generator.generateFont(parameter2);
 
 		//init Swimmer_Grafik
-		swimmer = new Sprite(new Texture("schwimmer_aufsicht_body.png"));
-		swimmer_linker_arm = new Sprite(new Texture("schwimmer_aufsicht_linker_arm.png"));
-		swimmer_rechter_arm = new Sprite(new Texture("schwimmer_aufsicht_rechter_arm.png"));
+		swimmer = new Sprite(schwimmer_aufsicht_body);
+		swimmer_linker_arm = new Sprite(schwimmer_aufsicht_linker_arm);
+		swimmer_rechter_arm = new Sprite(schwimmer_aufsicht_rechter_arm);
 		
 		//TODO: Width/9 statt width/7
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
-		swimmer_height= ((width-2)/ 9) * 3/4;
 
 		//init Ufertextur
-		ufer_links = new Sprite(new Texture("ufer.png"));
+		ufer_links = new Sprite(ufer);
 		ufer_links.setSize(width/9, height);
-		ufer_rechts = new Sprite(new Texture("ufer.png"));
+		ufer_rechts = new Sprite(ufer);
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);		
@@ -236,10 +289,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			menu.render();
 		}
 
-		//TODO: Speicherplatz von Hindernissen mit hindernis.dispose() freigeben!
 		if(!paused){
 			
-			if(state == 1)render_upperworld();		
+			if(state == 1) render_upperworld();		
 	
 			
 			if(state == 2)render_lowerworld();
@@ -247,7 +299,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			//Game-Variablen updaten
 			update_variables();
 					
-			//Graphik-Variablem updaten
+			//Graphik-Variablen updaten
 			update_graphics();
 		}
 
@@ -268,7 +320,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (hindernis_aktiv[i]){
 				if (meetObstacle(hindernis[i],swimmer)){
 					health--;
-					hindernis[i].dispose();
 				    hindernis_aktiv[i]=false;	
 				}
 			}
@@ -287,8 +338,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
 
 		//Animation Schwimmer
-		batch.draw(swimmer_rechter_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f + (swimmer_width/5.5f) - arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
-		batch.draw(swimmer_linker_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f - (swimmer_width/5.5f) + arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
+		batch.draw(swimmer_rechter_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f + (swimmer_width/4.0f) - arm_pos_x*swimmer_width/70, (swimmer_width/6.0f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
+		batch.draw(swimmer_linker_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f - (swimmer_width/4.0f) + arm_pos_x*swimmer_width/70, (swimmer_width/6.0f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
 
 		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
 		
@@ -324,11 +375,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Score-Anzeige
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
-		
-		//Level-Anzeigen
-	//if (level == 1){
-	//	font.draw(batch, "Level " + level, 40, 40);
-	//	}
 		
 		
 		// Herzen update
@@ -371,14 +417,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 				
 		// Game Over Anzeige
-		else {gameover.draw(batch, "GAME OVER", width /2, height/2);	
-		gameover.setColor(Color.WHITE);
-		batch.draw(herz_leer, 19, 440, width/18, height/18);
-		batch.draw(herz_leer, 55, 440, width/18, height/18);
-		batch.draw(herz_leer, 90, 440, width/18, height/18);
-		batch.draw(herz_leer, 125, 440, width/18, height/18);
-		batch.draw(herz_leer, 160, 440, width/18, height/18);
-		geschwindigkeit = 0;}
+		else {
+			gameover.draw(batch, "GAME OVER", width /2, height/2);	
+			gameover.setColor(Color.WHITE);
+			batch.draw(herz_leer, 19, 440, width/18, height/18);
+			batch.draw(herz_leer, 55, 440, width/18, height/18);
+			batch.draw(herz_leer, 90, 440, width/18, height/18);
+			batch.draw(herz_leer, 125, 440, width/18, height/18);
+			batch.draw(herz_leer, 160, 440, width/18, height/18);
+			geschwindigkeit = 0;
+		}
 		
 		batch.end();
 		
@@ -411,9 +459,12 @@ public class MyGdxGame extends ApplicationAdapter {
   		batch.draw(hintergrund4, 0, -10 - 10*unter_wasser_textur_pos, width, height - height/8);
   		
         // Taucher
-        batch.draw(tauchersprite, tauchersprite.getX(), tauchersprite.getY());
-        
-        
+  		//Animation
+        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_width/3 +width/2, tauchersprite.getY() + taucher_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
+        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_width/3 +width/2, tauchersprite.getY() + taucher_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
+
+        batch.draw(tauchersprite, tauchersprite.getX()+width/2, tauchersprite.getY(), taucher_width, taucher_width);
+              
         batch.end();
 		
 	}
@@ -498,7 +549,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
 		if(swimmer_position_swim == obs.getBahn()){
-		if(width*8/9-obs.getY()<2.5*swimmer_height){
+		if(width*8/9-obs.getY()<2.5*swimmer_width){
 				return true;
 			}
 		}
@@ -509,9 +560,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private void update_graphics(){
 
 		if(state == 1){
-			wellen_x_pos -= geschwindigkeit;
-			arm_pos_x += Math.sin(0.1*wellen_x_pos -0.5);
-			arm_pos_y -= Math.sin(0.1*wellen_x_pos);
+			//wellen_x_pos -= geschwindigkeit;
+			wellen_x_pos = (wellen_x_pos - geschwindigkeit) % height;
+			arm_pos += 10 % 314;
+			arm_pos_x = swimmer_width/8*(float) Math.sin(0.01*arm_pos -1.5);
+			arm_pos_y = swimmer_width/8*(float) Math.sin(0.01*arm_pos);
+
 			//Update Hindernisse
 			for(int i = 0; i<40; i++){
 				if(hindernis_aktiv[i]){
@@ -553,20 +607,16 @@ public class MyGdxGame extends ApplicationAdapter {
 							batch.draw(aktiv.getSprite(), (width/9)*aktiv.getBahn(), height - aktiv.getY(), width/9, width/9);	
 							break;
 					}
-					//Wenn Hindernis Fenster verlassen hat -> dispose
-					if(aktiv.getY() > (height + height/9)){
-						aktiv.dispose();
-						hindernis_aktiv[i] = false;
-					}
+					//Hindernisse auf false setzen (= loeschen), wenn aus Fenster
+					if(aktiv.getY() + aktiv.getSprite().getHeight() < 0) hindernis_aktiv[i] = false;
 				}
 			}
 		}
 		else if(state == 2){
 			//Bewegung Hintergrundtextur
 			unter_wasser_textur_pos = ((float) Math.sin((double)0.05f* zeit_unter_wasser));
-			//if(zeit_unter_wasser < 100 ) unter_wasser_textur_pos = (float) (unter_wasser_textur_pos + 0.1); 
-			//else if(zeit_unter_wasser > 99) unter_wasser_textur_pos = (float) (unter_wasser_textur_pos - 0.1);
 			zeit_unter_wasser = (zeit_unter_wasser + 1)%200;
+			taucher_width = width/7;
 		}
 
 
@@ -587,7 +637,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		level = (score/10);
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
-		swimmer_height= ((width-2)/ 9) * 3/4;
 	}
 
 	//init Klasse, um Obstacle-Objekte zu erzeugen 
@@ -597,32 +646,32 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		switch(type){
 			case 0: 
-				Sprite felsen_sprite = new Sprite(new Texture("hindernis_felsen.png"));
+				Sprite felsen_sprite = new Sprite(hindernis_felsen);
 				felsen_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(felsen_sprite, 0, bahn, 0.0f);
 				break;
 			case 1:
-				Sprite seerosen_sprite = new Sprite(new Texture("seerosen.png"));
+				Sprite seerosen_sprite = new Sprite(seerosen);
 				seerosen_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(seerosen_sprite, 1, bahn, 0.0f);
 				break;
 			case 2:
-				Sprite hai_sprite = new Sprite(new Texture("hai_1.png"));
+				Sprite hai_sprite = new Sprite(hai_1);
 				hai_sprite.setSize(width/9, height/9);
-				Sprite haikinn = new Sprite(new Texture("hai_2.png")); 
+				Sprite haikinn = new Sprite(hai_2); 
 				Sprite[] sprites_anim = new Sprite[1];
 				sprites_anim[0] = haikinn;
 				new_obstacle = new Obstacle(hai_sprite, 2, bahn, 0.0f, 1, sprites_anim);
 				break;
 			case 3:
-				Sprite schwan_sprite = new Sprite(new Texture("rennschwan.png"));
+				Sprite schwan_sprite = new Sprite(rennschwan);
 				schwan_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
 				//Richtung auf links setzen
 				new_obstacle.setRichtung(2);
 				break;
 			default: 
-				Sprite default_sprite = new Sprite(new Texture("hindernis_felsen.png"));
+				Sprite default_sprite = new Sprite(hindernis_felsen);
 				default_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(default_sprite, 0, bahn, 0.0f);
 				break;
