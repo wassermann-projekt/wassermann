@@ -315,10 +315,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void render() {
 
+		// Hauptmenü rendern
 		if (state == GameState.MAINMENU) {
 			menu.render();
 		}
-
 
 		// Spielgrafik rendern
 		if (state == GameState.UPPERWORLD)
@@ -643,6 +643,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	public boolean isPaused() {
 		return paused;
 	}
+	
+	public boolean isGameOver() {
+		return game_over;
+	}
 
 	public void returnToMainMenu() {
 		paused = false;
@@ -659,6 +663,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void changeDiveState() {
 
 		if (state == GameState.UPPERWORLD) {
+			Arrays.fill(wand_punkte, 0);
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
@@ -671,6 +676,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			
 			// TODO Dispose einfügen
 		} else {
+			Arrays.fill(hindernis_aktiv, false);
 			state = GameState.UPPERWORLD;
 		}
 
