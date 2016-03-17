@@ -71,6 +71,23 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Bis h größer gleich der Länge eines Hindernisses ist, dann starte Hindernisgenerator
 	private float h;
 	
+	//Hindernis-Generator
+	//maximale Anzahl unterschiedlicher Hindernisse
+	private int n_obstacles = 4;
+	//Schwierigkeit einzelner Typen von Hindernissen
+	//Hindernis x kann ab Level difficulty[x] generiert werden
+	private int[] difficulty = new int[n_obstacles];
+	//Start-Wahrscheinlichkeit eines Hindernisses x in lvl difficulty[x]
+	private double[] first_probability = new double[n_obstacles];
+	//Nach so vielen Leveln ist probability des Hindernisses auf 0.1
+	private int obstacle_ausdauer = 10;
+	//Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
+	private double[][] obstacle_probability = new double[n_obstacles][obstacle_ausdauer];
+	//Erwartungswert Anzahl Hindernisse pro Zeile
+	private double generation_probability;
+	//Poisson-Verteilung für Anzahl Hindernisse einer Zeile
+	private double[] p = new double[8];
+	
 	// Variablen für Schwimmer, Hintergrund	
 	private float geschwindigkeit;
 	//Aenderung der Geschwindigkeit
@@ -94,7 +111,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses 
 	private long Zeile; 
 		
-
 	// shortcuts for graphics fields
 	private int width, height;
 	private float ppiX, ppiY;
@@ -209,6 +225,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		//init score
 		score = 0;
 		level = 1;
+		
+		//init Hindernisgenerator
+		difficulty[0] = 1;
+		difficulty[1] = 1;
+		difficulty[2] = 1;
+		difficulty[3] = 1;
+		first_probability[0] = 0.8;
+		first_probability[1] = 0.8;
+		first_probability[2] = 0.8;
+		first_probability[3] = 0.8;
+		for (int k=0;k<n_obstacles;k++){
+		for (int i=0; i<obstacle_ausdauer;i++){
+			double b = Math.log(first_probability[k]);
+			double a = Math.log(first_probability[k]*100);
+			obstacle_probability[k][i] = Math.exp((-1/obstacle_ausdauer)*a*i+b);
+		}
+		}
+		generation_probability = 1;
+		p[0]=0;
+		for (int i=1; i<8;i++){
+			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
+		}
 		
 		//input
 		paused = false;
@@ -419,17 +457,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Helpermethods
 	
-	//Test Hindernis
-			//hindernis[0] = init_obstacle(0,4);
-			//hindernis[1] = init_obstacle(3,6);
-			//hindernis_aktiv[0] = true;
-			//hindernis_aktiv[1] = true;
-	
 	private void Hindernis_Generator(){
 		h = 0;
 		//erste einfache Version des Hindernisgenerators
 		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
-		if (Math.random()<0.5){
+		
+		/*if (Math.random()<0.5){
 		int random_bahn = (int)(Math.random()*7+1);
 		int random_hindernis = (int)(Math.random()*3);
 		int i = 0;
@@ -438,6 +471,140 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		hindernis[i] = init_obstacle(random_hindernis,random_bahn);
 		hindernis_aktiv[i]=true;
+		}*/
+		
+		//zweite Version des Hindernisgenerators
+		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
+		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
+		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
+	
+		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
+		//sei p array mit Poissonverteilung bereits initialisiert
+		//init p[0]=0;
+		int[] counts = new int[]{6,21,35};
+		int n=choice(p,7,1)-1;
+		if (n==0){
+			return;
+		}
+		//Auswahl Bahnen konkret
+		//wird in array bahnen gespeichert
+		int[] bahnen = new int[n];
+		int[] bahnen_final = new int[n];
+		int count = counts[(int)(-Math.abs(n-3.5)+3.5)-1];
+		//m ist der Index der Liste aller Teilmengen der Mächtigkeit n von {1,..7}
+		int m = (int)(Math.random()*count);
+		bahnen = get_bahnen(m,(int)(-Math.abs(n-3.5)+3.5));
+		//falls es 4,5,6 Bahnen sind, müssen die ausgewählten/nicht ausgewählten Bahnen invertiert werden
+		if (n>3){
+			int j = 0;
+			for (int i=1;i<8;i++){
+				boolean in_bahnen = false;
+				for (int k=0;k<7-n;k++){
+					if (bahnen[k]==i){
+						in_bahnen = true;
+					}
+				}
+				if (!in_bahnen){
+					bahnen_final[j] = i;
+					j++;
+				}
+			}
+		}
+		else{
+			for (int i=0;i<n;i++){
+				bahnen_final[i] = bahnen[i];
+			}
+		}
+		//erzeuge Wahrscheinlichkeit-Verteilung zur Auswahl des Typen des Hindernisses
+		double[] p_typ = new double[n_obstacles+1];
+		p_typ[0] = 0;
+		for (int i=1;i<n_obstacles+1;i++){
+			if (level<difficulty[i-1]){
+				p_typ[i] = 0;
+			}
+			else if (level>difficulty[i-1]+obstacle_ausdauer){
+				p_typ[i] = 0.01;
+			}
+			else {
+				p_typ[i] = obstacle_probability[(int)(level)-difficulty[i-1]][(int)level];
+			}
+		}
+		double sum = 0;
+		for (int i=1;i<n_obstacles+1;i++){
+			sum += p_typ[i];
+		}
+		for (int i=1;i<n_obstacles+1;i++){
+			p_typ[i] /= sum;
+		}
+		//iteriere i über jede ausgewählte Bahn
+		for (int i=0;i<n;i++){
+			gen_obstacle(choice(p_typ,n_obstacles,1)-1,bahnen_final[i]);
+		}
+		//dann teste, ob es einen path für den swimmer gibt, falls nicht, lösche ausgewählte Hindernisse
+		//ein Schwan blockiert eine ganze Zeile
+		
+	}
+	
+	//ein neu generiertes Hindernis erzeugen
+	private void gen_obstacle(int type,int bahn){
+		int i = 0;
+		while (hindernis_aktiv[i]){
+			i++;
+		}
+		if (i<40){
+			hindernis[i] = init_obstacle(type,bahn);
+			hindernis_aktiv[i]=true;
+		}
+	}
+	
+	//Hilfsfunktion für den Hindernisgenerator
+	private int[] get_bahnen(int m,int n){
+		int help = -1;
+		int[] a = new int[n];
+		int[] b = new int[3];
+		for (b[0]=1;b[0]<8;b[0]++){
+			for (b[1]=b[0]+1;b[1]<8;b[1]++){
+				for (b[2]=b[1]+1;b[2]<8;b[2]++){
+					help++;
+					if (help==m){
+						for (int i=0;i<n;i++){
+							a[i] = b[2-i];
+						}
+						return a;
+					}
+				}
+			}
+		}
+		return a;
+	}
+	
+	//choice wählt zufällig einen Index des arrays d, welches die W-Verteilung dieser Auswahl darstellt,
+	//Wertebereich 1-L, gibt a aus, falls nichts ausgewählt wurde
+	//init d[0]=0;
+	private int choice(double[] ar, int L, int a){
+	double help=1;
+	for (int i=1;i<L+1;i++){
+	double r = Math.random();
+	help*=1-ar[i-1];
+	if (r<ar[i]/help){
+	return i;
+	}
+	}
+	return a;
+	}
+	
+	//Fakultätsfunktion für die Poissonverteilung
+	private int fact(int n){
+        int fact = 1;
+        for (int i=1;i<=n;i++){
+            fact *= i;
+        }
+        return fact;
+    }
+	
+	private void reset_obstacles(){
+		for(int i=0;i<40;i++){
+		    hindernis_aktiv[i]=false;
 		}
 	}
 	
