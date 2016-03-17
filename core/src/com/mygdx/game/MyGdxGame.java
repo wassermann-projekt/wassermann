@@ -425,18 +425,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		// Hindernisse bewegen
 
-		// Kollisionsabfrage
-
-		for (int i=0; i<40; i++){
-			if (hindernis_aktiv[i]){
-				if (meetObstacle(hindernis[i],swimmer)){
-					shark.play();
-					health--;
-				    hindernis_aktiv[i]=false;	
-				}
-			}
-		}
-
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
