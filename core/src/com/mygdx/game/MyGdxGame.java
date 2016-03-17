@@ -33,6 +33,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Textures
 	Texture anzeige;
+	Texture felsen_unter_wasser;
 	Texture hai_1;
 	Texture hai_2;
 	Texture herz_leer_tex;
@@ -45,7 +46,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture schwimmer_seitlich_body;
 	Texture schwimmer_seitlich_rechtes_bein;
 	Texture schwimmer_seitlich_linkes_bein;
+	Texture luftblasen;
 	Texture seerosen;
+	Texture seerosen_mund;
+	Texture seerose_zaehne;
 	Texture ufer;
 	Texture unter_wasser_textur_1;
 	Texture unter_wasser_textur_2;
@@ -77,6 +81,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite tauchersprite;
 	private Sprite taucher_rechtes_bein;
 	private Sprite taucher_linkes_bein;
+	private Sprite taucher_luftblasen;
 	
 	private SpriteBatch batch;
 
@@ -99,6 +104,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private boolean[] hindernis_aktiv = new boolean[40];
 
 	// Hindernis Array Dive
+	private Obstacle hindernis_lowerworld;
 	private float[] wand_punkte = new float[2 * 10];
 
 	// Hilfsvariable für den Hindernisgenerator
@@ -110,7 +116,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Variablen für Schwimmer, Hintergrund, Hindernis
 	private float geschwindigkeit;
-	private float hindernis_geschwindigkeit;
+	private float hindernis_geschwindigkeit = 1.0f;
 	// Aenderung der Geschwindigkeit
 	private float beschleunigung;
 
@@ -130,6 +136,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	//taucher variables
 	//taucher Groesse
 	private float taucher_width;
+	private float luftblasen_x_pos;
+	private float luftblasen_y_pos;
 
 	// game variables
 	private long score;
@@ -181,6 +189,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		//Textures laden
 		anzeige = new Texture("anzeige.png");
+		felsen_unter_wasser = new Texture("felsen_unter_wasser.png");
 		hai_1 = new Texture("hai_1.png");
 		hai_2 = new Texture("hai_2.png");
 		herz_leer_tex = new Texture("herz_leer.png");
@@ -193,7 +202,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		schwimmer_seitlich_body = new Texture("schwimmer_seitlich_body.png");
 		schwimmer_seitlich_rechtes_bein = new Texture("schwimmer_seitlich_rechtes_bein.png");
 		schwimmer_seitlich_linkes_bein = new Texture("schwimmer_seitlich_linkes_bein.png");
+		luftblasen = new Texture("luftblasen.png");
 		seerosen = new Texture("seerosen.png");
+		seerosen_mund = new Texture("seerosen_mund.png");
+		seerose_zaehne = new Texture("seerosen_zaehne.png");
 		ufer = new Texture("ufer.png");
 		unter_wasser_textur_1 = new Texture("unter_wasser_textur_1.png");
 		unter_wasser_textur_2 = new Texture("unter_wasser_textur_2.png");
@@ -225,6 +237,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		taucher_rechtes_bein = new Sprite(schwimmer_seitlich_rechtes_bein);
 		taucher_linkes_bein = new Sprite(schwimmer_seitlich_linkes_bein);
 		taucher_width = width/7;
+		luftblasen_x_pos = 0.0f-(taucher_width);
+		luftblasen_y_pos = 0.0f;
 		
 		world = new World(new Vector2(0, -1), true);
 		BodyDef diver = new BodyDef();
@@ -317,11 +331,14 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			if (state == GameState.UPPERWORLD) {
 				update_variables_swim();
+				// Graphik-Variablen updaten
+				update_graphics();
 			} else if (state == GameState.LOWERWORLD) {
 				update_variables_dive();
+				// Graphik-Variablen updaten
+				update_graphics();
 			}
-			// Graphik-Variablen updaten
-			update_graphics();
+
 		} else {
 			if (game_over) {
 				render_gameover();
@@ -353,7 +370,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		// TODO: Game logik in update_variables_swim verschieben
 		if (h >= width / 9) {
-			Hindernis_Generator();
+			hindernis_Generator();
 			score++;
 		}
 		h += geschwindigkeit;
@@ -401,10 +418,17 @@ public class MyGdxGame extends ApplicationAdapter {
 				int aktiv_type = aktiv.getType();
 				switch (aktiv_type) {
 				case 0:
+					batch.draw(aktiv.getSprite(),
+							(width / 9) * aktiv.getBahn(),
+							height - aktiv.getY(), width / 9, width / 9);
+					break;
 				case 1:
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
+					batch.draw(aktiv.getSpritesAnim()[0], (width / 9) * aktiv.getBahn() + width/34, height - aktiv.getY() + width / 30, width / 18, width /25 + (float)(5*(Math.sin(0.3*aktiv.getY()))));
+					batch.draw(aktiv.getSpritesAnim()[1], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 20 +(float)(2.5*(Math.sin(0.3*aktiv.getY()))), width / 30, width/60);
+					batch.draw(aktiv.getSpritesAnim()[2], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 28 -(float)(2.5*(Math.sin(0.3*aktiv.getY()))), width / 30, width/60);
 					break;
 				case 2:
 					batch.draw(aktiv.getSprite(),
@@ -513,14 +537,14 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
         
-		ShapeRenderer wand = new ShapeRenderer();
+		/*ShapeRenderer wand = new ShapeRenderer();
 		wand.setColor(Color.GRAY);
 
 		wand.begin(ShapeType.Line);
 
 		// TODO for ...
 
-		wand.end();
+		wand.end();*/
 		
         batch.begin(); 	
         
@@ -533,13 +557,25 @@ public class MyGdxGame extends ApplicationAdapter {
   		
         // Taucher
   		//Animation
-        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_width/3 +width/2, tauchersprite.getY() + taucher_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
-        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_width/3 +width/2, tauchersprite.getY() + taucher_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
+        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
+        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
 
-        batch.draw(tauchersprite, tauchersprite.getX()+width/2, tauchersprite.getY(), taucher_width, taucher_width);
-              
-        batch.end();
+        batch.draw(tauchersprite, tauchersprite.getX()+width/10, tauchersprite.getY(), taucher_width, taucher_width);
+        
+        //Luftblasen
+        if(luftblasen_x_pos<(0-luftblasen.getWidth()) || luftblasen_y_pos>height) init_luftblasen();
+        batch.draw(luftblasen, luftblasen_x_pos, luftblasen_y_pos, taucher_width/2, taucher_width);
+        
+        //Hindernisse
+        //TODO: Typ von Unterwasserhindernis haengt von Typ des tauchbaren Hindernisses ab!
+        for(int i = 0; i<11; i++){
+        	//TODO: hindernis initialisieren bei change dive state (= beim abtauchen)
+        	//Hindernisse oben und unten? -> 20 Werte in Hindernis-Generator erzeugen?
+        	batch.draw(hindernis_lowerworld.getSprite(), hindernis_lowerworld.getX() + i*(width/9), hindernis_lowerworld.getY() - 100*wand_punkte[i],width/9, height);
+        }
 		
+        batch.end();
+
 	}
 
 	public void render_gameover() {
@@ -555,7 +591,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Helpermethods
 
-	private void Hindernis_Generator() {
+	private void hindernis_Generator() {
 		h = 0;
 		// erste einfache Version des Hindernisgenerators
 		// erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen
@@ -576,10 +612,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		return state;
 	}
 
-	private void Hindernis_Generator_dive() {
+	private void hindernis_Generator_dive() {
 
+		//TODO: An tatsaechliche Groesse Taucher anpassen! (statt 100)
 		for (int i = 0; i < 18; i++) {
 
+			//if(wand_punkte[])
 			wand_punkte[i] = wand_punkte[i + 2];
 
 		}
@@ -638,6 +676,12 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
 
+			//Unterwasser-Hindernis initialisieren
+			//TODO: -> Dynamisch annpassen -> Obstacle ueber init_Obstacle_lowerworld-Methode erzeugen
+			hindernis_lowerworld  = new Obstacle(new Sprite(felsen_unter_wasser), 0, width/2, 0-width/2);
+			//Hindernis-Generator anwerfen
+			hindernis_Generator_dive();
+			
 			// TODO Dispose einfügen
 		} else {
 			state = GameState.UPPERWORLD;
@@ -716,13 +760,11 @@ public class MyGdxGame extends ApplicationAdapter {
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
 					default:
-						batch.draw(aktiv.getSprite(),
-								(width / 9) * aktiv.getBahn(),
-								height - aktiv.getY(), width / 9, width / 9);
+						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
 					}
 					//Hindernisse auf false setzen (= loeschen), wenn aus Fenster
-					if(aktiv.getY() + aktiv.getSprite().getHeight() < 0) hindernis_aktiv[i] = false;
+					if(aktiv.getY() > aktiv.getSprite().getHeight() + height) hindernis_aktiv[i] = false;
 				}
 			}
 
@@ -733,6 +775,10 @@ public class MyGdxGame extends ApplicationAdapter {
 			zeit_unter_wasser = (zeit_unter_wasser + 1) % 200;
 			taucher_width = width/7;
 
+			//Luftblasen
+			luftblasen_x_pos -= hindernis_geschwindigkeit;
+			luftblasen_y_pos += (hindernis_geschwindigkeit/2 + Math.sin(0.2*luftblasen_x_pos));
+			
 			// Bewegung Hindernisse
 			hindernis_x_pos -= hindernis_geschwindigkeit;
 		}
@@ -785,15 +831,24 @@ public class MyGdxGame extends ApplicationAdapter {
 			case 1:
 				Sprite seerosen_sprite = new Sprite(seerosen);
 				seerosen_sprite.setSize(width/9, height/9);
-				new_obstacle = new Obstacle(seerosen_sprite, 1, bahn, 0.0f);
+				Sprite seerosen_mund_sprite = new Sprite(seerosen_mund);
+				seerosen_mund_sprite.setOriginCenter();
+				Sprite zaehne_oben = new Sprite(seerose_zaehne);
+				Sprite zaehne_unten = new Sprite(seerose_zaehne);
+				zaehne_unten.flip(false, true);
+				Sprite[] sprites_anim = new Sprite[3];
+				sprites_anim[0] = seerosen_mund_sprite;
+				sprites_anim[1] = zaehne_oben;
+				sprites_anim[2] = zaehne_unten;
+				new_obstacle = new Obstacle(seerosen_sprite, 1, bahn, 0.0f, 3, sprites_anim);
 				break;
 			case 2:
 				Sprite hai_sprite = new Sprite(hai_1);
 				hai_sprite.setSize(width/9, height/9);
 				Sprite haikinn = new Sprite(hai_2); 
-				Sprite[] sprites_anim = new Sprite[1];
-				sprites_anim[0] = haikinn;
-				new_obstacle = new Obstacle(hai_sprite, 2, bahn, 0.0f, 1, sprites_anim);
+				Sprite[] sprites_anim_2 = new Sprite[1];
+				sprites_anim_2[0] = haikinn;
+				new_obstacle = new Obstacle(hai_sprite, 2, bahn, 0.0f, 1, sprites_anim_2);
 				break;
 			case 3:
 				Sprite schwan_sprite = new Sprite(rennschwan);
@@ -810,6 +865,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		return new_obstacle;
 
+	}
+	
+	private void init_luftblasen(){
+		luftblasen_x_pos = tauchersprite.getX()+taucher_width+taucher_width/8;
+		luftblasen_y_pos = tauchersprite.getY()+taucher_width;
 	}
 
 	@Override
