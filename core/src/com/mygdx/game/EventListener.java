@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 
 public class EventListener implements InputProcessor {
 	private MyGdxGame game;
+	private Menu menu;
 	private Music bewegungmusic;
 
 	@Override
@@ -55,13 +56,15 @@ public class EventListener implements InputProcessor {
 			}
 
 		}
-
+/*
 		if (game.getState() != GameState.MAINMENU) {
 			if (keycode == Keys.ESCAPE) {
 				game.pauseGame(true);
 
 			}
 		}
+*/		
+		menu.handleKey(keycode);
 
 		return false;
 
@@ -111,6 +114,10 @@ public class EventListener implements InputProcessor {
 
 	public void setGame(MyGdxGame g) {
 		game = g;
+	}
+	
+	public void setMenu(Menu m){
+		menu = m;
 	}
 
 }
