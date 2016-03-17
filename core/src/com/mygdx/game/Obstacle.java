@@ -16,12 +16,14 @@ public class Obstacle {
 	 *3	:= Schwan 
 	 * */
 	private int type;
+	private long line;
 
 	//Obstacle animiert?
 	private boolean anim;
 	// Von 1 bis 7
 	private int bahn;
 	private float posY;
+	private float posX;
 	//0 := keine Richtung
 	//1 := schwimmt nach rechts
 	//2 := schwimmt nach links
@@ -34,14 +36,14 @@ public class Obstacle {
 		bahn = b;
 		posY = py;
 		anim = false;
-		num_parts = 0;
-		
+		num_parts = 0;	
+				
 		if(bahn < 1){
 			bahn = 1;
 		}
 		if(bahn > 7){
 			bahn = 7;
-		}	
+		}
 	}
 	
 	//Konstruktor fuer animierte Hindernisse
@@ -62,8 +64,30 @@ public class Obstacle {
 		}	
 	}
 	
+	//Konstruktor fuer nicht-animierte Hindernisse unter Wasser
+		public Obstacle(Sprite s, int t, float px, float py){
+			sprite = s;
+			type = t;
+			posX = px;
+			posY = py;
+			anim = false;
+			num_parts = 0;	
+		}
+	
 	public int getType(){
 		return type;
+	}
+	
+	public long getLine(){
+		return line;
+	}
+	
+	public void setLine(long L){
+		line = L;
+	}
+	
+	public float getX(){
+		return posX;
 	}
 	
 	public float getY(){
