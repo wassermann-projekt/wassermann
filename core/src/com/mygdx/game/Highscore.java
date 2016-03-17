@@ -3,7 +3,6 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Arrays;
 import java.util.Comparator;

@@ -346,13 +346,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-
-		// Hauptmenü rendern
-		if (state == GameState.MAINMENU) {
-			menu.render();
-		}
-
-
+		
 		// Spielgrafik rendern
 		if (state == GameState.UPPERWORLD){
 			if(!freeze){
