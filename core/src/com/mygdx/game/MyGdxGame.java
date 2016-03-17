@@ -355,7 +355,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 			if(freeze){
 				try {
-					Thread.sleep(1600);
+					Thread.sleep(400);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
