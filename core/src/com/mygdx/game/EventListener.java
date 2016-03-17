@@ -1,58 +1,70 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.Input.Keys;
 
 public class EventListener implements InputProcessor {
 	private MyGdxGame game;
-	
+	private Music bewegungmusic;
+
 	@Override
 	public boolean keyDown(int keycode) {
-		
-		if(game.getState() == 1){
-		
-			switch(keycode)
-			{
-			case Keys.LEFT:
-				game.changeSwimmerPosition_swim(-1);
-				break;
-			case Keys.RIGHT:
-				game.changeSwimmerPosition_swim(1);
-				break;
-			case Keys.UP:
-				break;
-			case Keys.DOWN:
-				break;
-			case Keys.ALT_LEFT:
-				game.changeDiveState();
+
+		// keine Steuerung wenn das Spiel pausiert ist
+		if (!game.isPaused()) {
+
+			if (game.getState() == GameState.UPPERWORLD) {
+
+				switch (keycode) {
+				case Keys.LEFT:
+					game.changeSwimmerPosition_swim(-1);
+					bewegungmusic = Gdx.audio.newMusic(Gdx.files
+							.internal("button-21.mp3"));
+					bewegungmusic.setVolume(0.05f);
+					bewegungmusic.play();
+					break;
+				case Keys.RIGHT:
+					game.changeSwimmerPosition_swim(1);
+					bewegungmusic = Gdx.audio.newMusic(Gdx.files
+							.internal("button-21.mp3"));
+					bewegungmusic.setVolume(0.05f);
+					bewegungmusic.play();
+					break;
+				case Keys.UP:
+					break;
+				case Keys.DOWN:
+					break;
+				case Keys.ALT_LEFT:
+					game.changeDiveState();
+
+				}
 			}
-			
-		}
-		
-		else if (game.getState() == 2){
-			
-			switch(keycode)
-			{
-			case Keys.UP:
-				game.changeSwimmerPosition_dive(5000);
-				break;
-			case Keys.DOWN:
-				game.changeSwimmerPosition_dive(-5000);
-				break;
+
+			else if (game.getState() == GameState.LOWERWORLD) {
+
+				switch (keycode) {
+				case Keys.UP:
+					game.changeSwimmerPosition_dive(20000);
+					break;
+				case Keys.DOWN:
+					game.changeSwimmerPosition_dive(-20000);
+					break;
+				}
 			}
-			
+
 		}
-		
-		if(game.getState() != 0){
-			if(keycode == Keys.ESCAPE){
+
+		if (game.getState() != GameState.MAINMENU) {
+			if (keycode == Keys.ESCAPE) {
 				game.pauseGame(true);
 			}
 		}
-		
+
 		return false;
 
-		}
-		
+	}
 
 	@Override
 	public boolean keyUp(int keycode) {
@@ -95,12 +107,9 @@ public class EventListener implements InputProcessor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	public void setGame(MyGdxGame g)
-	{
+
+	public void setGame(MyGdxGame g) {
 		game = g;
 	}
-	
-	
 
 }
