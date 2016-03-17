@@ -59,6 +59,7 @@ public class EventListener implements InputProcessor {
 		if (game.getState() != GameState.MAINMENU) {
 			if (keycode == Keys.ESCAPE) {
 				game.pauseGame(true);
+
 			}
 		}
 
