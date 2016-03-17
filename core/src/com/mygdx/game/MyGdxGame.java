@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 import java.util.Timer;
 
 import javax.swing.JFrame;
@@ -361,6 +362,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		paused = false;
 		game_over = false;
+		
+		Arrays.fill(hindernis_aktiv, false);
+		Arrays.fill(wand_punkte, 0);
 	}
 
 	// Methode um die Schwimmwelt zu rendern
@@ -368,24 +372,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Musik
 		music.play();
 		
-		// TODO: Game logik in update_variables_swim verschieben
-		if (h >= width / 9) {
-			hindernis_Generator();
-			score++;
-		}
-		h += geschwindigkeit;
-		// Hindernisse bewegen
-
-		// Kollisionsabfrage
-		for (int i = 0; i < 40; i++) {
-			if (hindernis_aktiv[i]) {
-				if (meetObstacle(hindernis[i], swimmer)) {
-					health--;
-				    hindernis_aktiv[i]=false;	
-				}
-			}
-		}
-
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -659,10 +645,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void returnToMainMenu() {
-		// TODO: cleanup ?
 		paused = false;
 		menu.loadMainMenu();
 		state = GameState.MAINMENU;
+		Arrays.fill(hindernis_aktiv, false);
+		Arrays.fill(wand_punkte, 0);
 	}
 
 	public void endApplication() {
@@ -799,6 +786,22 @@ public class MyGdxGame extends ApplicationAdapter {
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
 
+		if (h >= width / 9) {
+			hindernis_Generator();
+			score++;
+		}
+		h += geschwindigkeit;
+
+		// Kollisionsabfrage
+		for (int i = 0; i < 40; i++) {
+			if (hindernis_aktiv[i]) {
+				if (meetObstacle(hindernis[i], swimmer)) {
+					health--;
+				    hindernis_aktiv[i]=false;	
+				}
+			}
+		}		
+		
 		// GameOver check
 		if (health <= 0) {
 			setGameOver();
