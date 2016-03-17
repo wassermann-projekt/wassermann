@@ -708,7 +708,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
 		
 		if(swimmer_position_swim == obs.getBahn()){
-		//if(width*8/9-obs.getY()<2.5*swimmer_height){
 		if(width*8/9-obs.getY()<2.5*swimmer_width){
 				return true;
 			}
