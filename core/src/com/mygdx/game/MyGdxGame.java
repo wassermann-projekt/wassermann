@@ -180,6 +180,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private long level;
 	private int health;
 	private boolean game_over;
+	
+	// highscore-management
+	Highscore highscore;
 
 	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses
 	private long Zeile;
@@ -207,14 +210,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Menu menu;
 	private EventListener steuerung;
 
+	private FreeTypeFontGenerator generator;
 
-	
-	//Kollisionserkennung -> TODO: Ohne Variable loesen
-	private boolean accident;
-	
 	//Luftanzeige
 	private Sprite luftanzeige;
-
 
 
 	@Override
@@ -351,7 +350,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts = new Sprite(ufer);
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
-		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);		
+		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
+		
+		
+			
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -385,16 +387,21 @@ public class MyGdxGame extends ApplicationAdapter {
 			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
 		}
 		
+		// init Highscore
+		highscore = new Highscore(font, "highscore.txt");
+		highscore.load();
+		
 		//input
 		paused = false;
 		multiplexer = new InputMultiplexer();
 		// erstelle menu
-		menu = new Menu(multiplexer, this, font);
+		menu = new Menu(multiplexer, this, highscore, font);
 		menu.loadMainMenu();
 
 		// erstelle und registriere Steuerung
 		steuerung = new EventListener();
 		steuerung.setGame(this);
+		steuerung.setMenu(menu);
 		multiplexer.addProcessor(steuerung);
 		Gdx.input.setInputProcessor(multiplexer);
 
@@ -404,12 +411,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-
-		// Hauptmenü rendern
-		if (state == GameState.MAINMENU) {
-			menu.render();
-		}
-
+		
 		// Spielgrafik rendern
 		if (state == GameState.UPPERWORLD){
 			if(!freeze){
@@ -449,8 +451,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (game_over) {
 				render_gameover();
 			}
-			menu.render();
 		}
+		
+		menu.render();
 
 
 	}
@@ -936,8 +939,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 		GlyphLayout gl = new GlyphLayout(gameover, gameoverstring);
 		float left = (Gdx.graphics.getWidth() - gl.width) / 2;
-		float top = Gdx.graphics.getHeight() - (gl.height + 10);
-		gameover.draw(batch, gameoverstring, left, top);
+		float bottom = Gdx.graphics.getHeight() - (gl.height + 10);
+		gameover.draw(batch, gameoverstring, left, bottom);
 		gameover.setColor(Color.WHITE);
 		batch.end();
 	}
@@ -974,18 +977,27 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void startGame() {
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
+		menu.unloadMenu();
 	}
 
 	public void pauseGame(boolean p) {
 		if (p && p != paused) {
 			menu.loadPauseMenu();
 		}
+		else if(!p){
+			menu.unloadMenu();
+		}
 		paused = p;
 	}
 
 	public void setGameOver() {
 		game_over = true;
-		menu.loadGameOverMenu();
+		if(highscore.isHighscore(score)){
+			menu.loadHighscoreInput(score);
+		}
+		else{
+			menu.loadGameOverMenu();
+		}
 	}
 
 	public boolean isPaused() {
@@ -1005,6 +1017,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void endApplication() {
+		menu.unloadMenu();
 		Gdx.app.exit();
 	}
 
