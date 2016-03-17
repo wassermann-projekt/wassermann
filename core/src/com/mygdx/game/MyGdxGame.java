@@ -92,7 +92,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 	// Graphics Updates -> Variables to update positions
-
 	private float wellen_x_pos;
 	private float loop;
 	private float unter_wasser_textur_pos;
@@ -173,7 +172,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Luftanzeige
 	private Sprite luftanzeige;
-	private FreeTypeFontGenerator generator;
 
 
 
@@ -401,22 +399,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-			
-		batch.begin();
-				
-		//Hintergrund		
-		batch.draw(wellen1, 0, wellen_x_pos % height, width, height);
-		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width, height);
-		batch.draw(ufer_links, 0, 0, width/9, height);
-		batch.draw(ufer_rechts, ufer_rechts.getOriginX(), ufer_rechts.getOriginY(), width/9, height);
-
-
-		//Animation Schwimmer
-		batch.draw(swimmer_rechter_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f + (swimmer_width/5.5f) - arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
-		batch.draw(swimmer_linker_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f - (swimmer_width/5.5f) + arm_pos_x*swimmer_width/70, (swimmer_width/4.5f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
-		batch.draw(swimmer, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9, 0, swimmer_width, swimmer_width);
-		
-
 		batch.begin();
 
 		// Hintergrund
@@ -434,9 +416,6 @@ public class MyGdxGame extends ApplicationAdapter {
 				* (swimmer_position_swim - 1) + swimmer_offset + width / 9, 0,
 				swimmer_width, swimmer_width);
 
-		// Score-Anzeige
-		font.setColor(Color.BLACK);
-		font.draw(batch, "Score: " + score, 470, 465);
 
 		// Hindernisse
 		for (int i = 0; i < 40; i++) {
@@ -485,16 +464,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 		
-		//Luft-Anzeige
-		width2 = width/2 + (loop*0.5f);
-		if (width2 > 0){
-			batch.draw(luftanzeige, 40, 40, width2, height/18);
-			}
-		else {gameover.draw(batch, "GAME OVER", width /2, height/2);	
-		gameover.setColor(Color.WHITE);
-			geschwindigkeit = 0;
-			music.stop();
-		}
+
 		
 		// Herzen update
 		if (health == 5) {
@@ -595,6 +565,74 @@ public class MyGdxGame extends ApplicationAdapter {
 
         batch.draw(tauchersprite, tauchersprite.getX()+width/2, tauchersprite.getY(), taucher_width, taucher_width);
               
+        
+		//Luft-Anzeige
+		width2 = width/2 + (loop*0.5f);
+		if (width2 > 0){
+			batch.draw(luftanzeige, 40, 40, width2, height/18);
+			}
+		else {setGameOver();
+			//geschwindigkeit = 0;
+			music.stop();
+		}
+		
+		// Score-Anzeige
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Score: " + score, 470, 465);
+		
+		// Herzen update
+				if (health == 5) {
+					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 55, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 90, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 125, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 160, 440, width / 18, height / 18);
+
+				} else if (health == 4) {
+					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 55, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 90, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 125, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
+
+				} else if (health == 3) {
+					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 55, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 90, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 125, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
+
+				} else if (health == 2) {
+					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
+					batch.draw(herz_voll, 55, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 90, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 125, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
+
+				} else if (health == 1) {
+					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 55, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 90, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 125, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
+				}
+
+				else if (health == 0) {
+					batch.draw(herz_leer, 19, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 55, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 90, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 125, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
+				}
+
+				else {
+					batch.draw(herz_leer, 19, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 55, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 90, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 125, 440, width / 18, height / 18);
+					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
+					geschwindigkeit = 0;
+				}
         batch.end();
 		
 	}
@@ -736,6 +774,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			arm_pos_x = swimmer_width/8*(float) Math.sin(0.01*arm_pos -1.5);
 			arm_pos_y = swimmer_width/8*(float) Math.sin(0.01*arm_pos);
 			
+			loop = (loop - geschwindigkeit);
+			
 			// Update Hindernisse
 			for (int i = 0; i < 40; i++) {
 				if (hindernis_aktiv[i]) {
@@ -809,7 +849,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private void update_variables_swim() {
 
 		geschwindigkeit += beschleunigung;
-		level = (score/10);
+		level = (score/30);
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
 		width2 = luftanzeige.getHeight ();
