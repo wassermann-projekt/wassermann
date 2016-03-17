@@ -126,6 +126,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int swimmer_position_swim;
 	// swimmer Groesse
 	private float swimmer_width;
+	// Verwundbarkeit
+	private boolean invulnerable;
 
 	//Abstand zur Bahn
 	private float swimmer_offset;
@@ -726,17 +728,23 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	public boolean collision_dive(){
 		
-		if((body.getPosition().y > wand_punkte[1]) && (body.getPosition().y > wand_punkte[3])){
+		if((body.getPosition().y + 0.25*taucher_width > wand_punkte[1]) && (body.getPosition().y + 0.25*taucher_width > wand_punkte[3])){
 			
 			return true;
 			
 		}
 		
-		if(){
+		if((body.getPosition().y + 0.75*taucher_width > wand_punkte[0]) && (body.getPosition().y + 0.75*taucher_width > wand_punkte[2])){
 			
 			return true;
 			
 		}
+		
+		/*if((body.getPosition().y + 0.25*taucher_width > wand_punkte[5]) && (body.getPosition().y + 0.75*taucher_width > wand_punkte[4])){
+			
+			return true;
+			
+		}*/
 		
 		return false;
 	}
@@ -850,7 +858,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	private void update_variables_dive() {
-
+		
+		// TODO festlegen, ab wann der taucher wieder kollidieren kann
+		
+		invulnerable = false;
+		
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 
 		if (body.getPosition().y > 200) {
@@ -860,6 +872,20 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
+		
+		// Kollisionsabfrage
+		
+		if(invulnerable == false){
+			
+			if(collision_dive()){
+				
+				health--;
+				freeze = true;
+				invulnerable = true;
+				
+			}
+		}
+		
 	}
 
 	// init Klasse, um Obstacle-Objekte zu erzeugen
