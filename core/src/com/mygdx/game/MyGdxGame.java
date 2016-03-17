@@ -696,7 +696,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	protected void changeSwimmerPosition_dive(int change) {
 
-		body.applyForceToCenter(0, change, true);
+		body.applyForceToCenter(0, 20000*change, true);
 
 	}
 	
@@ -706,6 +706,23 @@ public class MyGdxGame extends ApplicationAdapter {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	public boolean collision_dive(){
+		
+		if((body.getPosition().y > wand_punkte[1]) && (body.getPosition().y > wand_punkte[3])){
+			
+			return true;
+			
+		}
+		
+		if(){
+			
+			return true;
+			
+		}
+		
 		return false;
 	}
 
