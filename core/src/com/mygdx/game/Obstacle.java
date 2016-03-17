@@ -16,6 +16,7 @@ public class Obstacle {
 	 *3	:= Schwan 
 	 * */
 	private int type;
+	private long line;
 
 	//Obstacle animiert?
 	private boolean anim;
@@ -75,6 +76,14 @@ public class Obstacle {
 	
 	public int getType(){
 		return type;
+	}
+	
+	public long getLine(){
+		return line;
+	}
+	
+	public void setLine(long L){
+		line = L;
 	}
 	
 	public float getX(){
