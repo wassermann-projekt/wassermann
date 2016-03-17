@@ -28,6 +28,9 @@ public class Obstacle {
 	//2 := schwimmt nach links
 	private int richtung = 0;
 	
+	//Laenge Unterwasserhindernis
+	private int laenge;
+	
 	//Konstruktor fuer nicht-animierte Hindernisse
 	public Obstacle(Sprite s, int t, int b, float py){
 		sprite = s;
@@ -64,11 +67,12 @@ public class Obstacle {
 	}
 	
 	//Konstruktor fuer nicht-animierte Hindernisse unter Wasser
-		public Obstacle(Sprite s, int t, float px, float py){
+		public Obstacle(Sprite s, int t, float px, float py, int laenge_h){
 			sprite = s;
 			type = t;
 			posX = px;
 			posY = py;
+			laenge = laenge_h;
 			anim = false;
 			num_parts = 0;	
 		}
@@ -99,6 +103,15 @@ public class Obstacle {
 	
 	public int getRichtung(){
 		return richtung;
+	}
+	
+	public int getLaenge(){
+		return laenge;
+	}
+	
+	public void setX(float new_pos){
+		posX = new_pos;
+		return;
 	}
 	
 	public void setY(float new_pos){

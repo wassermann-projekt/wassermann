@@ -101,7 +101,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float wellen_x_pos;
 	private float unter_wasser_textur_pos;
 	private float zeit_unter_wasser;
-	private float hindernis_x_pos;
 
 	// Hindernis-Array-Swim
 	private Obstacle[] hindernis = new Obstacle[40];
@@ -142,6 +141,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//taucher variables
 	//taucher Groesse
 	private float taucher_width;
+	private float taucher_body_width;
 	private float luftblasen_x_pos;
 	private float luftblasen_y_pos;
 
@@ -243,6 +243,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		taucher_rechtes_bein = new Sprite(schwimmer_seitlich_rechtes_bein);
 		taucher_linkes_bein = new Sprite(schwimmer_seitlich_linkes_bein);
 		taucher_width = width/9;
+		taucher_body_width = width/12;
 		luftblasen_x_pos = 0.0f-(taucher_width);
 		luftblasen_y_pos = 0.0f;
 		
@@ -520,9 +521,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 		
-		if(body.getPosition().y > 200){
-			changeDiveState();
-		}
 		if(body.getPosition().y < 0){
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
@@ -539,10 +537,10 @@ public class MyGdxGame extends ApplicationAdapter {
   		
         // Taucher
   		//Animation
-        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
-        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
+        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_body_width/3 +width/10, tauchersprite.getY() + taucher_body_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_body_width/2, taucher_body_width/4);
+        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_body_width/3 +width/10, tauchersprite.getY() + taucher_body_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_body_width/2, taucher_body_width/4);
 
-        batch.draw(tauchersprite, tauchersprite.getX()+width/10, tauchersprite.getY(), taucher_width, taucher_width);
+        batch.draw(tauchersprite, tauchersprite.getX()+width/10, tauchersprite.getY(), taucher_body_width, taucher_body_width);
         
         //Luftblasen
         if(luftblasen_x_pos<(0-luftblasen.getWidth()) || luftblasen_y_pos>height) init_luftblasen();
@@ -550,12 +548,9 @@ public class MyGdxGame extends ApplicationAdapter {
         
         //Hindernisse
         //TODO: Typ von Unterwasserhindernis haengt von Typ des tauchbaren Hindernisses ab!
-        for(int i = 0; i<11; i++){
-        	//System.out.println(hindernis_lowerworld_lower.getY() + " "+ hindernis_lowerworld_upper.getY());
-        	//TODO: hindernis initialisieren bei change dive state (= beim abtauchen)
-        	//Hindernisse oben und unten? -> 18 Werte in Hindernis-Generator erzeugen?
-        	batch.draw(hindernis_lowerworld_lower.getSprite(), hindernis_lowerworld_lower.getX() + i*(width/9), hindernis_lowerworld_lower.getY() - wand_punkte[i],width/9, height);
-        	batch.draw(hindernis_lowerworld_upper.getSprite(), hindernis_lowerworld_upper.getX() + i*(width/9), hindernis_lowerworld_upper.getY() + wand_punkte[i],width/9, height);
+        for(int i = 0; i<20; i=i+2){
+        	batch.draw(hindernis_lowerworld_lower.getSprite(), hindernis_lowerworld_lower.getX() + i/2*(width/8), hindernis_lowerworld_lower.getY() - wand_punkte[i],width/8, height);
+        	batch.draw(hindernis_lowerworld_upper.getSprite(), hindernis_lowerworld_upper.getX() + i/2*(width/8), hindernis_lowerworld_upper.getY() + wand_punkte[i+1],width/8, height);
 
         }
 		
@@ -599,10 +594,11 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	private void hindernis_Generator_dive_init(){
 		//1. Hindernis generieren
+		
 		float w0 = height * (float) Math.random();
 		float w1 = height * (float) Math.random();
 
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width)){
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width)){
 
 			w0 = height* (float) Math.random();
 			w1 = height* (float) Math.random();
@@ -620,6 +616,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void hindernis_Generator_dive() {
 
+
 		for (int i = 0; i < 18; i++) {
 
 			//if(wand_punkte[])
@@ -630,7 +627,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		float w0 = height * (float) Math.random();
 		float w1 = height * (float) Math.random();
 
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width) || ((w0 + taucher_width) < wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/4*taucher_width > w1)) {
 
 			w0 = height* (float) Math.random();
 			w1 = height* (float) Math.random();
@@ -693,8 +690,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			hindernis_lowerworld_up = new Sprite(felsen_unter_wasser);
 			hindernis_lowerworld_up.flip(true, false);
 
-			hindernis_lowerworld_lower  = new Obstacle(hindernis_lowerworld_low, 0, 0, 0);
-			hindernis_lowerworld_upper  = new Obstacle(hindernis_lowerworld_up, 0, 0, 0);
+			hindernis_lowerworld_lower  = new Obstacle(hindernis_lowerworld_low, 0, (float)2*width/3, 0.0f, 50);
+			hindernis_lowerworld_upper  = new Obstacle(hindernis_lowerworld_up, 0, (float)2*width/3, 0.0f, 50);
 			hindernis_lowerworld_upper.getSprite().flip(false, true);
 
 			//Hindernis-Generator anwerfen
@@ -793,13 +790,20 @@ public class MyGdxGame extends ApplicationAdapter {
 					* zeit_unter_wasser));
 			zeit_unter_wasser = (zeit_unter_wasser + 1) % 200;
 			taucher_width = width/9;
+			taucher_body_width = width/12;
 
 			//Luftblasen
 			luftblasen_x_pos -= hindernis_geschwindigkeit;
 			luftblasen_y_pos += (hindernis_geschwindigkeit/2 + Math.sin(0.2*luftblasen_x_pos));
 			
 			// Bewegung Hindernisse
-			hindernis_x_pos -= hindernis_geschwindigkeit;
+			hindernis_lowerworld_upper.setX(hindernis_lowerworld_upper.getX()-hindernis_geschwindigkeit);
+			hindernis_lowerworld_lower.setX(hindernis_lowerworld_lower.getX()-hindernis_geschwindigkeit);
+			if(hindernis_lowerworld_lower.getX() < 0-width/8 && ((hindernis_lowerworld_upper.getX()*(-1))>width/8*hindernis_lowerworld_upper.getLaenge())) {
+				hindernis_Generator_dive();
+				hindernis_lowerworld_lower.setX(hindernis_lowerworld_lower.getX()+width/8);
+				hindernis_lowerworld_upper.setX(hindernis_lowerworld_upper.getX()+width/8);
+			}
 		}
 
 	}
@@ -844,7 +848,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 
-		if (body.getPosition().y > 200) {
+		if (body.getPosition().y > height-taucher_width/2) {
 			changeDiveState();
 		}
 		if (body.getPosition().y < 0) {
