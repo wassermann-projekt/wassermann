@@ -149,6 +149,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses
 	private long Zeile;
 
+	//Hilfsvariable: bei Kollision
+	private boolean freeze;
+	
 	// Musik & Sound
 	private Sound sound;
 	private Music music;
@@ -321,8 +324,23 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 		// Spielgrafik rendern
-		if (state == GameState.UPPERWORLD)
-			render_upperworld();
+		if (state == GameState.UPPERWORLD){
+			if(!freeze){
+				render_upperworld();
+			}
+			if(freeze){
+				try {
+					Thread.sleep(1600);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				update_variables_swim();
+				// Graphik-Variablen updaten
+				update_graphics();
+				freeze = false;
+			}
+		}
 
 		if (state == GameState.LOWERWORLD)
 			render_lowerworld();
@@ -525,11 +543,8 @@ public class MyGdxGame extends ApplicationAdapter {
         
 		/*ShapeRenderer wand = new ShapeRenderer();
 		wand.setColor(Color.GRAY);
-
 		wand.begin(ShapeType.Line);
-
 		// TODO for ...
-
 		wand.end();*/
 		
         batch.begin(); 	
@@ -706,7 +721,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		return false;
 	}
-
+	
 	private void update_graphics() {				
 			
 		if (state == GameState.UPPERWORLD) {
@@ -803,7 +818,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (hindernis_aktiv[i]) {
 				if (meetObstacle(hindernis[i], swimmer)) {
 					health--;
-				    hindernis_aktiv[i]=false;	
+				    hindernis_aktiv[i]=false;
+				    freeze = true;
 				}
 			}
 		}		
