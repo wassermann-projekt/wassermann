@@ -240,8 +240,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen2.setSize(width, height);
 		wellen_x_pos = 0;
 
-		loop = 0;
-
 		// init Unterwasserwelt Hintergrund
 
 		hintergrund1 = new Sprite(new Texture("unter_wasser_textur_1.png"));
@@ -258,6 +256,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Luftanzeige
 		luftanzeige = new Sprite(new Texture("image.png"));
 		luftanzeige.setSize(width/18, height/18);
+		loop = 0; 
 		
 		//init Taucher
 		tauchersprite = new Sprite(schwimmer_seitlich_body);
@@ -495,7 +494,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
-		
 
 		
 		// Herzen update
@@ -572,14 +570,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
         
-		/*ShapeRenderer wand = new ShapeRenderer();
-		wand.setColor(Color.GRAY);
-
-		wand.begin(ShapeType.Line);
-
-		// TODO for ...
-
-		wand.end();*/
 		
         batch.begin(); 	
         
@@ -594,18 +584,14 @@ public class MyGdxGame extends ApplicationAdapter {
   		//Animation
         batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
         batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
-
-
-        batch.draw(tauchersprite, tauchersprite.getX()+width/2, tauchersprite.getY(), taucher_width, taucher_width);
               
         
 		//Luft-Anzeige
 		width2 = width/2 + (loop*0.5f);
 		if (width2 > 0){
-			batch.draw(luftanzeige, 40, 40, width2, height/18);
+			batch.draw(luftanzeige, 300, 300, width2, height/18);
 			}
 		else {setGameOver();
-			//geschwindigkeit = 0;
 			music.stop();
 		}
 		
@@ -839,7 +825,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			arm_pos_x = swimmer_width/8*(float) Math.sin(0.01*arm_pos -1.5);
 			arm_pos_y = swimmer_width/8*(float) Math.sin(0.01*arm_pos);
 			
-			loop = (loop - geschwindigkeit);
+			loop = (loop - hindernis_geschwindigkeit) % height;
 			
 			// Update Hindernisse
 			for (int i = 0; i < 40; i++) {
@@ -921,12 +907,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		swimmer_width = ((width-2) / 9) * 3/4;
 		width2 = luftanzeige.getHeight ();
 
-
-		if (h >= width / 9) {
-			hindernis_Generator();
-			score++;
-		}
-		h += geschwindigkeit;
 
 		// Kollisionsabfrage
 		for (int i = 0; i < 40; i++) {
