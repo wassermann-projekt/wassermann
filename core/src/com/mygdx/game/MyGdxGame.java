@@ -244,7 +244,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		world = new World(new Vector2(0, -1), true);
 		BodyDef diver = new BodyDef();
 		diver.type = BodyDef.BodyType.DynamicBody;
-
+		
+		// TODO Anfangsposition bzw. Anfangsimpuls bei changeDiveState
+		
 		diver.position.set(0, 0);
 		body = world.createBody(diver);
 
