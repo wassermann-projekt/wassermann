@@ -13,7 +13,7 @@ public class EventListener implements InputProcessor {
 	public boolean keyDown(int keycode) {
 
 		// keine Steuerung wenn das Spiel pausiert ist
-		if (!game.isPaused()) {
+		if (!game.isPaused() && !game.isGameOver()) {
 
 			if (game.getState() == GameState.UPPERWORLD) {
 
@@ -59,6 +59,7 @@ public class EventListener implements InputProcessor {
 		if (game.getState() != GameState.MAINMENU) {
 			if (keycode == Keys.ESCAPE) {
 				game.pauseGame(true);
+
 			}
 		}
 
