@@ -7,6 +7,8 @@ import com.mygdx.game.MyGdxGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		// Fenster nicht resizeable
+		config.resizable = false;
 		new LwjglApplication(new MyGdxGame(), config);
 	}
 }
