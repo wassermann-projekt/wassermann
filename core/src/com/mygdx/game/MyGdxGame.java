@@ -157,6 +157,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Zählt wie viel weiter geschwommen wurde, in Länge eines Hindernisses
 	private long Zeile;
 
+	//Hilfsvariable: bei Kollision
+	private boolean freeze;
+	
 	// Musik & Sound
 	private Sound sound;
 	private Music music;
@@ -346,8 +349,23 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 		// Spielgrafik rendern
-		if (state == GameState.UPPERWORLD)
-			render_upperworld();
+		if (state == GameState.UPPERWORLD){
+			if(!freeze){
+				render_upperworld();
+			}
+			if(freeze){
+				try {
+					Thread.sleep(1600);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				update_variables_swim();
+				// Graphik-Variablen updaten
+				update_graphics();
+				freeze = false;
+			}
+		}
 
 		if (state == GameState.LOWERWORLD)
 			render_lowerworld();
@@ -400,11 +418,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 
 		// TODO: Game logik in update_variables_swim verschieben
-		if (h >= width / 9) {
-			hindernis_Generator();
-			score++;
-		}
-		h += geschwindigkeit;
+		
 		// Hindernisse bewegen
 
 		// Kollisionsabfrage
@@ -569,7 +583,13 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
-        
+
+		/*ShapeRenderer wand = new ShapeRenderer();
+		wand.setColor(Color.GRAY);
+		wand.begin(ShapeType.Line);
+		// TODO for ...
+		wand.end();*/
+
 		
         batch.begin(); 	
         
@@ -586,15 +606,6 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_width/3 +width/10, tauchersprite.getY() + taucher_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_width/2, taucher_width/4);
               
         
-		//Luft-Anzeige
-		width2 = width/2 + (loop*0.5f);
-		if (width2 > 0){
-			batch.draw(luftanzeige, 300, 300, width2, height/18);
-			}
-		else {setGameOver();
-			music.stop();
-		}
-		
 		// Score-Anzeige
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
@@ -668,6 +679,15 @@ public class MyGdxGame extends ApplicationAdapter {
         	batch.draw(hindernis_lowerworld.getSprite(), hindernis_lowerworld.getX() + i*(width/9), hindernis_lowerworld.getY() - 100*wand_punkte[i],width/9, height);
         }
 
+		//Luft-Anzeige
+        
+		width2 = width/2 + (loop*0.5f);
+		if (width2 > 0){
+			batch.draw(luftanzeige, 40, 40, width2, height/18);
+			}
+		else {setGameOver();
+			music.stop();
+		}
 		
         batch.end();
 
@@ -816,7 +836,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		return false;
 	}
 
-
 	private void update_graphics() {				
 			
 		if (state == GameState.UPPERWORLD) {
@@ -825,7 +844,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			arm_pos_x = swimmer_width/8*(float) Math.sin(0.01*arm_pos -1.5);
 			arm_pos_y = swimmer_width/8*(float) Math.sin(0.01*arm_pos);
 			
-			loop = (loop - hindernis_geschwindigkeit) % height;
 			
 			// Update Hindernisse
 			for (int i = 0; i < 40; i++) {
@@ -887,6 +905,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			
 			// Bewegung Hindernisse
 			hindernis_x_pos -= hindernis_geschwindigkeit;
+			loop = (loop - hindernis_geschwindigkeit);
+
 		}
 
 	}
@@ -906,14 +926,25 @@ public class MyGdxGame extends ApplicationAdapter {
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
 		width2 = luftanzeige.getHeight ();
+	//	if (changeDiveState () = true){
+	//		width2 = width/2;
+	//	}
 
+		if (h >= width / 9) {
+			hindernis_Generator();
+			score++;
+		}
+		h += geschwindigkeit;
+		
+		
 
 		// Kollisionsabfrage
 		for (int i = 0; i < 40; i++) {
 			if (hindernis_aktiv[i]) {
 				if (meetObstacle(hindernis[i], swimmer)) {
 					health--;
-				    hindernis_aktiv[i]=false;	
+				    hindernis_aktiv[i]=false;
+				    freeze = true;
 				}
 			}
 		}		
