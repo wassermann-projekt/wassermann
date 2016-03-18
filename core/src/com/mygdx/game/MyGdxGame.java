@@ -375,7 +375,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		difficulty[0] = 1;
 		difficulty[1] = 1;
 		difficulty[2] = 1;
-		difficulty[3] = 1;
+		difficulty[3] = 2;
 		first_probability[0] = 0.8;
 		first_probability[1] = 0.8;
 		first_probability[2] = 0.8;
@@ -403,6 +403,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// erstelle menu
 		menu = new Menu(multiplexer, this, highscore, font);
 		menu.loadMainMenu();
+		
 
 		// erstelle und registriere Steuerung
 		steuerung = new EventListener();
@@ -525,9 +526,9 @@ public class MyGdxGame extends ApplicationAdapter {
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
-					batch.draw(aktiv.getSpritesAnim()[0], (width / 9) * aktiv.getBahn() + width/34, height - aktiv.getY() + width / 30, width / 18, width /25 + (float)(5*(Math.sin(0.3*aktiv.getY()))));
-					batch.draw(aktiv.getSpritesAnim()[1], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 20 +(float)(2.5*(Math.sin(0.3*aktiv.getY()))), width / 30, width/60);
-					batch.draw(aktiv.getSpritesAnim()[2], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 28 -(float)(2.5*(Math.sin(0.3*aktiv.getY()))), width / 30, width/60);
+					batch.draw(aktiv.getSpritesAnim()[0], (width / 9) * aktiv.getBahn() + width/34, height - aktiv.getY() + width / 30, width / 18, width /25 + (float)(5*(Math.sin(0.3*realtime))));
+					batch.draw(aktiv.getSpritesAnim()[1], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 20 +(float)(2.5*(Math.sin(0.3*realtime))), width / 30, width/60);
+					batch.draw(aktiv.getSpritesAnim()[2], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 28 -(float)(2.5*(Math.sin(0.3*realtime))), width / 30, width/60);
 					break;
 				case 2:
 					batch.draw(aktiv.getSprite(),
@@ -535,7 +536,7 @@ public class MyGdxGame extends ApplicationAdapter {
 							height - aktiv.getY(), width / 9, width / 9);
 					batch.draw(aktiv.getSpritesAnim()[0],
 							(width / 9) * aktiv.getBahn() + 40
-									+ (aktiv.getY() % 10),
+									+ (realtime % 10),
 							height - aktiv.getY() + (width / 9) / 15,
 							width / 18, width / 18);
 					break;
