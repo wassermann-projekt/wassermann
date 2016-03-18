@@ -392,6 +392,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// erstelle menu
 		menu = new Menu(multiplexer, this, highscore, font);
 		menu.loadMainMenu();
+		
 
 		// erstelle und registriere Steuerung
 		steuerung = new EventListener();
