@@ -60,6 +60,7 @@ public class Menu {
 		pixmap.setColor(Color.WHITE);
 		pixmap.fill();
 		skin.add("background", new Texture(pixmap));
+		skin.add("cursor", new Texture(pixmap));
 
 		TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
 		textButtonStyle.up = skin.newDrawable("background", Color.BLUE);
@@ -72,6 +73,8 @@ public class Menu {
 		textFieldStyle.font = skin.getFont("default");
 		textFieldStyle.fontColor = Color.BLUE;
 		textFieldStyle.focusedFontColor = Color.BLACK;
+		textFieldStyle.cursor = skin.newDrawable("cursor", Color.BLACK);
+		textFieldStyle.cursor.setMinWidth(2f);
 		skin.add("default", textFieldStyle);
 
 		Label.LabelStyle labelStyle = new Label.LabelStyle();
