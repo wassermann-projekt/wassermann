@@ -11,5 +11,6 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.title = "Waterlilly";
 		new LwjglApplication(new MyGdxGame(), config);
+
 	}
 }
