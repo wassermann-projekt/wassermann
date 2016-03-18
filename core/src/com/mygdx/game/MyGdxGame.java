@@ -1203,6 +1203,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (hindernis_aktiv[i]) {
 				if (meetObstacle(hindernis[i], swimmer)) {
 					health--;
+					shark.play ();
 				    hindernis_aktiv[i]=false;
 				    freeze = true;
 				}
@@ -1286,6 +1287,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		music.dispose();
+		batch.dispose();
 
 	}
 
