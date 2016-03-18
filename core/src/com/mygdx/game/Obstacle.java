@@ -16,6 +16,7 @@ public class Obstacle {
 	 *3	:= Schwan 
 	 * */
 	private int type;
+	private long line;
 
 	//Obstacle animiert?
 	private boolean anim;
@@ -27,6 +28,9 @@ public class Obstacle {
 	//1 := schwimmt nach rechts
 	//2 := schwimmt nach links
 	private int richtung = 0;
+	
+	//Laenge Unterwasserhindernis
+	private int laenge;
 	
 	//Konstruktor fuer nicht-animierte Hindernisse
 	public Obstacle(Sprite s, int t, int b, float py){
@@ -64,17 +68,26 @@ public class Obstacle {
 	}
 	
 	//Konstruktor fuer nicht-animierte Hindernisse unter Wasser
-		public Obstacle(Sprite s, int t, float px, float py){
+		public Obstacle(Sprite s, int t, float px, float py, int laenge_h){
 			sprite = s;
 			type = t;
 			posX = px;
 			posY = py;
+			laenge = laenge_h;
 			anim = false;
 			num_parts = 0;	
 		}
 	
 	public int getType(){
 		return type;
+	}
+	
+	public long getLine(){
+		return line;
+	}
+	
+	public void setLine(long L){
+		line = L;
 	}
 	
 	public float getX(){
@@ -99,6 +112,15 @@ public class Obstacle {
 	
 	public int getRichtung(){
 		return richtung;
+	}
+	
+	public int getLaenge(){
+		return laenge;
+	}
+	
+	public void setX(float new_pos){
+		posX = new_pos;
+		return;
 	}
 	
 	public void setY(float new_pos){
