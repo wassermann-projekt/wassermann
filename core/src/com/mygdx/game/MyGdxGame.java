@@ -364,7 +364,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		difficulty[0] = 1;
 		difficulty[1] = 1;
 		difficulty[2] = 1;
-		difficulty[3] = 1;
+		difficulty[3] = 2;
 		first_probability[0] = 0.8;
 		first_probability[1] = 0.8;
 		first_probability[2] = 0.8;
