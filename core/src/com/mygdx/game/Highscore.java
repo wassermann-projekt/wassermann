@@ -49,10 +49,7 @@ public class Highscore {
 		
 		items = new Item[numitems];
 		if(!load()){
-			for(int i = 0; i < numitems; ++i){
-				items[i] = new Item("", 0);
-			}
-			save();
+			resetScores();
 		}
 		
 		sort();
@@ -129,6 +126,13 @@ public class Highscore {
 			isnew = items[index].is_new; 
 		}
 		return isnew;
+	}
+	
+	public void resetScores(){
+		for(int i = 0; i < numitems; ++i){
+			items[i] = new Item("", 0);
+		}
+		save();
 	}
 	
 	private void sort(){
