@@ -145,6 +145,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	private double generation_probability;
 	//Poisson-Verteilung für Anzahl Hindernisse einer Zeile
 	private double[] p = new double[8];
+	//Hindernis-Buffer als queue zur Speicherung von zukünftigen Hindernissen
+	private ObstacleQueue buffer = new ObstacleQueue();
 
 	// Variablen für Schwimmer, Hintergrund, Hindernis
 	private float geschwindigkeit;
@@ -756,7 +758,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
 		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
 		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
-	
+		//zukünftige Hindernisse können in den "Hindernis-buffer" geladen werden
+		//Falls dieser nichtleer ist, werden die Hindernisse aus dem buffer generiert, ansonsten mit oben beschriebener Zufälligkeit
+		
+		//Hindernisse aus buffer laden
+		if (buffer.getSize()!=0){
+			int[] akt_zeile = buffer.getNextZeile();
+			for (int i=1;i<8;i++){
+				gen_obstacle(akt_zeile[i-1],i);
+			}
+			return;
+		}
 		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
 		//sei p array mit Poissonverteilung bereits initialisiert
 		//init p[0]=0;
@@ -816,7 +828,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			p_typ[i] /= sum;
 		}
 		//iteriere i über jede ausgewählte Bahn
-		for (int i=0;i<n;i++){			
+		for (int i=0;i<n;i++){
 			gen_obstacle(choice(p_typ,n_obstacles,1)-1,bahnen_final[i]);
 		}
 		for (int i=0;i<40;i++){
@@ -841,6 +853,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//ein neu generiertes Hindernis erzeugen
 	private void gen_obstacle(int type,int bahn){
+		if (type==-1){
+			return;
+		}
 		int i = 0;
 		while (hindernis_aktiv[i]){
 			i++;
