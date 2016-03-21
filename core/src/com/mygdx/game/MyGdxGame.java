@@ -70,6 +70,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Hintergrund Schwimmwelt
 	private Sprite wellen1;
 	private Sprite wellen2;
+	private Sprite wellen3;
+	private Sprite wellen4;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
 
@@ -105,7 +107,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 	// Graphics Updates -> Variables to update positions
-	private float wellen_x_pos;
+	private float wellen_y_pos;
 	private float loop;
 	private float unter_wasser_textur_pos;
 	private float zeit_unter_wasser;
@@ -265,11 +267,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		wellen = new Texture("wellen.png");
 
 		// init Wellentextur
-		wellen1 = new Sprite(new Texture("wellen.png"));
+		wellen1 = new Sprite(wellen);
 		wellen1.setSize(width, height);
-		wellen2 = new Sprite(new Texture("wellen.png"));
+		wellen2 = new Sprite(wellen);
 		wellen2.setSize(width, height);
-		wellen_x_pos = 0;
+		wellen_y_pos = 0;
 
 		// init Unterwasserwelt Hintergrund
 
@@ -490,9 +492,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 
 		// Hintergrund
-		batch.draw(wellen1, 0, wellen_x_pos % height, width, height);
-		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width,
-				height);
+		batch.draw(wellen1, 0, wellen_y_pos % height, width, height);
+		batch.draw(wellen2, 0, (wellen_y_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width / 9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(),
 				ufer_rechts.getOriginY(), width / 9, height);
@@ -521,19 +522,19 @@ public class MyGdxGame extends ApplicationAdapter {
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
-					batch.draw(aktiv.getSpritesAnim()[0], (width / 9) * aktiv.getBahn() + width/34, height - aktiv.getY() + width / 30, width / 18, width /25 + (float)(5*(Math.sin(0.3*aktiv.getY()))));
-					batch.draw(aktiv.getSpritesAnim()[1], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 20 +(float)(2.5*(Math.sin(0.3*aktiv.getY()))), width / 30, width/60);
-					batch.draw(aktiv.getSpritesAnim()[2], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 28 -(float)(2.5*(Math.sin(0.3*aktiv.getY()))), width / 30, width/60);
+					batch.draw(aktiv.getSpritesAnim()[0], (width / 9) * aktiv.getBahn() + width/34, height - aktiv.getY() + width / 30, width / 18, width /25 + (float)(5*(Math.sin(0.3*realtime))));
+					batch.draw(aktiv.getSpritesAnim()[1], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 20 +(float)(2.5*(Math.sin(0.3*realtime))), width / 30, width/60);
+					batch.draw(aktiv.getSpritesAnim()[2], (width / 9) * aktiv.getBahn() + width/25, height - aktiv.getY() + width / 28 -(float)(2.5*(Math.sin(0.3*realtime))), width / 30, width/60);
 					break;
 				case 2:
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
 					batch.draw(aktiv.getSpritesAnim()[0],
-							(width / 9) * aktiv.getBahn() + 40
-									+ (aktiv.getY() % 10),
-							height - aktiv.getY() + (width / 9) / 15,
-							width / 18, width / 18);
+							(width / 9) * aktiv.getBahn() + (width /17.5f)
+									+ (realtime % 50*0.3f),
+							height - (aktiv.getY()+width/500),
+							width / 25, width / 18);
 					break;
 				case 3:
 					batch.draw(aktiv.getSprite(),
@@ -1094,7 +1095,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private void update_graphics() {				
 			
 		if (state == GameState.UPPERWORLD) {
-			wellen_x_pos = (wellen_x_pos - geschwindigkeit) % height;
+			wellen_y_pos = (wellen_y_pos - geschwindigkeit) % height;
 			arm_pos += 10 % 314;
 			arm_pos_x = swimmer_width/8*(float) Math.sin(0.01*arm_pos -1.5);
 			arm_pos_y = swimmer_width/8*(float) Math.sin(0.01*arm_pos);
@@ -1205,6 +1206,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (hindernis_aktiv[i]) {
 				if (meetObstacle(hindernis[i], swimmer)) {
 					health--;
+					shark.play ();
 				    hindernis_aktiv[i]=false;
 				    freeze = true;
 				}
@@ -1293,6 +1295,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		music.dispose();
+		batch.dispose();
 
 	}
 
