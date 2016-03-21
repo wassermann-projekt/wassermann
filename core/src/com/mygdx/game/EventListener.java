@@ -38,7 +38,7 @@ public class EventListener implements InputProcessor {
 				case Keys.DOWN:
 					break;
 				case Keys.ALT_LEFT:
-//					game.changeDiveState();
+					game.changeDiveState();
 
 				}
 			}
