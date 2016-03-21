@@ -1029,7 +1029,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public boolean isGameOver() {
 		return game_over;
 	}
-
+	
 	public void returnToMainMenu() {
 		paused = false;
 		menu.loadMainMenu();

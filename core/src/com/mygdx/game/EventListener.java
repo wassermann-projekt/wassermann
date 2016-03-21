@@ -13,7 +13,7 @@ public class EventListener implements InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 
-		// keine Steuerung wenn das Spiel pausiert ist
+		// keine Steuerung wenn das Spiel pausiert/Gameover/Gefrohren ist
 		if (!game.isPaused() && !game.isGameOver()) {
 
 			if (game.getState() == GameState.UPPERWORLD) {
