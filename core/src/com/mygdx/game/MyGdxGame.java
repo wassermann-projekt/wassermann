@@ -120,7 +120,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Hindernis Dive
 	private Obstacle hindernis_lowerworld_upper;
 	private Obstacle hindernis_lowerworld_lower;
-	private float[] wand_punkte = new float[2 * 10];
+	//protected float[] wand_punkte = new float[2 * 10];
+	//protected float[] wand_punkte_init = new float[2 * 10];
 
 	// Hilfsvariable für den Hindernisgenerator
 	// Bei Aufruf von Hindernis-Generator wird h auf 0 gesetzt
@@ -209,7 +210,11 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	private float width2; 
 
-
+	// init Unterwasserhindernisse
+	
+	protected float[] wand_punkte_init = {height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0, height, 0};
+	protected float[] wand_punkte = wand_punkte_init;
+	
 	// input
 	private boolean paused;
 	private InputMultiplexer multiplexer;
@@ -482,7 +487,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		game_over = false;
 		
 		Arrays.fill(hindernis_aktiv, false);
-		Arrays.fill(wand_punkte, 0);
+		wand_punkte = wand_punkte_init;
 	}
 
 	// Methode um die Schwimmwelt zu rendern
@@ -663,9 +668,7 @@ public class MyGdxGame extends ApplicationAdapter {
         	batch.draw(hindernis_lowerworld_upper.getSprite(), hindernis_lowerworld_upper.getX() + i/2*(width/8), hindernis_lowerworld_upper.getY() + wand_punkte[i+1],width/8, height);
 
         }
-        
-        
-        
+                
 		// Score-Anzeige
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
@@ -1047,7 +1050,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		menu.loadMainMenu();
 		state = GameState.MAINMENU;
 		Arrays.fill(hindernis_aktiv, false);
-		Arrays.fill(wand_punkte, 0);
+		wand_punkte = wand_punkte_init;
 	}
 
 	public void endApplication() {
@@ -1058,7 +1061,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void changeDiveState() {
 
 		if (state == GameState.UPPERWORLD) {
-			Arrays.fill(wand_punkte, 0);
+			wand_punkte = wand_punkte_init;
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
@@ -1108,26 +1111,35 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		return false;
 	}
-	
+		
 	public boolean collision_dive(){
 		
-		if((body.getPosition().y + 0.25*taucher_width > wand_punkte[1]) && (body.getPosition().y + 0.25*taucher_width > wand_punkte[3])){
-			
-			return true;
+		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + width/8) {
+						
+			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[0]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[1])){
+				
+				return true;
+				
+			}
+		
+		}
+		
+		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + 2*width/8) {
+						
+			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[3])){
+				
+				return true;
+				
+			}
 			
 		}
 		
-		if((body.getPosition().y + 0.75*taucher_width > wand_punkte[0]) && (body.getPosition().y + 0.75*taucher_width > wand_punkte[2])){
+		
+		else {
 			
-			return true;
+			return false;
 			
 		}
-		
-		/*if((body.getPosition().y + 0.25*taucher_width > wand_punkte[5]) && (body.getPosition().y + 0.75*taucher_width > wand_punkte[4])){
-			
-			return true;
-			
-		}*/
 		
 		return false;
 	}
@@ -1264,7 +1276,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		// TODO festlegen, ab wann der taucher wieder kollidieren kann
 		
-		invulnerable = false;
+		//invulnerable = false;
 		
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 
@@ -1279,16 +1291,17 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Kollisionsabfrage
 		
-		if(invulnerable == false){
+		//if(invulnerable == false){
 			
 			if(collision_dive()){
 				
+				System.out.println(collision_dive());
 				health--;
 				freeze = true;
-				invulnerable = true;
+				//invulnerable = true;
 				
 			}
-		}
+		//}
 		
 
 		//gameover check (luftanzeige)
