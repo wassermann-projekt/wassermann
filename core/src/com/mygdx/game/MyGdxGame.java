@@ -722,13 +722,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//Luft-Anzeige
         
-		width2 = width/2 + (loop*0.5f);
+		/*width2 = width/2 + (loop*0.5f);
 		if (width2 > 0){
 			batch.draw(luftanzeige, 40, 40, width2, height/18);
 			}
 		else {setGameOver();
 			music.stop();
-		}
+		}*/
 		
         batch.end();
 
@@ -943,7 +943,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	private void hindernis_Generator_dive_init(){
-		//1. Hindernis generieren
+		//Die beiden ersten Hindernisse generieren
 		
 		float w0 = height * (float) Math.random();
 		float w1 = height * (float) Math.random();
@@ -955,10 +955,20 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		}
 		
+		wand_punkte[16] = w0;
+		wand_punkte[17] = w1;
+		
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/4*taucher_width > w1)) {
+
+			w0 = height* (float) Math.random();
+			w1 = height* (float) Math.random();
+
+		}
+		
 		wand_punkte[18] = w0;
 		wand_punkte[19] = w1;
 		
-		for(int i = 0; i < 18; i++){
+		for(int i = 0; i < 16; i++){
 			hindernis_Generator_dive();
 		}
 	}
@@ -977,7 +987,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		float w0 = height * (float) Math.random();
 		float w1 = height * (float) Math.random();
 
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/4*taucher_width > w1)) {
+		//Letzte beide generierte Hindernisse abfragen -> entsteht ein machbares Labyrinth?
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/4*taucher_width > w1) ||
+				(hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[15]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[14]+ 5/4*taucher_width > w1)) {
 
 			w0 = height* (float) Math.random();
 			w1 = height* (float) Math.random();
