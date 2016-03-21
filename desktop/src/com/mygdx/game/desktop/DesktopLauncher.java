@@ -9,7 +9,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		// Fenster nicht resizeable
 		config.resizable = false;
-		config.title = "Waterlilly";
+		config.title = "Waterlily";
 		new LwjglApplication(new MyGdxGame(), config);
 
 	}
