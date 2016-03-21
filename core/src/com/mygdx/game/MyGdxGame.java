@@ -5,7 +5,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.backends.lwjgl.audio.Mp3.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -63,6 +62,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture unter_wasser_textur_3;
 	Texture unter_wasser_textur_4;
 	Texture wellen;
+	Texture guteherzen;
+	Texture coin;
 
 	
 	private GameState state;
@@ -91,6 +92,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite taucher_rechtes_bein;
 	private Sprite taucher_linkes_bein;
 	private Sprite taucher_luftblasen;
+	
+	private Sprite guteherzen_sprite;
+	private Sprite coin_sprite;
 	
 	//Hindernis unter Wasser
 	private Sprite hindernis_lowerworld_up;
@@ -131,7 +135,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Hindernis-Generator
 	//maximale Anzahl unterschiedlicher Hindernisse
-	private int n_obstacles = 4;
+	private int n_obstacles = 6;
 	//Schwierigkeit einzelner Typen von Hindernissen
 	//Hindernis x kann ab Level difficulty[x] generiert werden
 	private int[] difficulty = new int[n_obstacles];
@@ -195,9 +199,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private boolean freeze;
 	
 	// Musik & Sound
-	private Sound sound;
 	private Music music;
-	private Music bewegungmusic;
 	private Music shark;
 
 	// shortcuts for graphics fields
@@ -214,7 +216,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Menu menu;
 	private EventListener steuerung;
 
-	private FreeTypeFontGenerator generator;
 
 	//Luftanzeige
 	private Sprite luftanzeige;
@@ -265,6 +266,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		unter_wasser_textur_3 = new Texture("unter_wasser_textur_3.png");
 		unter_wasser_textur_4 = new Texture("unter_wasser_textur_4.png");
 		wellen = new Texture("wellen.png");
+		guteherzen = new Texture ("herz_voll2.png");
+		coin = new Texture("muenze.png");
+		
+		guteherzen_sprite = new Sprite(guteherzen);
+		coin_sprite = new Sprite(guteherzen);
+
+	
 
 		// init Wellentextur
 		wellen1 = new Sprite(wellen);
@@ -355,8 +363,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.flip(true, false);
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
 		
-		
-			
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -373,10 +379,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		difficulty[1] = 1;
 		difficulty[2] = 1;
 		difficulty[3] = 2;
+		difficulty[4] = 1;
+		difficulty[5] = 1;
 		first_probability[0] = 0.8;
 		first_probability[1] = 0.8;
 		first_probability[2] = 0.8;
 		first_probability[3] = 0.8;
+		first_probability[4] = 0.8;
+		first_probability[5] = 0.8;
 		for (int k=0;k<n_obstacles;k++){
 		for (int i=0; i<obstacle_ausdauer;i++){
 			double b = Math.log(first_probability[k]);
@@ -541,6 +551,16 @@ public class MyGdxGame extends ApplicationAdapter {
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
 					break;
+				case 4: 
+					batch.draw(aktiv.getSprite(), 
+							(width / 9) * aktiv.getBahn() + width/45,
+							height - aktiv.getY(), width / 15 , width / 15);
+					break; 
+				case 5: 
+					batch.draw(aktiv.getSprite(), 
+							(width / 9) * aktiv.getBahn(),
+							height - aktiv.getY(), width / 12, width / 12);
+					break; 
 				default:
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
@@ -552,17 +572,19 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Score-Anzeige
 		font.setColor(Color.BLACK);
-		font.draw(batch, "Score: " + score, 470, 465);
+		font.draw(batch, "Score: " + score, 460, 465);
+		
 
 		// Level-Anzeigen
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Level " + level, 360, 465);
 		if (score % 30 < 2) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
-
 		
 		// Herzen update
-		if (health == 5) {
+		if (health >= 5) {
 			batch.draw(herz_voll, 19, 440, width / 18, height / 18);
 			batch.draw(herz_voll, 55, 440, width / 18, height / 18);
 			batch.draw(herz_voll, 90, 440, width / 18, height / 18);
@@ -666,7 +688,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.draw(batch, "Score: " + score, 470, 465);
 		
 		// Herzen update
-				if (health == 5) {
+				if (health >= 5) {
 					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
 					batch.draw(herz_voll, 55, 440, width / 18, height / 18);
 					batch.draw(herz_voll, 90, 440, width / 18, height / 18);
@@ -1092,6 +1114,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		return false;
 	}
 
+
 	private void update_graphics() {				
 			
 		if (state == GameState.UPPERWORLD) {
@@ -1137,6 +1160,8 @@ public class MyGdxGame extends ApplicationAdapter {
 						}
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
+					case 4:
+					case 5:
 					default:
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
@@ -1205,18 +1230,31 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i = 0; i < 40; i++) {
 			if (hindernis_aktiv[i]) {
 				if (meetObstacle(hindernis[i], swimmer)) {
+					if (hindernis[i].getType()==4) {
+						if (health < 5) {
+						health++;
+									}
+					}
+					
+					else if (hindernis[i].getType()==5) {
+						score += 10; 
+				} 
+					else {
 					health--;
 					shark.play ();
+					freeze = true;
+					}
+				
 				    hindernis_aktiv[i]=false;
-				    freeze = true;
-				}
+				    
+				} 
 			}
-		}		
+	}
+		
 		
 		// GameOver check
 		if (health <= 0) {
 			setGameOver();
-
 		}
 	}
 
@@ -1276,6 +1314,16 @@ public class MyGdxGame extends ApplicationAdapter {
 				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
 				//Richtung auf links setzen
 				new_obstacle.setRichtung(2);
+				break;
+			case 4:
+				Sprite herz_voll2 = new Sprite(guteherzen);
+				herz_voll2.setSize(width/15, height/15);
+				new_obstacle = new Obstacle(herz_voll2, 4, bahn, 0.0f);
+				break;
+			case 5: 
+				Sprite muenze = new Sprite(coin);
+				muenze.setSize(width/12, height/12);
+				new_obstacle = new Obstacle(muenze, 5, bahn, 0.0f);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(hindernis_felsen);
