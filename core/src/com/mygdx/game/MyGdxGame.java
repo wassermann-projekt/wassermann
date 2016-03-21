@@ -146,7 +146,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Variablen für Schwimmer, Hintergrund, Hindernis
 	private float geschwindigkeit;
-	private float max_speed = 5.0f;
+	private float max_speed = 10.0f;
 	private float hindernis_geschwindigkeit = 1.0f;
 	// Aenderung der Geschwindigkeit
 	private float beschleunigung;
@@ -463,7 +463,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	// setzt alle Variablen für den Spielstart
 	public void resetGameVariables() {
 		geschwindigkeit = 1.0f;
-		beschleunigung = 0.05f;
+		beschleunigung = 0.03f;
 
 		swimmer_position_swim = 4;
 
@@ -1266,7 +1266,8 @@ public class MyGdxGame extends ApplicationAdapter {
 				schwan_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
 				//Richtung auf links setzen
-				new_obstacle.setRichtung(2);
+				new_obstacle.setRichtung((int)Math.random()*2+1);
+				new_obstacle.getSprite().flip(true, false);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(hindernis_felsen);
