@@ -57,6 +57,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture seerosen;
 	Texture seerosen_mund;
 	Texture seerose_zaehne;
+	Texture hindernis_tauchbar_loch;
+	Texture hindernis_tauchbar_strudel;
 	Texture ufer;
 	Texture unter_wasser_textur_1;
 	Texture unter_wasser_textur_2;
@@ -257,6 +259,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		seerosen = new Texture("seerosen.png");
 		seerosen_mund = new Texture("seerosen_mund.png");
 		seerose_zaehne = new Texture("seerosen_zaehne.png");
+		hindernis_tauchbar_loch = new Texture("hindernis_tauchbar_loch.png");
+		hindernis_tauchbar_strudel = new Texture("hindernis_tauchbar_strudel.png");
 		ufer = new Texture("ufer.png");
 		unter_wasser_textur_1 = new Texture("unter_wasser_textur_1.png");
 		unter_wasser_textur_2 = new Texture("unter_wasser_textur_2.png");
@@ -347,7 +351,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
-				
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -469,6 +472,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		Arrays.fill(hindernis_aktiv, false);
 		Arrays.fill(wand_punkte, height);
+		
 	}
 
 	// Methode um die Schwimmwelt zu rendern
@@ -531,6 +535,15 @@ public class MyGdxGame extends ApplicationAdapter {
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
+					break;
+				case 200:
+					batch.draw(aktiv.getSprite(),
+							(width / 9) * aktiv.getBahn(),
+							height - aktiv.getY(), width / 9, width / 18);
+					batch.draw(aktiv.getSpritesAnim()[0],
+							(width / 9) * aktiv.getBahn()+width/36,
+							height - aktiv.getY(), width/36, width/36,
+							width /18, width / 18, 1, 1, (wellen_y_pos));
 					break;
 				default:
 					batch.draw(aktiv.getSprite(),
@@ -1113,6 +1126,9 @@ public class MyGdxGame extends ApplicationAdapter {
 						}
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
+					case 200:
+						aktiv.setY(aktiv.getY() + geschwindigkeit);
+						break;
 					default:
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
@@ -1255,6 +1271,15 @@ public class MyGdxGame extends ApplicationAdapter {
 				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
 				//Richtung auf links setzen
 				new_obstacle.setRichtung(2);
+				break;
+			case 200:
+				Sprite loch_sprite = new Sprite(hindernis_tauchbar_loch);
+				loch_sprite.setSize(width/9, height/9);
+				Sprite strudel_sprite = new Sprite(hindernis_tauchbar_strudel); 
+				strudel_sprite.setOrigin(width/18, width/18);
+				Sprite[] sprites_anim_3 = new Sprite[1];
+				sprites_anim_3[0] = strudel_sprite;
+				new_obstacle = new Obstacle(loch_sprite, 200, bahn, 0.0f, 1, sprites_anim_3);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(hindernis_felsen);

@@ -17,6 +17,7 @@ public class Obstacle {
 	 *4 := Herz_power-up
 	 *5 := Muenze_power-up
 	 *100:= Unterwasserhindernis
+	 *200:= Loch tauchbares Hindernis
 	 * */
 	private int type;
 	private long line;
