@@ -726,7 +726,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (width2 > 0){
 			batch.draw(luftanzeige, 40, 40, width2, height/18);
 			}
-		else {setGameOver();
+/*		else {setGameOver();
 			music.stop();
 		}*/
 		
@@ -1002,6 +1002,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void startGame() {
+		System.out.println("in startGame()");
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
 		menu.unloadMenu();
@@ -1019,6 +1020,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void setGameOver() {
 		game_over = true;
+		music.stop();
 		if(highscore.isHighscore(score)){
 			menu.loadHighscoreInput(score);
 		}
@@ -1240,6 +1242,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (body.getPosition().y < 0) {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
+		}
+		
+		//gameover check (luftanzeige)
+		if(width2 <= 0){
+			setGameOver();
 		}
 	}
 
