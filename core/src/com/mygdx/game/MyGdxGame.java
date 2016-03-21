@@ -216,8 +216,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	private FreeTypeFontGenerator generator;
 
-	//Luftanzeige
-	private Sprite luftanzeige;
 
 
 	@Override
@@ -275,21 +273,16 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// init Unterwasserwelt Hintergrund
 
-		hintergrund1 = new Sprite(new Texture("unter_wasser_textur_1.png"));
+		hintergrund1 = new Sprite(unter_wasser_textur_1);
 		hintergrund1.setSize(width, height);
-		hintergrund2 = new Sprite(new Texture("unter_wasser_textur_2.png"));
+		hintergrund2 = new Sprite(unter_wasser_textur_2);
 		hintergrund2.setSize(width, height);
-		hintergrund3 = new Sprite(new Texture("unter_wasser_textur_3.png"));
+		hintergrund3 = new Sprite(unter_wasser_textur_3);
 		hintergrund3.setSize(width, height);
-		hintergrund4 = new Sprite(new Texture("unter_wasser_textur_4.png"));
+		hintergrund4 = new Sprite(unter_wasser_textur_4);
 		hintergrund4.setSize(width, height);
 		unter_wasser_textur_pos = 0.0f;
 		zeit_unter_wasser = 0.0f;
-
-		//Luftanzeige
-		luftanzeige = new Sprite(new Texture("image.png"));
-		luftanzeige.setSize(width/18, height/18);
-		loop = 0; 
 		
 		//init Taucher
 		tauchersprite = new Sprite(schwimmer_seitlich_body);
@@ -354,9 +347,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
-		
-		
-			
+				
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -477,7 +468,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		game_over = false;
 		
 		Arrays.fill(hindernis_aktiv, false);
-		Arrays.fill(wand_punkte, 0);
+		Arrays.fill(wand_punkte, height);
 	}
 
 	// Methode um die Schwimmwelt zu rendern
@@ -652,14 +643,18 @@ public class MyGdxGame extends ApplicationAdapter {
         batch.draw(luftblasen, luftblasen_x_pos, luftblasen_y_pos, taucher_width/2, taucher_width);
         
         //Hindernisse
-        //TODO: Typ von Unterwasserhindernis haengt von Typ des tauchbaren Hindernisses ab!
-        for(int i = 0; i<20; i=i+2){
-        	batch.draw(hindernis_lowerworld_lower.getSprite(), hindernis_lowerworld_lower.getX() + i/2*(width/8), hindernis_lowerworld_lower.getY() - wand_punkte[i],width/8, height);
-        	batch.draw(hindernis_lowerworld_upper.getSprite(), hindernis_lowerworld_upper.getX() + i/2*(width/8), hindernis_lowerworld_upper.getY() + wand_punkte[i+1],width/8, height);
-
+        if(hindernis_lowerworld_lower.getLaenge()>0){
+        	for(int i = 0; i<20; i=i+2){
+        		batch.draw(hindernis_lowerworld_lower.getSprite(), hindernis_lowerworld_lower.getX() + i/2*(width/8), hindernis_lowerworld_lower.getY() - wand_punkte[i],width/8, height);
+        		batch.draw(hindernis_lowerworld_upper.getSprite(), hindernis_lowerworld_upper.getX() + i/2*(width/8), hindernis_lowerworld_upper.getY() + wand_punkte[i+1],width/8, height);
+        	}
+        } else if(hindernis_lowerworld_lower.getLaenge()>(-10)){
+        	for(int i = 0; i<(20+2*hindernis_lowerworld_lower.getLaenge()); i=i+2){
+        		batch.draw(hindernis_lowerworld_lower.getSprite(), hindernis_lowerworld_lower.getX() + i/2*(width/8), hindernis_lowerworld_lower.getY() - wand_punkte[i],width/8, height);
+        		batch.draw(hindernis_lowerworld_upper.getSprite(), hindernis_lowerworld_upper.getX() + i/2*(width/8), hindernis_lowerworld_upper.getY() + wand_punkte[i+1],width/8, height);
+        	}
         }
-        
-        
+                
         
 		// Score-Anzeige
 		font.setColor(Color.BLACK);
@@ -718,17 +713,6 @@ public class MyGdxGame extends ApplicationAdapter {
 					batch.draw(herz_leer, 160, 440, width / 18, height / 18);
 					geschwindigkeit = 0;
 				}
- 
-
-		//Luft-Anzeige
-        
-		/*width2 = width/2 + (loop*0.5f);
-		if (width2 > 0){
-			batch.draw(luftanzeige, 40, 40, width2, height/18);
-			}
-/*		else {setGameOver();
-			music.stop();
-		}*/
 		
         batch.end();
 
@@ -738,21 +722,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void hindernis_Generator(){
 		h = 0;
-		//erste einfache Version des Hindernisgenerators
-		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
 		
-		/*if (Math.random()<0.5){
-		int random_bahn = (int)(Math.random()*7+1);
-		int random_hindernis = (int)(Math.random()*3);
-		int i = 0;
-		while (hindernis_aktiv[i]){
-			i++;
-		}
-		hindernis[i] = init_obstacle(random_hindernis,random_bahn);
-		hindernis_aktiv[i]=true;
-		}*/
-		
-		//zweite Version des Hindernisgenerators
+		//Hindernisgenerator
 		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
 		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
 		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
@@ -945,23 +916,23 @@ public class MyGdxGame extends ApplicationAdapter {
 	private void hindernis_Generator_dive_init(){
 		//Die beiden ersten Hindernisse generieren
 		
-		float w0 = height * (float) Math.random();
-		float w1 = height * (float) Math.random();
+		float w0 = 2*height/3 * (float) Math.random() + height/3;
+		float w1 = 2*height/3 * (float) Math.random() + height/3;
 
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width)){
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width)){
 
-			w0 = height* (float) Math.random();
-			w1 = height* (float) Math.random();
+			w0 = 2*height/3* (float) Math.random() + height/3;
+			w1 = 2*height/3* (float) Math.random() + height/3;
 
 		}
 		
 		wand_punkte[16] = w0;
 		wand_punkte[17] = w1;
 		
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/4*taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/6*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/6*taucher_width > w1)) {
 
-			w0 = height* (float) Math.random();
-			w1 = height* (float) Math.random();
+			w0 = 2*height/3* (float) Math.random() + height/3;
+			w1 = 2*height/3* (float) Math.random() + height/3;
 
 		}
 		
@@ -976,23 +947,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void hindernis_Generator_dive() {
 
+		verschiebe_wandpunkte();
 
-		for (int i = 0; i < 18; i++) {
-
-			//if(wand_punkte[])
-			wand_punkte[i] = wand_punkte[i + 2];
-
-		}
-
-		float w0 = height * (float) Math.random();
-		float w1 = height * (float) Math.random();
+		float w0 = 2*height/3 * (float) Math.random() + height/3;
+		float w1 = 2*height/3 * (float) Math.random() + height/3;
 
 		//Letzte beide generierte Hindernisse abfragen -> entsteht ein machbares Labyrinth?
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/4*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/4*taucher_width > w1) ||
-				(hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/4*taucher_width > wand_punkte[15]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[14]+ 5/4*taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/6*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/6*taucher_width > w1)) {
 
-			w0 = height* (float) Math.random();
-			w1 = height* (float) Math.random();
+			w0 = 2*height/3* (float) Math.random() + height/3;
+			w1 = 2*height/3* (float) Math.random() + height/3;
 
 		}
 
@@ -1042,7 +1006,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		menu.loadMainMenu();
 		state = GameState.MAINMENU;
 		Arrays.fill(hindernis_aktiv, false);
-		Arrays.fill(wand_punkte, 0);
+		Arrays.fill(wand_punkte, height);
 	}
 
 	public void endApplication() {
@@ -1053,7 +1017,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void changeDiveState() {
 
 		if (state == GameState.UPPERWORLD) {
-			Arrays.fill(wand_punkte, 0);
+			Arrays.fill(wand_punkte, height);
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
@@ -1064,8 +1028,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			hindernis_lowerworld_up = new Sprite(felsen_unter_wasser);
 			hindernis_lowerworld_up.flip(true, false);
 
-			hindernis_lowerworld_lower  = new Obstacle(hindernis_lowerworld_low, 0, (float)2*width/3, 0.0f, 50);
-			hindernis_lowerworld_upper  = new Obstacle(hindernis_lowerworld_up, 0, (float)2*width/3, 0.0f, 50);
+			hindernis_lowerworld_lower  = new Obstacle(hindernis_lowerworld_low, 100, (float)2*width/3, 0.0f, 20);
+			hindernis_lowerworld_upper  = new Obstacle(hindernis_lowerworld_up, 100, (float)2*width/3, 0.0f, 20);
 			hindernis_lowerworld_upper.getSprite().flip(false, true);
 
 			//Hindernis-Generator anwerfen
@@ -1127,7 +1091,7 @@ public class MyGdxGame extends ApplicationAdapter {
 						break;
 					case 3:
 						// Bahn wechseln -> nach rechts oder nach links?
-						if (/*aktiv.getY()*/realtime % schwan_speed == 0 && aktiv.getRichtung() == 1) {
+						if (realtime % schwan_speed == 0 && aktiv.getRichtung() == 1) {
 							// Richtungswechsel
 							if (aktiv.getBahn() == 7) {
 								aktiv.setRichtung(2);
@@ -1173,10 +1137,18 @@ public class MyGdxGame extends ApplicationAdapter {
 			// Bewegung Hindernisse
 			hindernis_lowerworld_upper.setX(hindernis_lowerworld_upper.getX()-hindernis_geschwindigkeit);
 			hindernis_lowerworld_lower.setX(hindernis_lowerworld_lower.getX()-hindernis_geschwindigkeit);
-			if(hindernis_lowerworld_lower.getX() < 0-width/8 && ((hindernis_lowerworld_upper.getX()*(-1))>width/8*hindernis_lowerworld_upper.getLaenge())) {
+			if(hindernis_lowerworld_lower.getX() < 0-width/8 && hindernis_lowerworld_lower.getLaenge()>0) {
 				hindernis_Generator_dive();
 				hindernis_lowerworld_lower.setX(hindernis_lowerworld_lower.getX()+width/8);
 				hindernis_lowerworld_upper.setX(hindernis_lowerworld_upper.getX()+width/8);
+				hindernis_lowerworld_lower.setLaenge(hindernis_lowerworld_lower.getLaenge()-1);
+				hindernis_lowerworld_upper.setLaenge(hindernis_lowerworld_upper.getLaenge()-1);
+			} else if(hindernis_lowerworld_lower.getX() < 0-width/8 && hindernis_lowerworld_lower.getLaenge()<=0 && hindernis_lowerworld_lower.getLaenge() > (-10)){
+				verschiebe_wandpunkte();
+				hindernis_lowerworld_lower.setX(hindernis_lowerworld_lower.getX()+width/8);
+				hindernis_lowerworld_upper.setX(hindernis_lowerworld_upper.getX()+width/8);
+				hindernis_lowerworld_lower.setLaenge(hindernis_lowerworld_lower.getLaenge()-1);
+				hindernis_lowerworld_upper.setLaenge(hindernis_lowerworld_upper.getLaenge()-1);
 			}
 
 			loop = (loop - hindernis_geschwindigkeit);
@@ -1211,7 +1183,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		level = (score/30)+1;
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
-		width2 = luftanzeige.getHeight ();		
 
 		// Kollisionsabfrage
 		for (int i = 0; i < 40; i++) {
@@ -1244,10 +1215,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
 		
-		//gameover check (luftanzeige)
-		if(width2 <= 0){
-			setGameOver();
-		}
 	}
 
 	// init Klasse, um Obstacle-Objekte zu erzeugen
@@ -1309,6 +1276,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		music.dispose();
 		batch.dispose();
 
+	}
+	
+	//Hilfsfunktion wandpunkte verschieben
+	private void verschiebe_wandpunkte(){
+		for (int i = 0; i < 18; i++) {
+
+			wand_punkte[i] = wand_punkte[i + 2];
+
+		}
 	}
 
 }
