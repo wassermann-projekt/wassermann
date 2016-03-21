@@ -5,7 +5,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.backends.lwjgl.audio.Mp3.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -72,6 +71,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Hintergrund Schwimmwelt
 	private Sprite wellen1;
 	private Sprite wellen2;
+	private Sprite wellen3;
+	private Sprite wellen4;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
 
@@ -110,7 +111,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 	// Graphics Updates -> Variables to update positions
-	private float wellen_x_pos;
+	private float wellen_y_pos;
 	private float loop;
 	private float unter_wasser_textur_pos;
 	private float zeit_unter_wasser;
@@ -198,9 +199,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private boolean freeze;
 	
 	// Musik & Sound
-	private Sound sound;
 	private Music music;
-	private Music bewegungmusic;
 	private Music shark;
 
 	// shortcuts for graphics fields
@@ -276,11 +275,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 
 		// init Wellentextur
-		wellen1 = new Sprite(new Texture("wellen.png"));
+		wellen1 = new Sprite(wellen);
 		wellen1.setSize(width, height);
-		wellen2 = new Sprite(new Texture("wellen.png"));
+		wellen2 = new Sprite(wellen);
 		wellen2.setSize(width, height);
-		wellen_x_pos = 0;
+		wellen_y_pos = 0;
 
 		// init Unterwasserwelt Hintergrund
 
@@ -503,9 +502,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 
 		// Hintergrund
-		batch.draw(wellen1, 0, wellen_x_pos % height, width, height);
-		batch.draw(wellen2, 0, (wellen_x_pos % (height)) + height, width,
-				height);
+		batch.draw(wellen1, 0, wellen_y_pos % height, width, height);
+		batch.draw(wellen2, 0, (wellen_y_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width / 9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(),
 				ufer_rechts.getOriginY(), width / 9, height);
@@ -543,10 +541,10 @@ public class MyGdxGame extends ApplicationAdapter {
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
 					batch.draw(aktiv.getSpritesAnim()[0],
-							(width / 9) * aktiv.getBahn() + 40
-									+ (realtime % 10),
-							height - aktiv.getY() + (width / 9) / 15,
-							width / 18, width / 18);
+							(width / 9) * aktiv.getBahn() + (width /17.5f)
+									+ (realtime % 50*0.3f),
+							height - (aktiv.getY()+width/500),
+							width / 25, width / 18);
 					break;
 				case 3:
 					batch.draw(aktiv.getSprite(),
@@ -750,10 +748,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (width2 > 0){
 			batch.draw(luftanzeige, 40, 40, width2, height/18);
 			}
-		else {setGameOver();
+/*		else {setGameOver();
 			music.stop();
 		}
-		
+*/		
         batch.end();
 
 	}
@@ -1014,6 +1012,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void startGame() {
+		System.out.println("in startGame()");
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
 		menu.unloadMenu();
@@ -1031,6 +1030,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void setGameOver() {
 		game_over = true;
+		music.stop();
 		if(highscore.isHighscore(score)){
 			menu.loadHighscoreInput(score);
 		}
@@ -1118,7 +1118,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private void update_graphics() {				
 			
 		if (state == GameState.UPPERWORLD) {
-			wellen_x_pos = (wellen_x_pos - geschwindigkeit) % height;
+			wellen_y_pos = (wellen_y_pos - geschwindigkeit) % height;
 			arm_pos += 10 % 314;
 			arm_pos_x = swimmer_width/8*(float) Math.sin(0.01*arm_pos -1.5);
 			arm_pos_y = swimmer_width/8*(float) Math.sin(0.01*arm_pos);
@@ -1268,6 +1268,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (body.getPosition().y < 0) {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
+		}
+		
+		//gameover check (luftanzeige)
+		if(width2 <= 0){
+			setGameOver();
 		}
 	}
 
