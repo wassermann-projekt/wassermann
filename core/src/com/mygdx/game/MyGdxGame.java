@@ -28,6 +28,7 @@ import java.awt.event.KeyListener;
 
 import java.util.Arrays;
 import java.util.Timer;
+import java.util.TimerTask;
 
 
 import javax.imageio.ImageIO;
@@ -225,8 +226,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	private Menu menu;
 	private EventListener steuerung;
-
-
+	
+	Timer timer = new Timer();
 
 
 	@Override
@@ -1048,6 +1049,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		return game_over;
 	}
 	
+	public void changeInvuln(){
+		if(invulnerable == false){
+			invulnerable = true;
+		}
+		else{
+			invulnerable = false;
+		}
+	}
+	
 	public void returnToMainMenu() {
 		paused = false;
 		menu.loadMainMenu();
@@ -1323,20 +1333,31 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Kollisionsabfrage
 		
-		//if(invulnerable == false){
+		System.out.println(collision_dive());
+		
+		if(invulnerable == false){
 			
 			if(collision_dive()){
 				
-				System.out.println(collision_dive());
 				health--;
-				freeze = true;
-				//invulnerable = true;
+				//freeze = true;
+				invulnerable = true;
+				
+				timer.schedule(new TimerTask(){
+					
+					public void run() {
+						changeInvuln();
+					}
+					
+				}, 1000);
 				
 			}
-		//}
+		}
 		
 	}
 
+	
+	
 	// init Klasse, um Obstacle-Objekte zu erzeugen
 	private Obstacle init_obstacle(int type, int bahn) {
 		Obstacle new_obstacle;
