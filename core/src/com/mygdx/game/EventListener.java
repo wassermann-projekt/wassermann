@@ -13,7 +13,7 @@ public class EventListener implements InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 
-		// keine Steuerung wenn das Spiel pausiert ist
+		// keine Steuerung wenn das Spiel pausiert/Gameover/Gefrohren ist
 		if (!game.isPaused() && !game.isGameOver()) {
 
 			if (game.getState() == GameState.UPPERWORLD) {
@@ -47,10 +47,10 @@ public class EventListener implements InputProcessor {
 
 				switch (keycode) {
 				case Keys.UP:
-					game.changeSwimmerPosition_dive(20000);
+					game.changeSwimmerPosition_dive(1);
 					break;
 				case Keys.DOWN:
-					game.changeSwimmerPosition_dive(-20000);
+					game.changeSwimmerPosition_dive(-1);
 					break;
 				}
 			}
