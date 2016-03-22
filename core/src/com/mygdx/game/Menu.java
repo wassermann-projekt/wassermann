@@ -234,15 +234,28 @@ public class Menu {
 		textfield = new TextField("", skin);
 		textfield.setPosition(left, bottom);
 		textfield.setMaxLength(10);
+		textfield.clearListeners();
+		textfield.addListener(textfield.new TextFieldClickListener(){
+			@Override
+			public boolean keyDown(InputEvent event, int keycode){
+				if(keycode == Keys.ENTER){
+					highscore.enterHighscore(textfield.getText(), score_to_save);
+					loadHighscoreScreen(true);
+				}
+				else if(keycode == Keys.ESCAPE){
+					loadHighscoreScreen(true);
+				}
+				return true;
+			}
+		});
 		
 		bottom -= button_h + button_space;
 		
-		TextButton proceedButton = new TextButton("PROCEED", skin);
-		proceedButton.setPosition(left, bottom);
-		proceedButton.addListener(new ClickListener(){
+		TextButton cancelButton = new TextButton("CANCEL", skin);
+		cancelButton.setPosition(left, bottom);
+		cancelButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y){
-				highscore.enterHighscore(textfield.getText(), score_to_save);
 				loadHighscoreScreen(true);
 			}
 		});
@@ -251,7 +264,7 @@ public class Menu {
 		stage.addActor(label1);
 		stage.addActor(label2);
 		stage.addActor(textfield);
-		stage.addActor(proceedButton);
+		stage.addActor(cancelButton);
 		
 		stage.setKeyboardFocus(textfield);
 		
@@ -307,6 +320,22 @@ public class Menu {
 			stage.addActor(newGameButton);	
 		}
 		else{
+			
+			if(!highscore.getScoreString(0).isEmpty()){			
+				TextButton resetButton = new TextButton("RESET", skin);
+				resetButton.setPosition(left, bottom);
+				resetButton.addListener(new ClickListener(){
+					@Override
+					public void clicked(InputEvent event, float x, float y){
+						highscore.resetScores();
+						loadHighscoreScreen(false);
+					}
+				});
+				
+				stage.addActor(resetButton);
+				bottom -= button_h + button_space;
+			}
+			
 			TextButton backButton = new TextButton("BACK", skin);
 			backButton.setPosition(left, bottom);
 			backButton.addListener(new ClickListener() {
@@ -315,6 +344,7 @@ public class Menu {
 					loadMainMenu();
 				}
 			});
+			
 			
 			stage.addActor(backButton);
 			
@@ -325,7 +355,7 @@ public class Menu {
 	
 	public void handleKey(int keycode){
 		if(state == MenuState.NONE){
-			if(keycode == Keys.ESCAPE){
+			if(keycode == Keys.ESCAPE || keycode == Keys.SPACE){
 				game.pauseGame(true);
 			}
 		}
@@ -338,16 +368,12 @@ public class Menu {
 			}
 		}
 		else if(state == MenuState.PAUSE){
-			if(keycode == Keys.ESCAPE){
+			if(keycode == Keys.ESCAPE || keycode == Keys.SPACE){
 				game.pauseGame(false);
 			}
 		}
 		else if(state == MenuState.INPUT_HIGHSCORE){
-			if(keycode == Keys.ENTER){
-				highscore.enterHighscore(textfield.getText(), score_to_save);
-				loadHighscoreScreen(true);
-				System.out.println("highscore pls");
-			}
+			
 		}	
 	}
 
