@@ -14,8 +14,15 @@ public class Obstacle {
 	 *1 := Seerose
 	 *2	:= Hai
 	 *3	:= Schwan 
+<<<<<<< HEAD
+	 *4 := Herz_power-up
+	 *5 := Muenze_power-up
+	 *100:= Unterwasserhindernis
+	 *200:= Loch tauchbares Hindernis
+=======
 	 *4 := Herzen
 	 *5 := Coins
+>>>>>>> upstream/master
 	 * */
 	private int type;
 	private long line;
@@ -142,6 +149,11 @@ public class Obstacle {
 	
 	public void setRichtung(int new_richtung){
 		richtung = new_richtung;
+		return;
+	}
+	
+	public void setLaenge(int new_laenge){
+		laenge = new_laenge;
 		return;
 	}
 	
