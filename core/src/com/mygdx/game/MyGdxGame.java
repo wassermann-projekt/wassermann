@@ -399,48 +399,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		score = 0;
 		level = 1;
 		
-<<<<<<< HEAD
-=======
-		//init Unsterblichkeit
-	//	startTime = 0; 
-	//	elapsedTime = 0; 
-	//	startTime = TimeUtils.nanoTime();
-	//	elapsedTime = System.nanoTime() - startTime;
-
-		
-		//init Hindernisgenerator
-		difficulty[0] = 1;
-		difficulty[1] = 1;
-		difficulty[2] = 1;
-		difficulty[3] = 2;
-		difficulty[4] = 1;
-		difficulty[5] = 1;
-		difficulty[6] = 1;
-		difficulty[7] = 1;
-		difficulty[8] = 1;
-		first_probability[0] = 0.8;
-		first_probability[1] = 0.8;
-		first_probability[2] = 0.8;
-		first_probability[3] = 0.8;
-		first_probability[4] = 0.8;
-		first_probability[5] = 0.8;
-		first_probability[6] = 0.8;
-		first_probability[7] = 0.8;
-		first_probability[8] = 0.8;
-		for (int k=0;k<n_obstacles;k++){
-		for (int i=0; i<obstacle_ausdauer;i++){
-			double b = Math.log(first_probability[k]);
-			double a = Math.log(first_probability[k]*100);
-			obstacle_probability[k][i] = Math.exp((-1/obstacle_ausdauer)*a*i+b);
-		}
-		}
-		generation_probability = 2;
-		p[0]=0;
-		for (int i=1; i<8;i++){
-			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
-		}
-		
->>>>>>> upstream/master
 		// init Highscore
 		highscore = new Highscore(font, "highscore.txt");
 		highscore.load();
@@ -516,11 +474,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	// setzt alle Variablen für den Spielstart
 	public void resetGameVariables() {
 		geschwindigkeit = 1.0f;
-<<<<<<< HEAD
 		beschleunigung = 0.03f;
-=======
-		beschleunigung = 0.04f;
->>>>>>> upstream/master
 
 		swimmer_position_swim = 4;
 
@@ -541,9 +495,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		init_obstacle_type(0,1,0.8,2);
 		init_obstacle_type(1,1,0.8,2);
 		init_obstacle_type(2,2,0.8,2);
-		init_obstacle_type(3,2,0.8,2);
-		init_obstacle_type(4,5,0.05,0);
-		init_obstacle_type(5,1,0.3,0);
+		init_obstacle_type(3,2,0.8,1);
+		init_obstacle_type(4,5,0.03,0);
+		init_obstacle_type(5,1,0.25,0);
+		init_obstacle_type(6,7,0.05,0);
+		init_obstacle_type(7,5,0.03,0);
+		init_obstacle_type(8,4,0.8,2);
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
 				for (int i=0; i<obstacle_ausdauer;i++){
@@ -677,11 +634,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-<<<<<<< HEAD
-		if (score % 50 < 2) {
-=======
 		if (score % 50 < 4) {
->>>>>>> upstream/master
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -878,29 +831,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Helpermethods
 	
 	private void hindernis_Generator(){
-		h = 0;
-<<<<<<< HEAD
-		//erste einfache Version des Hindernisgenerators
-		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
-		
-		/*if (Math.random()<0.5){
-		int random_bahn = (int)(Math.random()*7+1);
-		int random_hindernis = (int)(Math.random()*3);
-		int i = 0;
-		while (hindernis_aktiv[i]){
-			i++;
-		}
-		hindernis[i] = init_obstacle(random_hindernis,random_bahn);
-		hindernis_aktiv[i]=true;
-		}*/
-		
-		//zweite Version des Hindernisgenerators
-		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
-		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
-		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
-		//zukünftige Hindernisse können in den "Hindernis-buffer" geladen werden
-		//Falls dieser nichtleer ist, werden die Hindernisse aus dem buffer generiert, ansonsten mit oben beschriebener Zufälligkeit
-		
+		h = 0;		
 		//Hindernisse aus buffer laden
 		if (buffer.getSize()!=0){
 			int[] akt_zeile = buffer.getNextZeile();
@@ -912,9 +843,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
 		//sei p array mit Poissonverteilung bereits initialisiert
 		//init p[0]=0;
-=======
-
->>>>>>> upstream/master
 		int[] counts = new int[]{6,21,35};
 		int n=choice(p,7,1)-1;
 		if (n==0){
@@ -1145,6 +1073,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	public GameState getState() {
 		return state;
 	}
+	
+	public int getBrillen(){
+		return brillen;
+	}
+	
 	public boolean isFrozen(){
 		return freeze;
 	}
