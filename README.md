@@ -1,4 +1,4 @@
-# <h1><span style="color:blue">Waterlily</span></h1>
+# <h1>Waterlily</h1>
 
 Sportspiel zum Thema "schwimmen", entworfen und programmiert im Rahmen des Softwarepraktikums 2015/16 von
 
