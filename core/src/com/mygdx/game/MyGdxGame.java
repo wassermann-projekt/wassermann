@@ -957,7 +957,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		float w0 = 2*height/3 * (float) Math.random() + height/3;
 		float w1 = 2*height/3 * (float) Math.random() + height/3;
 
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width)){
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width)){
 
 			w0 = 2*height/3* (float) Math.random() + height/3;
 			w1 = 2*height/3* (float) Math.random() + height/3;
@@ -967,7 +967,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		wand_punkte[16] = w0;
 		wand_punkte[17] = w1;
 		
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/6*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/6*taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ taucher_width > w1)) {
 
 			w0 = 2*height/3* (float) Math.random() + height/3;
 			w1 = 2*height/3* (float) Math.random() + height/3;
@@ -991,7 +991,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		float w1 = 2*height/3 * (float) Math.random() + height/3;
 
 		//Letzte beide generierte Hindernisse abfragen -> entsteht ein machbares Labyrinth?
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/6*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/6*taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ taucher_width > w1)) {
 
 			w0 = 2*height/3* (float) Math.random() + height/3;
 			w1 = 2*height/3* (float) Math.random() + height/3;
