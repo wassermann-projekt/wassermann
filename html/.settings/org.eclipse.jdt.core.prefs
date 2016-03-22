@@ -1,5 +1,21 @@
 #
+<<<<<<< HEAD
+#Wed Mar 09 15:30:58 CET 2016
+=======
+<<<<<<< HEAD
 #Tue Mar 22 13:36:19 CET 2016
+=======
+<<<<<<< HEAD
+#Tue Mar 22 13:20:03 CET 2016
+=======
+<<<<<<< HEAD
+#Wed Mar 09 18:58:33 CET 2016
+=======
+#Fri Mar 11 15:56:41 CET 2016
+>>>>>>> upstream/master
+>>>>>>> upstream/master
+>>>>>>> upstream/master
+>>>>>>> upstream/master
 org.eclipse.jdt.core.compiler.debug.localVariable=generate
 org.eclipse.jdt.core.compiler.compliance=1.6
 org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve
