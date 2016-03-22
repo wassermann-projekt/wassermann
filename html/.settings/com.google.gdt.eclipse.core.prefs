@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 #Wed Mar 09 18:58:33 CET 2016
 warSrcDir=webapp/
 lastWarOutDir=/Users/luiseschricker/workspace/wassermann/html/war
+=======
+#Fri Mar 11 15:33:25 CET 2016
+warSrcDir=webapp/
+lastWarOutDir=/home/mi/tgois/workspace/wassermann/html/war
+>>>>>>> upstream/master
 eclipse.preferences.version=1
 warSrcDirIsOutput=false
