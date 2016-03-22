@@ -11,10 +11,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-<<<<<<< HEAD
 import com.badlogic.gdx.utils.Disposable;
-=======
->>>>>>> upstream/master
+
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
@@ -243,14 +241,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		music.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
-<<<<<<< HEAD
+		
 		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.wav"));
 		musik.setLooping(true);
 		musik.setVolume(0.3f);		
-=======
-
-			
->>>>>>> upstream/master
 
 		// init state
 		state = GameState.MAINMENU;
