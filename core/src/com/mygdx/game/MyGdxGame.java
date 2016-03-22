@@ -1348,6 +1348,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		//}	
 			
+		//auftauchen
+		if(hindernis_lowerworld_lower.getLaenge() < (-10)) body.applyLinearImpulse(0, 1.0f, body.getPosition().x, body.getPosition().y, true);
+			
 		// GameOver check
 		if (health <= 0) {
 			setGameOver();
