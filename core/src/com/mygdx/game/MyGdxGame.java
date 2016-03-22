@@ -707,6 +707,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
 		
+		// Level-Anzeigen
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Level " + level, 360, 465);
+		if (score % 30 < 2) {
+			gameover.draw(batch, "Level " + level, width / 2, height / 2);
+		}
+		
 		// Herzen update
 				if (health >= 5) {
 					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
@@ -1319,7 +1326,13 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
 		
-
+		//Andere Game-Variablen
+		level = (score/30)+1;
+		if (h >= width / 9) {
+			score++;
+			h = 0;
+		}
+		h += hindernis_geschwindigkeit;
 
 		// Kollisionsabfrage
 		
@@ -1333,7 +1346,12 @@ public class MyGdxGame extends ApplicationAdapter {
 				//invulnerable = true;
 				
 			}
-		//}
+		//}	
+			
+		// GameOver check
+		if (health <= 0) {
+			setGameOver();
+		}
 		
 	}
 
