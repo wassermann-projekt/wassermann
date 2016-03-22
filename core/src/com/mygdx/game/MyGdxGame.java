@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -207,6 +208,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Musik & Sound
 	private Music music;
 	private Music shark;
+	private Music musik;
 
 	// shortcuts for graphics fields
 	private int width, height;
@@ -233,12 +235,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 
 		// init Sounds
-		music = Gdx.audio.newMusic(Gdx.files.internal("super-mario-bros.mp3"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.wav"));
 		music.setLooping(true);
 		music.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
-			
+		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.wav"));
+		musik.setLooping(true);
+		musik.setVolume(0.3f);		
 
 		// init state
 		state = GameState.MAINMENU;
@@ -501,6 +505,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Methode um die Schwimmwelt zu rendern
 	private void render_upperworld() {
 		// Musik
+		musik.dispose();
 		music.play();
 
 		// Hintergrundfarbe
@@ -659,6 +664,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Methode um die Tauchwelt zu rendern
 	private void render_lowerworld() {
+		music.dispose();
+		musik.play();
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -958,6 +965,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public GameState getState() {
 		return state;
+	}
+	public boolean isFrozen(){
+		return freeze;
 	}
 
 	private void hindernis_Generator_dive_init(){
@@ -1413,6 +1423,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		music.dispose();
+		musik.dispose();
 		batch.dispose();
 
 	}
