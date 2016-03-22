@@ -18,9 +18,9 @@ public class Obstacle {
 	 *5 := Coins
 	 *6 := Stopwatch
 	 *7 := Taucherbrille
-	 *8:= Loch tauchbares Hindernis
+	 *8 := Loch / Strudel
 	 *100:= Unterwasserhindernis
-	 * */
+	 */
 	private int type;
 	private long line;
 
