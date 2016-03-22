@@ -79,7 +79,8 @@ public class Menu {
 
 		Label.LabelStyle labelStyle = new Label.LabelStyle();
 		labelStyle.font = skin.getFont("default");
-		labelStyle.fontColor = Color.CORAL;
+		labelStyle.fontColor = Color.WHITE;
+//		labelStyle.background = skin.newDrawable("background", new Color(1f, 1f, 1f, 0.5f));
 		skin.add("default", labelStyle);
 
 	}
@@ -281,9 +282,11 @@ public class Menu {
 			if(!highscore.getScoreString(i).isEmpty()){
 				Label nameLabel = new Label("(" + (i + 1) + ")   " + highscore.getName(i), skin);
 				nameLabel.setPosition(left, bottom);
+				nameLabel.setSize(button_w, button_h);
 				
 				Label scoreLabel = new Label(highscore.getScoreString(i), skin);
 				scoreLabel.setPosition(left + button_w + button_space, bottom);
+				scoreLabel.setSize(button_w, button_h);
 				
 				stage.addActor(nameLabel);
 				stage.addActor(scoreLabel);
