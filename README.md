@@ -2,7 +2,7 @@
 
 Sportspiel zum Thema "schwimmen", entworfen und programmiert im Rahmen des Softwarepraktikums 2015/16 von
 
-Dasha , Konstatin, Tilman, Marten, Xixuan, Dong-Hyun, Luise Schricker.
+Daria Kravets, Konstatin Jaehne, Tilman, Marten Tilgner, Xixuan, Dong-Hyun Kim, Luise Schricker.
 
 <h2>Das Spiel</h2>
 
