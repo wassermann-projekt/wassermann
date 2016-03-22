@@ -276,7 +276,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Gute Hindernisse
 		guteherzen = new Texture ("herz_voll2.png");
 		coin = new Texture("muenze.png");
-		stopwatch = new Texture("stopwatch.png");
+		stopwatch = new Texture("uhr.png");
 		guteherzen_sprite = new Sprite(guteherzen);
 		coin_sprite = new Sprite(guteherzen);
 		brille = new Texture ("Fugini.png");
