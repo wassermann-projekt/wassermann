@@ -29,6 +29,7 @@ import java.awt.event.KeyListener;
 
 import java.util.Arrays;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -200,9 +201,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Hilfsvariable: bei Kollision
 	private boolean freeze;
-	private long freeze_start;
-	private boolean invincible;
-	private long invincible_start;
 
 	// Musik & Sound
 	private Music music;
@@ -228,6 +226,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	private Menu menu;
 	private EventListener steuerung;
+
+	Timer timer = new Timer();
+
 
 	@Override
 	public void create() {
@@ -412,7 +413,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 		// init Highscore
-		highscore = new Highscore(font, "highscore.txt");
+		highscore = new Highscore("highscore.txt");
 		highscore.load();
 
 		// input
@@ -443,12 +444,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		if (state == GameState.LOWERWORLD)
 			render_lowerworld();
-
-		if (freeze) {
-			if (checkFreeze()) {
-				freeze = false;
-			}
-		}
+		
 		// Spiellogik updaten
 		if (!(paused || game_over || freeze)) {
 
@@ -511,19 +507,21 @@ public class MyGdxGame extends ApplicationAdapter {
 				ufer_rechts.getOriginY(), width / 9, height);
 
 		// Animation Schwimmer
-		batch.draw(swimmer_rechter_arm, (width - 2 * width / 9) / 7
-				* (swimmer_position_swim - 1) + swimmer_offset + width / 9
-				+ swimmer_width / 5.0f + (swimmer_width / 4.0f) - arm_pos_x
-				* swimmer_width / 70, (swimmer_width / 6.0f - arm_pos_y
-				* swimmer_width / 80), swimmer_width / 2, swimmer_width);
-		batch.draw(swimmer_linker_arm, (width - 2 * width / 9) / 7
-				* (swimmer_position_swim - 1) + swimmer_offset + width / 9
-				+ swimmer_width / 5.0f - (swimmer_width / 4.0f) + arm_pos_x
-				* swimmer_width / 70, (swimmer_width / 6.0f - arm_pos_y
-				* swimmer_width / 80), swimmer_width / 2, swimmer_width);
-		batch.draw(swimmer, (width - 2 * width / 9) / 7
-				* (swimmer_position_swim - 1) + swimmer_offset + width / 9, 0,
-				swimmer_width, swimmer_width);
+		if(!blinkInvuln()){
+			batch.draw(swimmer_rechter_arm, (width - 2 * width / 9) / 7
+					* (swimmer_position_swim - 1) + swimmer_offset + width / 9
+					+ swimmer_width / 5.0f + (swimmer_width / 4.0f) - arm_pos_x
+					* swimmer_width / 70, (swimmer_width / 6.0f - arm_pos_y
+					* swimmer_width / 80), swimmer_width / 2, swimmer_width);
+			batch.draw(swimmer_linker_arm, (width - 2 * width / 9) / 7
+					* (swimmer_position_swim - 1) + swimmer_offset + width / 9
+					+ swimmer_width / 5.0f - (swimmer_width / 4.0f) + arm_pos_x
+					* swimmer_width / 70, (swimmer_width / 6.0f - arm_pos_y
+					* swimmer_width / 80), swimmer_width / 2, swimmer_width);
+			batch.draw(swimmer, (width - 2 * width / 9) / 7
+					* (swimmer_position_swim - 1) + swimmer_offset + width / 9, 0,
+					swimmer_width, swimmer_width);
+		}
 
 		// Hindernisse
 		for (int i = 0; i < 40; i++) {
@@ -1083,7 +1081,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void startGame() {
-		System.out.println("in startGame()");
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
 		menu.unloadMenu();
@@ -1120,6 +1117,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		return freeze;
 	}
 
+	public void changeInvuln(){
+		invulnerable = !invulnerable;
+	}
+	
 	public void returnToMainMenu() {
 		paused = false;
 		menu.loadMainMenu();
@@ -1184,7 +1185,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer) {
-		if(invincible){
+		if(invulnerable){
 			return false;
 		}
 		if (swimmer_position_swim == obs.getBahn()) {
@@ -1196,10 +1197,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public boolean collision_dive() {
-		if(invincible){
-			return false;
-		}
-
 		if (body.getPosition().x >= hindernis_lowerworld_upper.getX() - width
 				/ 9
 				&& body.getPosition().x <= hindernis_lowerworld_upper.getX()
@@ -1356,23 +1353,29 @@ public class MyGdxGame extends ApplicationAdapter {
 		ppiY = Gdx.graphics.getPpiY();
 
 	}
-	
-	private void startInvincible(){
-		invincible = true;
-		invincible_start = TimeUtils.millis();
-	}
-	
-	private boolean checkInvincible(){
-		return TimeUtils.timeSinceMillis(invincible_start) >= 1000;
-	}
 
 	private void startFreeze() {
-		freeze_start = TimeUtils.millis();
 		freeze = true;
+		
+		timer.schedule(new TimerTask(){
+			public void run(){
+				freeze = false;
+			}
+		}, 400);
 	}
-
-	private boolean checkFreeze() {
-		return TimeUtils.timeSinceMillis(freeze_start) >= 400;
+	private void startInvuln(){
+		invulnerable = true;
+		
+		timer.schedule(new TimerTask(){
+			public void run(){
+				invulnerable = false;
+			}
+		}, 1400);
+	}
+	
+	private boolean blinkInvuln(){
+		boolean blink = TimeUtils.millis() % 200 > 100;
+		return  invulnerable && blink;
 	}
 
 	private void update_variables_swim() {
@@ -1412,6 +1415,7 @@ public class MyGdxGame extends ApplicationAdapter {
 						shark.play();
 						// freeze = true;
 						startFreeze();
+						startInvuln();
 					}
 
 					hindernis_aktiv[i] = false;
@@ -1444,21 +1448,31 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Kollisionsabfrage
 
-		// if(invulnerable == false){
-
-		if (collision_dive()) {
-
-			System.out.println(collision_dive());
-			health--;
-			// freeze = true;
-			startFreeze();
-			// invulnerable = true;
-
+		
+		if(invulnerable == false){
+			
+			if(collision_dive()){
+				
+				health--;
+				//freeze = true;
+				invulnerable = true;
+				
+				timer.schedule(new TimerTask(){
+					
+					public void run() {
+						changeInvuln();
+					}
+					
+				}, 1000);
+				
+			}
 		}
-		// }
+		
 
 	}
 
+	
+	
 	// init Klasse, um Obstacle-Objekte zu erzeugen
 	private Obstacle init_obstacle(int type, int bahn) {
 		Obstacle new_obstacle;
