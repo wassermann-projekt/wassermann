@@ -14,6 +14,8 @@ public class Obstacle {
 	 *1 := Seerose
 	 *2	:= Hai
 	 *3	:= Schwan 
+	 *4 := Herzen
+	 *5 := Coins
 	 * */
 	private int type;
 	private long line;
