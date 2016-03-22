@@ -16,6 +16,8 @@ public class Obstacle {
 	 *3	:= Schwan 
 	 *4 := Herzen
 	 *5 := Coins
+	 *6 := Stopwatch
+	 *7 := Taucherbrille
 	 * */
 	private int type;
 	private long line;

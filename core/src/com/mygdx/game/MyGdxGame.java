@@ -1,9 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,28 +9,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.*;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
-import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import java.util.Arrays;
-import java.util.Timer;
 
-
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
 
 public class MyGdxGame extends ApplicationAdapter {
 
@@ -64,6 +50,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture wellen;
 	Texture guteherzen;
 	Texture coin;
+	Texture stopwatch;
+	Texture brille; 
 
 	
 	private GameState state;
@@ -71,8 +59,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Hintergrund Schwimmwelt
 	private Sprite wellen1;
 	private Sprite wellen2;
-	private Sprite wellen3;
-	private Sprite wellen4;
 	private Sprite ufer_links;
 	private Sprite ufer_rechts;
 
@@ -95,6 +81,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private Sprite guteherzen_sprite;
 	private Sprite coin_sprite;
+	private Sprite taucherbrille_sprite; 
 	
 	//Hindernis unter Wasser
 	private Sprite hindernis_lowerworld_up;
@@ -108,6 +95,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Schrift
 	private BitmapFont font;
 	private BitmapFont gameover; 
+	
+	//Unsterblichkeit
+
+	private long startTime;
+	private long elapsedTime;
+	private float deltaTime; 
+
 
 
 	// Graphics Updates -> Variables to update positions
@@ -135,7 +129,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	//Hindernis-Generator
 	//maximale Anzahl unterschiedlicher Hindernisse
-	private int n_obstacles = 6;
+	private int n_obstacles = 8;
 	//Schwierigkeit einzelner Typen von Hindernissen
 	//Hindernis x kann ab Level difficulty[x] generiert werden
 	private int[] difficulty = new int[n_obstacles];
@@ -187,6 +181,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private long score;
 	private long level;
 	private int health;
+	private int brillen; 
 	private boolean game_over;
 	
 	// highscore-management
@@ -230,6 +225,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		music.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
+
 			
 
 		// init state
@@ -266,12 +262,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		unter_wasser_textur_3 = new Texture("unter_wasser_textur_3.png");
 		unter_wasser_textur_4 = new Texture("unter_wasser_textur_4.png");
 		wellen = new Texture("wellen.png");
+		
+		//Gute Hindernisse
 		guteherzen = new Texture ("herz_voll2.png");
 		coin = new Texture("muenze.png");
-		
+		stopwatch = new Texture("stopwatch.png");
 		guteherzen_sprite = new Sprite(guteherzen);
 		coin_sprite = new Sprite(guteherzen);
-
+		brille = new Texture ("Fugini.png");
+		taucherbrille_sprite = new Sprite(new Texture("Fugini.png"));
+		taucherbrille_sprite.setSize(width/12, height/11);
 	
 
 		// init Wellentextur
@@ -374,6 +374,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		score = 0;
 		level = 1;
 		
+		//init Unsterblichkeit
+	//	startTime = 0; 
+	//	elapsedTime = 0; 
+	//	startTime = TimeUtils.nanoTime();
+	//	elapsedTime = System.nanoTime() - startTime;
+
+		
 		//init Hindernisgenerator
 		difficulty[0] = 1;
 		difficulty[1] = 1;
@@ -381,12 +388,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		difficulty[3] = 2;
 		difficulty[4] = 1;
 		difficulty[5] = 1;
+		difficulty[6] = 1;
+		difficulty[7] = 1;
 		first_probability[0] = 0.8;
 		first_probability[1] = 0.8;
 		first_probability[2] = 0.8;
 		first_probability[3] = 0.8;
 		first_probability[4] = 0.8;
 		first_probability[5] = 0.8;
+		first_probability[6] = 0.8;
+		first_probability[7] = 0.8;
 		for (int k=0;k<n_obstacles;k++){
 		for (int i=0; i<obstacle_ausdauer;i++){
 			double b = Math.log(first_probability[k]);
@@ -475,13 +486,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	// setzt alle Variablen für den Spielstart
 	public void resetGameVariables() {
 		geschwindigkeit = 1.0f;
-		beschleunigung = 0.05f;
+		beschleunigung = 0.04f;
 
 		swimmer_position_swim = 4;
 
 		score = 0;
 		level = 1;
 		health = 5;
+		brillen = 0; 
 
 		paused = false;
 		game_over = false;
@@ -554,9 +566,24 @@ public class MyGdxGame extends ApplicationAdapter {
 				case 4: 
 					batch.draw(aktiv.getSprite(), 
 							(width / 9) * aktiv.getBahn() + width/45,
-							height - aktiv.getY(), width / 15 , width / 15);
+							height - aktiv.getY() + width/45, width / 15 , width / 15);
 					break; 
 				case 5: 
+					batch.draw(aktiv.getSprite(), 
+							(width / 9) * aktiv.getBahn() + 0.5f*width/36,
+							height - aktiv.getY(), width / 12, width / 12);
+					break; 
+				case 6: 
+					batch.draw(aktiv.getSprite(), 
+							(width / 9) * aktiv.getBahn(),
+							height - aktiv.getY(), width / 12, width / 12);
+					break; 
+				case 7: 
+					batch.draw(aktiv.getSprite(), 
+							(width / 9) * aktiv.getBahn(),
+							height - aktiv.getY(), width / 12, width / 12);
+					break; 
+				case 8: 
 					batch.draw(aktiv.getSprite(), 
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 12, width / 12);
@@ -578,10 +605,25 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 30 < 2) {
+		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
+        //Taucherbrille Anzeige
+        
+		if (brillen == 1){
+			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
+		}
+		if (brillen == 2){
+			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 90, 10, width/12, height/12);
+		}
+		if (brillen == 3){
+			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 90, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 130, 10, width/12, height/12);
+		}
+         
 		
 		// Herzen update
 		if (health >= 5) {
@@ -653,7 +695,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
-		
+
         batch.begin(); 	
         
         
@@ -681,7 +723,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
         }
         
-        
+
         
 		// Score-Anzeige
 		font.setColor(Color.BLACK);
@@ -760,28 +802,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	private void hindernis_Generator(){
 		h = 0;
-		//erste einfache Version des Hindernisgenerators
-		//erstellt ein zufälliges Hindernis von Typ 1-3 auf einer zufälligen Bahn mit 50%iger Wahrscheinlichkeit
-		
-		/*if (Math.random()<0.5){
-		int random_bahn = (int)(Math.random()*7+1);
-		int random_hindernis = (int)(Math.random()*3);
-		int i = 0;
-		while (hindernis_aktiv[i]){
-			i++;
-		}
-		hindernis[i] = init_obstacle(random_hindernis,random_bahn);
-		hindernis_aktiv[i]=true;
-		}*/
-		
-		//zweite Version des Hindernisgenerators
-		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
-		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
-		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
-	
-		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
-		//sei p array mit Poissonverteilung bereits initialisiert
-		//init p[0]=0;
 		int[] counts = new int[]{6,21,35};
 		int n=choice(p,7,1)-1;
 		if (n==0){
@@ -1105,15 +1125,20 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	}
 	
+
+//Kollision und Unsterblichkeit
 	public boolean meetObstacle(Obstacle obs, Sprite swimmer){
+		
 		if(swimmer_position_swim == obs.getBahn()){
-		if(width*8/9-obs.getY()<2.5*swimmer_width){
+			if (width*8/9-obs.getY()<2.5*swimmer_width){ 
+				
 				return true;
 			}
+	 		
 		}
 		return false;
 	}
-
+	
 
 	private void update_graphics() {				
 			
@@ -1162,6 +1187,8 @@ public class MyGdxGame extends ApplicationAdapter {
 						break;
 					case 4:
 					case 5:
+					case 6: 
+					case 7: 
 					default:
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
@@ -1203,6 +1230,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		ppiX = Gdx.graphics.getPpiX();
 		ppiY = Gdx.graphics.getPpiY();
 
+
+
 	}
 
 	private void update_variables_swim() {
@@ -1221,7 +1250,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			realtime = 0;
 		}
 		//Andere Game-Variablen
-		level = (score/30)+1;
+		level = (score/50)+1;
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
 		width2 = luftanzeige.getHeight ();		
@@ -1239,6 +1268,15 @@ public class MyGdxGame extends ApplicationAdapter {
 					else if (hindernis[i].getType()==5) {
 						score += 10; 
 				} 
+					
+					else if (hindernis[i].getType()==6){geschwindigkeit -= 1.0f;
+					}
+					else if (hindernis[i].getType()==7){
+						if (brillen < 3){
+						brillen ++;
+					}
+						}
+					
 					else {
 					health--;
 					shark.play ();
@@ -1250,6 +1288,21 @@ public class MyGdxGame extends ApplicationAdapter {
 				} 
 			}
 	}
+		
+		//Unsterblichkeit test
+	//	for (int i = 0; i < 40; i++) {
+	//	if (freeze == true) {
+	//	if (elapsedTime/1000 < 1000){
+		//	{
+
+			//	hindernis_aktiv[i]=false;
+		//	}
+//		 if (elapsedTime > 2000){
+//		meetObstacle() = false;
+			 
+	//	}
+	//	}
+	//	}
 		
 		
 		// GameOver check
@@ -1324,6 +1377,16 @@ public class MyGdxGame extends ApplicationAdapter {
 				Sprite muenze = new Sprite(coin);
 				muenze.setSize(width/12, height/12);
 				new_obstacle = new Obstacle(muenze, 5, bahn, 0.0f);
+				break;
+			case 6: 
+				Sprite stopuhr = new Sprite(stopwatch);
+				stopuhr.setSize(width/12, height/11);
+				new_obstacle = new Obstacle(stopuhr, 6, bahn, 0.0f);
+				break;
+			case 7: 
+				Sprite taucherbrille = new Sprite(brille);
+				taucherbrille.setSize(width/12, height/11);
+				new_obstacle = new Obstacle(taucherbrille, 7, bahn, 0.0f);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(hindernis_felsen);
