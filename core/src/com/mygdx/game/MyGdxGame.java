@@ -708,6 +708,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Score: " + score, 470, 465);
 		
+		// Level-Anzeigen
+		font.setColor(Color.BLACK);
+		font.draw(batch, "Level " + level, 360, 465);
+		if (score % 30 < 2) {
+			gameover.draw(batch, "Level " + level, width / 2, height / 2);
+		}
+		
 		// Herzen update
 				if (health >= 5) {
 					batch.draw(herz_voll, 19, 440, width / 18, height / 18);
@@ -967,7 +974,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		float w0 = 2*height/3 * (float) Math.random() + height/3;
 		float w1 = 2*height/3 * (float) Math.random() + height/3;
 
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width)){
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width)){
 
 			w0 = 2*height/3* (float) Math.random() + height/3;
 			w1 = 2*height/3* (float) Math.random() + height/3;
@@ -977,7 +984,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		wand_punkte[16] = w0;
 		wand_punkte[17] = w1;
 		
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/6*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/6*taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ taucher_width > w1)) {
 
 			w0 = 2*height/3* (float) Math.random() + height/3;
 			w1 = 2*height/3* (float) Math.random() + height/3;
@@ -1001,7 +1008,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		float w1 = 2*height/3 * (float) Math.random() + height/3;
 
 		//Letzte beide generierte Hindernisse abfragen -> entsteht ein machbares Labyrinth?
-		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < 5/6*taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  5/6*taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ 5/6*taucher_width > w1)) {
+		while ((w1 - (hindernis_lowerworld_lower.getSprite().getHeight() - w0) < taucher_width) || (hindernis_lowerworld_lower.getSprite().getHeight()- w0 +  taucher_width > wand_punkte[17]) || (hindernis_lowerworld_lower.getSprite().getHeight()-wand_punkte[16]+ taucher_width > w1)) {
 
 			w0 = 2*height/3* (float) Math.random() + height/3;
 			w1 = 2*height/3* (float) Math.random() + height/3;
@@ -1329,7 +1336,13 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
 		
-
+		//Andere Game-Variablen
+		level = (score/30)+1;
+		if (h >= width / 9) {
+			score++;
+			h = 0;
+		}
+		h += hindernis_geschwindigkeit;
 
 		// Kollisionsabfrage
 		
@@ -1352,8 +1365,14 @@ public class MyGdxGame extends ApplicationAdapter {
 				}, 1000);
 				
 			}
+		}	
+			
+		// GameOver check
+		if (health <= 0) {
+			setGameOver();
+
 		}
-		
+
 	}
 
 	
