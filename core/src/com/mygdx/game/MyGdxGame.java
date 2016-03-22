@@ -1065,7 +1065,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void changeDiveState() {
 
 		if (state == GameState.UPPERWORLD) {
-			wand_punkte = wand_punkte_init;
+			//wand_punkte = wand_punkte_init;
 
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
@@ -1335,12 +1335,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		//}
 		
-
-		//gameover check (luftanzeige)
-		if(width2 <= 0){
-			setGameOver();
-		}
-
 	}
 
 	// init Klasse, um Obstacle-Objekte zu erzeugen
