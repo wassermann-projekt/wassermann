@@ -284,8 +284,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		stopwatch = new Texture("uhr.png");
 		guteherzen_sprite = new Sprite(guteherzen);
 		coin_sprite = new Sprite(guteherzen);
-		brille = new Texture ("Fugini.png");
-		taucherbrille_sprite = new Sprite(new Texture("Fugini.png"));
+		brille = new Texture ("taucherbrille.png");
+		taucherbrille_sprite = new Sprite(new Texture("taucherbrille.png"));
 		taucherbrille_sprite.setSize(width/12, height/11);
 	
 
@@ -618,7 +618,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Score-Anzeige
 		font.setColor(Color.BLACK);
-		font.draw(batch, "Score: " + score, 460, 465);
+		font.draw(batch, "Score " + score, 460, 465);
 		
 
 		// Level-Anzeigen
