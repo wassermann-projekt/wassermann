@@ -52,13 +52,4 @@ nbbuild/
 dist/
 nbdist/
 nbactions.xml
-nb-configuration.xml
-
-## Gradle
-
-.gradle
-gradle-app.setting
-build/
-
-## OS Specific
-.DS_Store
+desktop/highscore.txt
