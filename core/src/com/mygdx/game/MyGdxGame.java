@@ -359,10 +359,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
-<<<<<<< HEAD
-=======
-		
->>>>>>> upstream/master
+
 	
 		//init geschwindigkeit
 		geschwindigkeit = 1.0f;
@@ -552,17 +549,6 @@ public class MyGdxGame extends ApplicationAdapter {
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 9, width / 9);
 					break;
-<<<<<<< HEAD
-				case 200:
-					batch.draw(aktiv.getSprite(),
-							(width / 9) * aktiv.getBahn(),
-							height - aktiv.getY(), width / 9, width / 18);
-					batch.draw(aktiv.getSpritesAnim()[0],
-							(width / 9) * aktiv.getBahn()+width/36,
-							height - aktiv.getY(), width/36, width/36,
-							width /18, width / 18, 1, 1, (wellen_y_pos));
-					break;
-=======
 				case 4: 
 					batch.draw(aktiv.getSprite(), 
 							(width / 9) * aktiv.getBahn() + width/45,
@@ -572,8 +558,16 @@ public class MyGdxGame extends ApplicationAdapter {
 					batch.draw(aktiv.getSprite(), 
 							(width / 9) * aktiv.getBahn(),
 							height - aktiv.getY(), width / 12, width / 12);
-					break; 
->>>>>>> upstream/master
+					break; 				
+				case 200:
+					batch.draw(aktiv.getSprite(),
+							(width / 9) * aktiv.getBahn(),
+							height - aktiv.getY(), width / 9, width / 18);
+					batch.draw(aktiv.getSpritesAnim()[0],
+							(width / 9) * aktiv.getBahn()+width/36,
+							height - aktiv.getY(), width/36, width/36,
+							width /18, width / 18, 1, 1, (wellen_y_pos));
+					break;
 				default:
 					batch.draw(aktiv.getSprite(),
 							(width / 9) * aktiv.getBahn(),
@@ -1158,14 +1152,11 @@ public class MyGdxGame extends ApplicationAdapter {
 						}
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
-<<<<<<< HEAD
+					case 4:
+					case 5:
 					case 200:
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
-=======
-					case 4:
-					case 5:
->>>>>>> upstream/master
 					default:
 						aktiv.setY(aktiv.getY() + geschwindigkeit);
 						break;
@@ -1322,16 +1313,6 @@ public class MyGdxGame extends ApplicationAdapter {
 				//Richtung auf links setzen
 				new_obstacle.setRichtung(2);
 				break;
-<<<<<<< HEAD
-			case 200:
-				Sprite loch_sprite = new Sprite(hindernis_tauchbar_loch);
-				loch_sprite.setSize(width/9, height/9);
-				Sprite strudel_sprite = new Sprite(hindernis_tauchbar_strudel); 
-				strudel_sprite.setOrigin(width/18, width/18);
-				Sprite[] sprites_anim_3 = new Sprite[1];
-				sprites_anim_3[0] = strudel_sprite;
-				new_obstacle = new Obstacle(loch_sprite, 200, bahn, 0.0f, 1, sprites_anim_3);
-=======
 			case 4:
 				Sprite herz_voll2 = new Sprite(guteherzen);
 				herz_voll2.setSize(width/15, height/15);
@@ -1341,7 +1322,15 @@ public class MyGdxGame extends ApplicationAdapter {
 				Sprite muenze = new Sprite(coin);
 				muenze.setSize(width/12, height/12);
 				new_obstacle = new Obstacle(muenze, 5, bahn, 0.0f);
->>>>>>> upstream/master
+				break;
+			case 200:
+				Sprite loch_sprite = new Sprite(hindernis_tauchbar_loch);
+				loch_sprite.setSize(width/9, height/9);
+				Sprite strudel_sprite = new Sprite(hindernis_tauchbar_strudel); 
+				strudel_sprite.setOrigin(width/18, width/18);
+				Sprite[] sprites_anim_3 = new Sprite[1];
+				sprites_anim_3[0] = strudel_sprite;
+				new_obstacle = new Obstacle(loch_sprite, 200, bahn, 0.0f, 1, sprites_anim_3);
 				break;
 			default: 
 				Sprite default_sprite = new Sprite(hindernis_felsen);
