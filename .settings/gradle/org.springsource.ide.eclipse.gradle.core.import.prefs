@@ -1,11 +1,15 @@
 #org.springsource.ide.eclipse.gradle.core.preferences.GradleImportPreferences
 <<<<<<< HEAD
+#Wed Mar 09 15:30:56 CET 2016
+=======
+<<<<<<< HEAD
 #Tue Mar 22 13:36:17 CET 2016
 =======
 <<<<<<< HEAD
 #Tue Mar 22 13:20:01 CET 2016
 =======
 #Wed Mar 09 18:57:01 CET 2016
+>>>>>>> upstream/master
 >>>>>>> upstream/master
 >>>>>>> upstream/master
 addResourceFilters=true
