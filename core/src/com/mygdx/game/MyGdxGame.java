@@ -1514,7 +1514,12 @@ public class MyGdxGame extends ApplicationAdapter {
 				}, 1000);
 				
 			}
-		}	
+		}
+		
+		//autauchen
+		if(hindernis_lowerworld_lower.getLaenge()<=(-10)){
+			body.applyForceToCenter(0, 2000000, true);
+		}
 			
 		// GameOver check
 		if (health <= 0) {
