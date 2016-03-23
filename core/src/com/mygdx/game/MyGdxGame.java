@@ -244,13 +244,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 
 		// init Sounds
-		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.wav"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.mp3"));
 		music.setLooping(true);
 		music.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
 		
-		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.wav"));
+		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.mp3"));
 		musik.setLooping(true);
 		musik.setVolume(0.3f);		
 
@@ -634,6 +634,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
+
 		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
@@ -831,7 +832,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Helpermethods
 	
 	private void hindernis_Generator(){
-		h = 0;		
+		h = 0;
+
+		
+		//zweite Version des Hindernisgenerators
+		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
+		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
+		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
+		//zukünftige Hindernisse können in den "Hindernis-buffer" geladen werden
+		//Falls dieser nichtleer ist, werden die Hindernisse aus dem buffer generiert, ansonsten mit oben beschriebener Zufälligkeit
+		
+
 		//Hindernisse aus buffer laden
 		if (buffer.getSize()!=0){
 			int[] akt_zeile = buffer.getNextZeile();
@@ -843,6 +854,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
 		//sei p array mit Poissonverteilung bereits initialisiert
 		//init p[0]=0;
+
+
+
+
 		int[] counts = new int[]{6,21,35};
 		int n=choice(p,7,1)-1;
 		if (n==0){
@@ -1514,12 +1529,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				}, 1000);
 				
 			}
-		}
-		
-		//autauchen
-		if(hindernis_lowerworld_lower.getLaenge()<=(-10)){
-			body.applyForceToCenter(0, 2000000, true);
-		}
+		}	
 			
 		// GameOver check
 		if (health <= 0) {
