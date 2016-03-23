@@ -36,9 +36,9 @@ public class EventListener implements InputProcessor {
 				case Keys.UP:
 					break;
 				case Keys.DOWN:
-					//if (game.getBrillen()>0){
+					if (game.getBrillen()>0){
 						game.changeDiveState();
-					//}
+					}
 					break;
 				}
 			}
