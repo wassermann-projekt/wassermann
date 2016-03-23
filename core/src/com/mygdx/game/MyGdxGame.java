@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +13,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.TweenManager;
+import tween.SpriteAccessor;
+
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -60,7 +68,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture stopwatch;
 	Texture brille; 
 
-	
+	private TweenManager tweenManager; 
 	private GameState state;
 
 	// Hintergrund Schwimmwelt
@@ -89,6 +97,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite guteherzen_sprite;
 	private Sprite coin_sprite;
 	private Sprite taucherbrille_sprite; 
+	public Sprite logo; 
 	
 	//Hindernis unter Wasser
 	private Sprite hindernis_lowerworld_up;
@@ -239,16 +248,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
 
-			
-
+		
 		// init state
 		state = GameState.MAINMENU;
+		
 
 		// Infos Screen;
 		readGraphics();
 
 		// New Sprite Batch
 		batch = new SpriteBatch();
+		
 		
 		//Textures laden
 		anzeige = new Texture("anzeige.png");
@@ -283,12 +293,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		coin = new Texture("muenze.png");
 		stopwatch = new Texture("uhr.png");
 		guteherzen_sprite = new Sprite(guteherzen);
-		coin_sprite = new Sprite(guteherzen);
+		coin_sprite = new Sprite(coin);
 		brille = new Texture ("taucherbrille.png");
 		taucherbrille_sprite = new Sprite(new Texture("taucherbrille.png"));
 		taucherbrille_sprite.setSize(width/12, height/11);
-	
+		
 
+		
 		// init Wellentextur
 		wellen1 = new Sprite(wellen);
 		wellen1.setSize(width, height);
@@ -385,12 +396,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//init score
 		score = 0;
 		level = 1;
-		
-		//init Unsterblichkeit
-	//	startTime = 0; 
-	//	elapsedTime = 0; 
-	//	startTime = TimeUtils.nanoTime();
-	//	elapsedTime = System.nanoTime() - startTime;
+
 
 		
 		//init Hindernisgenerator
@@ -432,6 +438,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		//input
 		paused = false;
 		multiplexer = new InputMultiplexer();
+		
+		
 		// erstelle menu
 		menu = new Menu(multiplexer, this, highscore, font);
 		menu.loadMainMenu();
@@ -448,8 +456,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		resetGameVariables();
 	}
 
+
+
 	@Override
 	public void render() {
+		
 		
 		// Spielgrafik rendern
 		if (state == GameState.UPPERWORLD){
@@ -491,7 +502,10 @@ public class MyGdxGame extends ApplicationAdapter {
 				render_gameover();
 			}
 		}
-		
+if (state == GameState.MAINMENU){
+
+}
+	
 		menu.render();
 
 
@@ -525,16 +539,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		
 		batch.begin();
 
+		
 		// Hintergrund
 		batch.draw(wellen1, 0, wellen_y_pos % height, width, height);
 		batch.draw(wellen2, 0, (wellen_y_pos % (height)) + height, width, height);
 		batch.draw(ufer_links, 0, 0, width / 9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(),
 				ufer_rechts.getOriginY(), width / 9, height);
-
+		
+		
 		//Animation Schwimmer
 		batch.draw(swimmer_rechter_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f + (swimmer_width/4.0f) - arm_pos_x*swimmer_width/70, (swimmer_width/6.0f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
 		batch.draw(swimmer_linker_arm, (width-2*width/9) / 7 * (swimmer_position_swim-1) + swimmer_offset + width/9 + swimmer_width/5.0f - (swimmer_width/4.0f) + arm_pos_x*swimmer_width/70, (swimmer_width/6.0f - arm_pos_y*swimmer_width/80), swimmer_width/2, swimmer_width);
@@ -635,12 +651,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		if (brillen == 2){
 			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
-			batch.draw(taucherbrille_sprite, 90, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 95, 10, width/12, height/12);
 		}
 		if (brillen == 3){
 			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
-			batch.draw(taucherbrille_sprite, 90, 10, width/12, height/12);
-			batch.draw(taucherbrille_sprite, 130, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 95, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 150, 10, width/12, height/12);
 		}
          
 		
@@ -1056,6 +1072,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void startGame() {
+				
 		System.out.println("in startGame()");
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
@@ -1535,6 +1552,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void dispose() {
 		music.dispose();
 		batch.dispose();
+
 
 	}
 	

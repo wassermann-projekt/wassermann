@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.Input.Keys;
 
 public class EventListener implements InputProcessor {
-	private MyGdxGame game;
+	public MyGdxGame game;
 	private Menu menu;
 	private Music bewegungmusic;
 
