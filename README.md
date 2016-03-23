@@ -6,11 +6,11 @@ Daria Kravets, Konstatin Jaehne, Tilman, Marten Tilgner, Xixuan Zhang, Dong-Hyun
 
 <h2>Das Spiel</h2>
 
-Als Spieler steuerst du einen Schwimmer, der sich in einem Fluss befindet und Hindernissen ausweichen muss, die mit zunehmender Geschwindigkeit auf dich zu steuern. Tipp: Nimm dich vor den Rennschwänen in Acht! Du startest mit fünf Leben, die du durch Kollisionen verlierst. Achte auf Herzen, die auf dich zutreiben – du kannst ein Leben regenerieren indem du sie aufsammelst. Goldmünzen erhöhen deinen Score. Wenn du eine Taucherbrille findest, kannst du den Schwimmer tauchen lassen und hast Zugang zur Unterwasserwelt: hier musst du den Schwimmer durch ein Unterwasserlabyrinth steuern und kannst so den Hindernissen an der Oberfläche ausweichen. 
+Als Spieler steuerst du einen Schwimmer, der sich in einem Fluss befindet und Hindernissen ausweichen muss, die mit zunehmender Geschwindigkeit auf dich zu steuern. Tipp: Nimm dich vor den Rennschwänen in Acht! Du startest mit fünf Leben, die du durch Kollisionen verlierst. Achte auf Herzen, die auf dich zutreiben – du kannst ein Leben regenerieren indem du sie aufsammelst. Goldmünzen erhöhen deinen Score. Wenn du eine Taucherbrille findest, kannst du den Schwimmer tauchen lassen und hast Zugang zur Unterwasserwelt: hier musst du den Schwimmer durch ein Unterwasserlabyrinth steuern und kannst so den Hindernissen an der Oberfläche ausweichen. Versuche den Highscore zu knacken und in die Hall of Fame der besten Schwimmer aufgenommen zu werden!
 
 <h2>Steuerung</h2>
 
-Mit der Leertaste und Escape kannst du das Spiel jederzeit pausieren und zum Haputmenü zurückwechseln.
+Mit der Leertaste und Escape kannst du das Spiel jederzeit pausieren und zum Hauptmenü zurückwechseln.
 
 <h3>Die Welt über Wasser:</h3>
 

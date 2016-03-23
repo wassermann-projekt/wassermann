@@ -244,13 +244,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 
 		// init Sounds
-		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.wav"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.mp3"));
 		music.setLooping(true);
 		music.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
 		
-		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.wav"));
+		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.mp3"));
 		musik.setLooping(true);
 		musik.setVolume(0.3f);		
 
