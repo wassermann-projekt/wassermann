@@ -146,7 +146,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Start-Wahrscheinlichkeit eines Hindernisses x in lvl difficulty[x]
 	private double[] first_probability = new double[n_obstacles];
 	//Nach so vielen Leveln ist probability des Hindernisses auf 0.1
-	private int obstacle_ausdauer = 20;
+	private int obstacle_ausdauer = 50;
 	//Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
 	private double[][] obstacle_probability = new double[n_obstacles][obstacle_ausdauer];
 	//Art der W-Verteilung des Hindernisses
@@ -238,19 +238,20 @@ public class MyGdxGame extends ApplicationAdapter {
 	private EventListener steuerung;
 	
 	Timer timer = new Timer();
+	private float Timestep;
 
 
 	@Override
 	public void create() {
 
 		// init Sounds
-		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.wav"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.mp3"));
 		music.setLooping(true);
 		music.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
 		
-		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.wav"));
+		musik = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.mp3"));
 		musik.setLooping(true);
 		musik.setVolume(0.3f);		
 
@@ -332,11 +333,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		luftblasen_y_pos = 0.0f;
 		
 		world = new World(new Vector2(0, -1), true);
+		//Timestep = Gdx.graphics.getDeltaTime();
+		
 		BodyDef diver = new BodyDef();
 		diver.type = BodyDef.BodyType.DynamicBody;
-		
-		// TODO Anfangsposition bzw. Anfangsimpuls bei changeDiveState
-		
+				
 		diver.position.set(0, 0);
 		body = world.createBody(diver);
 
@@ -491,15 +492,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i=1; i<8;i++){
 			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
 		}
-		init_obstacle_type(0,1,0.8,2);
-		init_obstacle_type(1,1,0.8,2);
-		init_obstacle_type(2,2,0.8,2);
+		init_obstacle_type(0,1,0.5,1);
+		init_obstacle_type(1,1,0.5,1);
+		init_obstacle_type(2,2,0.5,1);
 		init_obstacle_type(3,2,0.8,1);
 		init_obstacle_type(4,5,0.02,0);
 		init_obstacle_type(5,1,0.25,0);
 		init_obstacle_type(6,7,0.02,0);
 		init_obstacle_type(7,5,0.03,0);
-		init_obstacle_type(8,4,0.8,2);
+		init_obstacle_type(8,4,0.5,1);
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
 				for (int i=0; i<obstacle_ausdauer;i++){
@@ -632,6 +633,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
+
 		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
@@ -717,7 +719,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+		world.step(Timestep, 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 		
 		if(body.getPosition().y < 0){
@@ -764,7 +766,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 30 < 2) {
+		if (score % 50 < 2) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 		
@@ -829,7 +831,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Helpermethods
 	
 	private void hindernis_Generator(){
-		h = 0;		
+		h = 0;
+
+		
+		//zweite Version des Hindernisgenerators
+		//erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf einer zufälligen Bahn
+		//Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
+		//Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über Poisson-Verteilung
+		//zukünftige Hindernisse können in den "Hindernis-buffer" geladen werden
+		//Falls dieser nichtleer ist, werden die Hindernisse aus dem buffer generiert, ansonsten mit oben beschriebener Zufälligkeit
+		
+
 		//Hindernisse aus buffer laden
 		if (buffer.getSize()!=0){
 			int[] akt_zeile = buffer.getNextZeile();
@@ -841,6 +853,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
 		//sei p array mit Poissonverteilung bereits initialisiert
 		//init p[0]=0;
+
+
+
+
 		int[] counts = new int[]{6,21,35};
 		int n=choice(p,7,1)-1;
 		if (n==0){
@@ -1179,11 +1195,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		else if(!p){
 			menu.unloadMenu();
 		}
+		setTimestep(p);
 		paused = p;
 	}
 
 	public void setGameOver() {
 		game_over = true;
+		setTimestep(true);
 		music.stop();
 		if(highscore.isHighscore(score)){
 			menu.loadHighscoreInput(score);
@@ -1192,7 +1210,19 @@ public class MyGdxGame extends ApplicationAdapter {
 			menu.loadGameOverMenu();
 		}
 	}
-
+	
+	public void setTimestep(boolean p) {
+		
+		if (p == true) {
+			Timestep = 0;
+		}
+		
+		if (p == false) {
+			Timestep = Gdx.graphics.getDeltaTime();
+		}
+		
+	}
+	
 	public boolean isPaused() {
 		return paused;
 	}
@@ -1225,24 +1255,27 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void changeDiveState() {
-
+	
 		if (state == GameState.UPPERWORLD) {
+			//Brille verbrauchen
+			brillen--;
 			//wand_punkte = wand_punkte_init;
-
+			
+			Timestep = Gdx.graphics.getDeltaTime();
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
-
+	
 			//Unterwasser-Hindernis initialisieren
 			//TODO: -> Dynamisch annpassen -> Obstacle ueber init_Obstacle_lowerworld-Methode erzeugen
 			hindernis_lowerworld_low = new Sprite(felsen_unter_wasser);
 			hindernis_lowerworld_up = new Sprite(felsen_unter_wasser);
 			hindernis_lowerworld_up.flip(true, false);
-
+	
 			hindernis_lowerworld_lower  = new Obstacle(hindernis_lowerworld_low, 100, (float)2*width/3, 0.0f, 20);
 			hindernis_lowerworld_upper  = new Obstacle(hindernis_lowerworld_up, 100, (float)2*width/3, 0.0f, 20);
 			hindernis_lowerworld_upper.getSprite().flip(false, true);
-
+	
 			//Hindernis-Generator anwerfen
 			hindernis_Generator_dive_init();
 			
@@ -1251,7 +1284,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			Arrays.fill(hindernis_aktiv, false);
 			state = GameState.UPPERWORLD;
 		}
-
+	
 	}
 
 	protected void changeSwimmerPosition_swim(int change) {
@@ -1287,9 +1320,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	public boolean collision_dive(){
 		
-		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + width/8) {
-						
-			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[0]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[1])){
+		if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 2*width/8) {
+				
+			System.out.println(0);
+			
+			if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[3])){
 				
 				return true;
 				
@@ -1297,16 +1332,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		}
 		
-		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + 2*width/8) {
-						
-			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[3])){
+		if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 3*width/8) {
+			
+			System.out.println(1);
+			
+			if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[4]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[5])){
+				
 				
 				return true;
 				
 			}
 			
 		}
-		
 		
 		else {
 			
@@ -1503,7 +1540,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		
 		//Andere Game-Variablen
-		level = (score/30)+1;
+		level = (score/50)+1;
 		if (h >= width / 9) {
 			score++;
 			h = 0;
@@ -1512,7 +1549,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Kollisionsabfrage
 		
-		System.out.println(collision_dive());
+		//System.out.println(hindernis_lowerworld_upper.getX());
 		
 		if(invulnerable == false){
 			
@@ -1521,7 +1558,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				health--;
 				//freeze = true;
 				invulnerable = true;
-				
+								
 				timer.schedule(new TimerTask(){
 					
 					public void run() {
