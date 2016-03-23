@@ -1,0 +1,20 @@
+package com.mygdx.game;
+
+public class TestTime{
+    public static void main(String[] args) {
+        long timeOfIncident = 0, timeTillReaction = 1000000000;
+        boolean condition = true, timeOfIncidentSet = false, reactionOccurred = false;
+
+        while(!reactionOccurred) {
+            if(condition && !timeOfIncidentSet) {
+                timeOfIncident = System.nanoTime();
+                timeOfIncidentSet = true;
+            }
+
+            if(System.nanoTime() >= timeOfIncident + timeTillReaction) {
+                System.out.println("Reaction in 1 second / 1 billion nanoseconds!");
+                reactionOccurred = true;
+            }
+        }
+    }
+}

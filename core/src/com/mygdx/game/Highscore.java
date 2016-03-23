@@ -36,14 +36,11 @@ public class Highscore {
 	}
 	
 	private String filename;
-	private BitmapFont font;
 	private Item[] items;
 	private int numitems;
 	
 	
-	public Highscore(BitmapFont f, String file){
-		
-		font = f;
+	public Highscore(String file){
 		filename = file;
 		numitems = 5;
 		
@@ -52,8 +49,7 @@ public class Highscore {
 			resetScores();
 		}
 		
-		sort();
-		
+		sort();	
 	}
 	
 	public void save(){
