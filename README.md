@@ -10,7 +10,7 @@ Als Spieler steuerst du einen Schwimmer, der sich in einem Fluss befindet und Hi
 
 <h2>Steuerung</h2>
 
-Mit der Leertaste und Escape kannst du das Spiel jederzeit pausieren und zum Haputmenü zurückwechseln.
+Mit der Leertaste und Escape kannst du das Spiel jederzeit pausieren und zum Hauptmenü zurückwechseln.
 
 <h3>Die Welt über Wasser:</h3>
 
