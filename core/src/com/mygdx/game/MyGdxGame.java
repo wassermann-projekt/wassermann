@@ -238,6 +238,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private EventListener steuerung;
 	
 	Timer timer = new Timer();
+	private float Timestep;
 
 
 	@Override
@@ -332,11 +333,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		luftblasen_y_pos = 0.0f;
 		
 		world = new World(new Vector2(0, -1), true);
+		//Timestep = Gdx.graphics.getDeltaTime();
+		
 		BodyDef diver = new BodyDef();
 		diver.type = BodyDef.BodyType.DynamicBody;
-		
-		// TODO Anfangsposition bzw. Anfangsimpuls bei changeDiveState
-		
+				
 		diver.position.set(0, 0);
 		body = world.createBody(diver);
 
@@ -720,7 +721,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+		world.step(Timestep, 6, 2);
 		tauchersprite.setPosition(body.getPosition().x, body.getPosition().y);
 		
 		if(body.getPosition().y < 0){
@@ -1163,11 +1164,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		else if(!p){
 			menu.unloadMenu();
 		}
+		setTimestep(p);
 		paused = p;
 	}
 
 	public void setGameOver() {
 		game_over = true;
+		setTimestep(true);
 		music.stop();
 		if(highscore.isHighscore(score)){
 			menu.loadHighscoreInput(score);
@@ -1176,7 +1179,19 @@ public class MyGdxGame extends ApplicationAdapter {
 			menu.loadGameOverMenu();
 		}
 	}
-
+	
+	public void setTimestep(boolean p) {
+		
+		if (p == true) {
+			Timestep = 0;
+		}
+		
+		if (p == false) {
+			Timestep = Gdx.graphics.getDeltaTime();
+		}
+		
+	}
+	
 	public boolean isPaused() {
 		return paused;
 	}
@@ -1209,24 +1224,25 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void changeDiveState() {
-
+	
 		if (state == GameState.UPPERWORLD) {
 			//wand_punkte = wand_punkte_init;
-
+			
+			Timestep = Gdx.graphics.getDeltaTime();
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
-
+	
 			//Unterwasser-Hindernis initialisieren
 			//TODO: -> Dynamisch annpassen -> Obstacle ueber init_Obstacle_lowerworld-Methode erzeugen
 			hindernis_lowerworld_low = new Sprite(felsen_unter_wasser);
 			hindernis_lowerworld_up = new Sprite(felsen_unter_wasser);
 			hindernis_lowerworld_up.flip(true, false);
-
+	
 			hindernis_lowerworld_lower  = new Obstacle(hindernis_lowerworld_low, 100, (float)2*width/3, 0.0f, 20);
 			hindernis_lowerworld_upper  = new Obstacle(hindernis_lowerworld_up, 100, (float)2*width/3, 0.0f, 20);
 			hindernis_lowerworld_upper.getSprite().flip(false, true);
-
+	
 			//Hindernis-Generator anwerfen
 			hindernis_Generator_dive_init();
 			
@@ -1235,7 +1251,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			Arrays.fill(hindernis_aktiv, false);
 			state = GameState.UPPERWORLD;
 		}
-
+	
 	}
 
 	protected void changeSwimmerPosition_swim(int change) {
@@ -1271,9 +1287,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	public boolean collision_dive(){
 		
-		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + width/8) {
-						
-			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[0]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[1])){
+		if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 2*width/8) {
+				
+			System.out.println(0);
+			
+			if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[3])){
 				
 				return true;
 				
@@ -1281,16 +1299,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		}
 		
-		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + 2*width/8) {
-						
-			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[3])){
+		if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 3*width/8) {
+			
+			System.out.println(1);
+			
+			if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[4]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[5])){
+				
 				
 				return true;
 				
 			}
 			
 		}
-		
 		
 		else {
 			
@@ -1510,7 +1530,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Kollisionsabfrage
 		
-		System.out.println(collision_dive());
+		//System.out.println(hindernis_lowerworld_upper.getX());
 		
 		if(invulnerable == false){
 			
@@ -1519,7 +1539,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				health--;
 				//freeze = true;
 				invulnerable = true;
-				
+								
 				timer.schedule(new TimerTask(){
 					
 					public void run() {
