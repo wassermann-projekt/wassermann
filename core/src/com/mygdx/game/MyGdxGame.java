@@ -59,7 +59,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture guteherzen;
 	Texture coin;
 	Texture stopwatch;
-	Texture brille; 
+	Texture brille;
+	Texture logo_mit_traegerform;
 
 	private GameState state;
 
@@ -94,6 +95,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Hindernis unter Wasser
 	private Sprite hindernis_lowerworld_up;
 	private Sprite hindernis_lowerworld_low;
+	
+	// logo
+	private Sprite logo_sprite;
+	private float logo_size;
+	private long logo_start;
 
 	private SpriteBatch batch;
 
@@ -103,16 +109,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Schrift
 	private BitmapFont font;
 	private BitmapFont gameover;
-
-	
-	//Unsterblichkeit
-
-	private long startTime;
-	private long elapsedTime;
-	private float deltaTime; 
-
-
-
 
 	// Graphics Updates -> Variables to update positions
 	private float wellen_y_pos;
@@ -147,18 +143,28 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int[] difficulty = new int[n_obstacles];
 	// Start-Wahrscheinlichkeit eines Hindernisses x in lvl difficulty[x]
 	private double[] first_probability = new double[n_obstacles];
-	// Nach so vielen Leveln ist probability des Hindernisses auf 0.1
-	private int obstacle_ausdauer = 10;
-	// Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
+
+	//Nach so vielen Leveln ist probability des Hindernisses auf 0.1
+	private int obstacle_ausdauer = 20;
+	//Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
 	private double[][] obstacle_probability = new double[n_obstacles][obstacle_ausdauer];
-	// Erwartungswert Anzahl Hindernisse pro Zeile
+	//Art der W-Verteilung des Hindernisses
+	/*0:=immer konstant
+	  1:=linear steigend bis difficulty+ausdauer
+	  2:=exponentiell fallend
+	 */
+	private int[] distribution_type = new int[n_obstacles];
+	//Erwartungswert Anzahl Hindernisse pro Zeile
+
 	private double generation_probability;
 	// Poisson-Verteilung für Anzahl Hindernisse einer Zeile
 	private double[] p = new double[8];
+	//Hindernis-Buffer als queue zur Speicherung von zukünftigen Hindernissen
+	private ObstacleQueue buffer = new ObstacleQueue();
 
 	// Variablen für Schwimmer, Hintergrund, Hindernis
 	private float geschwindigkeit;
-	private float max_speed = 5.0f;
+	private float max_speed = 10.0f;
 	private float hindernis_geschwindigkeit = 1.0f;
 	// Aenderung der Geschwindigkeit
 	private float beschleunigung;
@@ -209,9 +215,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	private boolean freeze;
 
 	// Musik & Sound
-	private Music music;
+	private Music music_upper;
 	private Music shark;
-	private Music musik;
+	private Music music_lower;
+	private Music current_music;
+	private boolean music_enabled;
+	
 
 	// shortcuts for graphics fields
 	private int width, height;
@@ -241,15 +250,21 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 
 		// init Sounds
-		music = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.wav"));
-		music.setLooping(true);
-		music.setVolume(0.3f);
+		music_upper = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.wav"));
+		music_upper.setLooping(true);
+		music_upper.setVolume(0.3f);
+		music_lower = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.wav"));
+		music_lower.setLooping(true);
+		music_lower.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
+		
+		current_music = music_upper;
+		music_enabled = true;
 
 
 		// init state
-		state = GameState.MAINMENU;
+		state = GameState.LOGO;
 
 		// Infos Screen;
 		readGraphics();
@@ -289,6 +304,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		unter_wasser_textur_3 = new Texture("unter_wasser_textur_3.png");
 		unter_wasser_textur_4 = new Texture("unter_wasser_textur_4.png");
 		wellen = new Texture("wellen.png");
+		logo_mit_traegerform = new Texture("logo-mit-traegerform.png");
 
 		
 		//Gute Hindernisse
@@ -331,6 +347,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		taucher_body_width = width / 12;
 		luftblasen_x_pos = 0.0f - (taucher_width);
 		luftblasen_y_pos = 0.0f;
+		
+		// init logo
+		logo_sprite = new Sprite(logo_mit_traegerform);
+		
 
 		world = new World(new Vector2(0, -1), true);
 		BodyDef diver = new BodyDef();
@@ -400,53 +420,19 @@ public class MyGdxGame extends ApplicationAdapter {
 		score = 0;
 		level = 1;
 
-
-		
-		//init Hindernisgenerator
-
-		difficulty[0] = 1;
-		difficulty[1] = 1;
-		difficulty[2] = 1;
-		difficulty[3] = 2;
-		difficulty[4] = 1;
-		difficulty[5] = 1;
-		difficulty[6] = 1;
-		difficulty[7] = 1;
-		difficulty[8] = 1;
-		first_probability[0] = 0.8;
-		first_probability[1] = 0.8;
-		first_probability[2] = 0.8;
-		first_probability[3] = 0.8;
-		first_probability[4] = 0.8;
-		first_probability[5] = 0.8;
-		first_probability[6] = 0.8;
-		first_probability[7] = 0.8;
-		first_probability[8] = 0.8;
-		for (int k=0;k<n_obstacles;k++){
-		for (int i=0; i<obstacle_ausdauer;i++){
-			double b = Math.log(first_probability[k]);
-			double a = Math.log(first_probability[k]*100);
-			obstacle_probability[k][i] = Math.exp((-1/obstacle_ausdauer)*a*i+b);
-		}
-
-		}
-		generation_probability = 2;
-		p[0] = 0;
-		for (int i = 1; i < 8; i++) {
-			p[i] = Math.exp(-generation_probability)
-					* Math.pow(generation_probability, i - 1) / fact(i - 1);
-		}
-
 		// init Highscore
 		highscore = new Highscore("highscore.txt");
 		highscore.load();
-
+		
+		//logo
+		initLogo();
+		
 		// input
 		paused = false;
 		multiplexer = new InputMultiplexer();
 		// erstelle menu
 		menu = new Menu(multiplexer, this, highscore, font);
-		menu.loadMainMenu();
+		//menu.loadMainMenu();
 
 		// erstelle und registriere Steuerung
 		steuerung = new EventListener();
@@ -463,6 +449,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void render() {
 
 		// Spielgrafik rendern
+		if(state == GameState.LOGO){
+			animateLogo();
+		}
+		
 		if (state == GameState.UPPERWORLD) {
 			render_upperworld();
 		}
@@ -496,7 +486,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	// setzt alle Variablen für den Spielstart
 	public void resetGameVariables() {
 		geschwindigkeit = 1.0f;
-		beschleunigung = 0.04f;
+		beschleunigung = 0.03f;
 
 		swimmer_position_swim = 4;
 
@@ -508,6 +498,42 @@ public class MyGdxGame extends ApplicationAdapter {
 		paused = false;
 		game_over = false;
 
+		
+		//init Hindernisgenerator
+		generation_probability = 2;
+		p[0]=0;
+		for (int i=1; i<8;i++){
+			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
+		}
+		init_obstacle_type(0,1,0.8,2);
+		init_obstacle_type(1,1,0.8,2);
+		init_obstacle_type(2,2,0.8,2);
+		init_obstacle_type(3,2,0.8,1);
+		init_obstacle_type(4,5,0.03,0);
+		init_obstacle_type(5,1,0.25,0);
+		init_obstacle_type(6,7,0.05,0);
+		init_obstacle_type(7,5,0.03,0);
+		init_obstacle_type(8,4,0.8,2);
+		for (int k=0;k<n_obstacles;k++){
+			if (distribution_type[k]==2){
+				for (int i=0; i<obstacle_ausdauer;i++){
+					double b = Math.log(first_probability[k]);
+					double a = Math.log(first_probability[k]*100);
+					obstacle_probability[k][i] = Math.exp((-1/obstacle_ausdauer)*a*i+b);
+				}
+			}
+			else if (distribution_type[k]==1){
+				for (int i=0; i<obstacle_ausdauer;i++){
+					obstacle_probability[k][i] = first_probability[k]*(i/obstacle_ausdauer+1);
+				}
+			}
+			else{
+				for (int i=0; i<obstacle_ausdauer;i++){
+					obstacle_probability[k][i] = first_probability[k];
+				}
+			}
+		}
+
 		Arrays.fill(hindernis_aktiv, false);
 		wand_punkte = wand_punkte_init;
 
@@ -516,8 +542,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	// Methode um die Schwimmwelt zu rendern
 	private void render_upperworld() {
 		// Musik
-//		musik.dispose();
-		music.play();
+//		music_lower.dispose();
+//		music_upper.play();
 
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
@@ -730,8 +756,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// Methode um die Tauchwelt zu rendern
 	private void render_lowerworld() {
-		music.dispose();
-		musik.play();
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0.6f, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -845,22 +869,51 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.end();
 
 	}
-
-	// Helpermethods
-
-	private void hindernis_Generator() {
-		h = 0;
-
-		// Hindernisgenerator
-		// erstellt ein zufälliges Hindernis von Typ 0 bis n_obstacles-1 auf
-		// einer zufälligen Bahn
-		// Auswahl des Typen des Hindernisses erfolgt über Exponentialverteilung
-		// Auswahl der Anzahl Hindernisse in einer Zeile erfolgt über
-		// Poisson-Verteilung
-
-		// Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
-		// sei p array mit Poissonverteilung bereits initialisiert
-		// init p[0]=0;
+	
+	
+	private void initLogo(){
+		logo_size = 1.0f;
+		logo_start = TimeUtils.millis();
+	}
+	private void animateLogo(){
+		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
+		batch.draw(logo_sprite, (width - logo_size) / 2, (height - logo_size) / 2 + 100, logo_size, logo_size);
+		batch.end();
+		long t = TimeUtils.timeSinceMillis(logo_start);
+		logo_size += t / 500;
+		if(logo_size >= 256){
+			logo_size = 256; 
+		}
+		if(t > 2500){
+			returnToMainMenu();
+		}
+	}
+	
+	public void renderLogo(){
+		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
+		batch.draw(logo_sprite, (width - 256) / 2, (height - 256) / 2 + 100);
+		batch.end();
+	}
+	
+	//Helpermethods
+	
+	private void hindernis_Generator(){
+		h = 0;		
+		//Hindernisse aus buffer laden
+		if (buffer.getSize()!=0){
+			int[] akt_zeile = buffer.getNextZeile();
+			for (int i=1;i<8;i++){
+				gen_obstacle(akt_zeile[i-1],i);
+			}
+			return;
+		}
+		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
+		//sei p array mit Poissonverteilung bereits initialisiert
+		//init p[0]=0;
 
 		int[] counts = new int[]{6,21,35};
 		int n=choice(p,7,1)-1;
@@ -871,14 +924,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		// wird in array bahnen gespeichert
 		int[] bahnen = new int[n];
 		int[] bahnen_final = new int[n];
-		int count = counts[(int) (-Math.abs(n - 3.5) + 3.5) - 1];
-		// m ist der Index der Liste aller Teilmengen der Mächtigkeit n von
-		// {1,..7}
-		int m = (int) (Math.random() * count);
-		bahnen = get_bahnen(m, (int) (-Math.abs(n - 3.5) + 3.5));
-		// falls es 4,5,6 Bahnen sind, müssen die ausgewählten/nicht
-		// ausgewählten Bahnen invertiert werden
-		if (n > 3) {
+
+		int count = counts[(int)(-Math.abs(n-3.5)+3.5)-1];
+		//m ist der Index der Liste aller Teilmengen der Mächtigkeit n von {1,..,7}
+		int m = (int)(Math.random()*count);
+		bahnen = get_bahnen(m,(int)(-Math.abs(n-3.5)+3.5));
+		//falls es 4,5,6 Bahnen sind, müssen die ausgewählten/nicht ausgewählten Bahnen invertiert werden
+		if (n>3){
+
 			int j = 0;
 			for (int i = 1; i < 8; i++) {
 				boolean in_bahnen = false;
@@ -904,23 +957,42 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i = 1; i < n_obstacles + 1; i++) {
 			if (level < difficulty[i - 1]) {
 				p_typ[i] = 0;
-			} else if (level >= difficulty[i - 1] + obstacle_ausdauer) {
-				p_typ[i] = 0.01;
-			} else {
-				p_typ[i] = obstacle_probability[i - 1][(int) (level)
-						- difficulty[i - 1]];
+
+			}
+			else if (level>=difficulty[i-1]+obstacle_ausdauer){
+				switch (distribution_type[i-1]){
+					case 2: p_typ[i] = 0.01;
+							break;
+					case 1: p_typ[i] = 2 * first_probability[i-1];
+							break;
+					case 0: p_typ[i] = first_probability[i-1];
+							break;
+				}
+			}
+			else {
+				p_typ[i] = obstacle_probability[i-1][(int)(level)-difficulty[i-1]];
 			}
 		}
 		double sum = 0;
-		for (int i = 1; i < n_obstacles + 1; i++) {
-			sum += p_typ[i];
+		double sum_without_constant_obstacles = 0;
+		for (int i=1;i<n_obstacles+1;i++){
+			if (distribution_type[i-1]!=0){
+				sum += p_typ[i];
+			}
+			else{
+				sum_without_constant_obstacles += p_typ[i];
+			}
 		}
-		for (int i = 1; i < n_obstacles + 1; i++) {
-			p_typ[i] /= sum;
+		sum_without_constant_obstacles = 1 - sum_without_constant_obstacles;
+		for (int i=1;i<n_obstacles+1;i++){
+			if (distribution_type[i-1]!=0){
+				p_typ[i] /= (sum / sum_without_constant_obstacles);
+			}
 		}
-		// iteriere i über jede ausgewählte Bahn
-		for (int i = 0; i < n; i++) {
-			gen_obstacle(choice(p_typ, n_obstacles, 1) - 1, bahnen_final[i]);
+		//iteriere i über jede ausgewählte Bahn
+		for (int i=0;i<n;i++){
+			gen_obstacle(choice(p_typ,n_obstacles,1)-1,bahnen_final[i]);
+
 		}
 		for (int i = 0; i < 40; i++) {
 			// wenn ein Schwan generiert wurde, entferne alle anderen
@@ -951,8 +1023,34 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 	}
 
-	// ein neu generiertes Hindernis erzeugen
-	private void gen_obstacle(int type, int bahn) {
+	
+	//ein neu generiertes Hindernis erzeugen
+	private void gen_obstacle(int type,int bahn){
+		if (type==-1){
+			return;
+		}
+		/*if (type==6){
+			int[] z = new int[7];
+			for (int k=0;k<7;k++){
+				z[k] = 1;
+			}
+			buffer.addZeile(z);
+			int[] w = new int[7];
+			for (int k=0;k<7;k++){
+				w[k] = 2;
+			}
+			buffer.addZeile(w);
+			int[] u = new int[7];
+			u[0] = 0;
+			u[1] = 2;
+			u[2] = 1;
+			u[3] = 1;
+			u[4] = 1;
+			u[5] = 3;
+			u[6] = -1;
+			buffer.addZeile(u);
+		}*/
+
 		int i = 0;
 		while (hindernis_aktiv[i]) {
 			i++;
@@ -960,7 +1058,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (i < 40) {
 			hindernis[i] = init_obstacle(type, bahn);
 			hindernis[i].setLine(score);
-			hindernis_aktiv[i] = true;
+
+			if (hindernis[i].getType()!=6){
+				hindernis_aktiv[i]=true;
+			}
+
 		}
 	}
 
@@ -1023,19 +1125,21 @@ public class MyGdxGame extends ApplicationAdapter {
 		return a;
 	}
 
-	// Fakultätsfunktion für die Poissonverteilung
-	private int fact(int n) {
-		int fact = 1;
-		for (int i = 1; i <= n; i++) {
-			fact *= i;
-		}
-		return fact;
-	}
-
-	private void reset_obstacles() {
-		for (int i = 0; i < 40; i++) {
-			hindernis_aktiv[i] = false;
-		}
+	
+	//Fakultätsfunktion für die Poissonverteilung
+	private int fact(int n){
+        int fact = 1;
+        for (int i=1;i<=n;i++){
+            fact *= i;
+        }
+        return fact;
+    }
+	
+	//initialisiere Hindernistyp
+	private void init_obstacle_type(int type, int first_lvl, double first_prob, int dist_type){
+		difficulty[type] = first_lvl;
+		first_probability[type] = first_prob;
+		distribution_type[type] = dist_type;
 	}
 
 	public void render_gameover() {
@@ -1052,6 +1156,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	public GameState getState() {
 		return state;
 	}
+
+	
+	public int getBrillen(){
+		return brillen;
+	}
+
+
 
 
 	private void hindernis_Generator_dive_init() {
@@ -1114,6 +1225,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void startGame() {
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
+		current_music.stop();
+		current_music = music_upper;
+		if(music_enabled){
+			current_music.play();
+		}
 		menu.unloadMenu();
 	}
 
@@ -1125,10 +1241,21 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		paused = p;
 	}
+	
+	public void toggleMusic(){
+		if(current_music.isPlaying()){
+			current_music.stop();
+			music_enabled = false;
+		}
+		else{
+			current_music.play();
+			music_enabled = true;
+		}
+	}
 
 	public void setGameOver() {
 		game_over = true;
-		music.stop();
+		current_music.stop();
 		if (highscore.isHighscore(score)) {
 			menu.loadHighscoreInput(score);
 		} else {
@@ -1139,7 +1266,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	public boolean isPaused() {
 		return paused;
 	}
-
+	
+	public boolean musicIsPlaying(){
+		return current_music.isPlaying();
+	}
+	
 	public boolean isGameOver() {
 		return game_over;
 	}
@@ -1154,6 +1285,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	public void returnToMainMenu() {
 		paused = false;
+		current_music.stop();
 		menu.loadMainMenu();
 		state = GameState.MAINMENU;
 		Arrays.fill(hindernis_aktiv, false);
@@ -1169,6 +1301,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void changeDiveState() {
 
 		if (state == GameState.UPPERWORLD) {
+			//music_lower ändern
+			current_music.stop();
+			current_music = music_lower;
+			
 			// wand_punkte = wand_punkte_init;
 
 			state = GameState.LOWERWORLD;
@@ -1195,6 +1331,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		} else {
 			Arrays.fill(hindernis_aktiv, false);
 			state = GameState.UPPERWORLD;
+			
+			// music_lower ändern
+			current_music.stop();
+			current_music = music_upper;
 		}
 
 	}
@@ -1557,8 +1697,11 @@ public class MyGdxGame extends ApplicationAdapter {
 				Sprite schwan_sprite = new Sprite(rennschwan);
 				schwan_sprite.setSize(width/9, height/9);
 				new_obstacle = new Obstacle(schwan_sprite, 3, bahn, 0.0f);
-				//Richtung auf links setzen
-				new_obstacle.setRichtung(2);
+				//Richtung
+				new_obstacle.setRichtung((int)(Math.random()*2+1));
+				if (new_obstacle.getRichtung()==1){
+				  new_obstacle.getSprite().flip(true, false);
+				}
 				break;
 			case 4:
 				Sprite herz_voll2 = new Sprite(guteherzen);
@@ -1609,8 +1752,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		music.dispose();
-//		musik.dispose();
+		music_upper.dispose();
+		music_lower.dispose();
 		batch.dispose();
 
 	}

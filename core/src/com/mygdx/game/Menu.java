@@ -28,6 +28,7 @@ public class Menu {
 	}
 	
 	private Skin skin;
+	private Skin background_skin;
 	private Stage stage;
 	private MyGdxGame game;
 	private Highscore highscore;
@@ -82,6 +83,14 @@ public class Menu {
 		labelStyle.fontColor = Color.WHITE;
 //		labelStyle.background = skin.newDrawable("background", new Color(1f, 1f, 1f, 0.5f));
 		skin.add("default", labelStyle);
+		
+		background_skin = new Skin();
+		background_skin.add("default", font);
+		background_skin.add("background", new Texture(pixmap));
+		Label.LabelStyle background_style = new Label.LabelStyle();
+		background_style.background = background_skin.newDrawable("background", new Color(0f, 0f, 0f, 0.5f));
+		background_style.font = background_skin.getFont("default");
+		background_skin.add("default", background_style);
 
 	}
 
@@ -94,7 +103,7 @@ public class Menu {
 		int left = (w - button_w) / 2;
 		int bottom = (h + (num_buttons * button_h + (num_buttons - 1)
 				* button_space))
-				/ 2 - button_h;
+				/ 2 - button_h - 125;
 
 		TextButton startButton = new TextButton("START", skin);
 		startButton.setPosition(left, bottom);
@@ -136,7 +145,7 @@ public class Menu {
 		stage.clear();
 		state = MenuState.PAUSE;
 
-		int num_buttons = 2;
+		int num_buttons = 3;
 		int w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
 		int left = (w - button_w) / 2;
 		int bottom = (h + (num_buttons * button_h + (num_buttons - 1)
@@ -153,6 +162,18 @@ public class Menu {
 		});
 
 		bottom -= button_h + button_space;
+		
+		TextButton musicButton = new TextButton("MUSIC : " + (game.musicIsPlaying() ? "ON" : "OFF"), skin);
+		musicButton.setPosition(left, bottom);
+		musicButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.toggleMusic();
+				loadPauseMenu();
+			}
+		});
+
+		bottom -= button_h + button_space;
 
 		TextButton resumeButton = new TextButton("RESUME", skin);
 		resumeButton.setPosition(left, bottom);
@@ -164,6 +185,7 @@ public class Menu {
 		});
 
 		stage.addActor(mainMenuButton);
+		stage.addActor(musicButton);
 		stage.addActor(resumeButton);
 
 	}
@@ -178,7 +200,10 @@ public class Menu {
 		int bottom = (h + (num_buttons * button_h + (num_buttons - 1)
 				* button_space))
 				/ 2 - button_h;
-
+		
+		Label background_label = new Label("",background_skin);
+		background_label.setSize(w, h);
+		
 		TextButton mainMenuButton = new TextButton("MAIN MENU", skin);
 		mainMenuButton.setPosition(left, bottom);
 		mainMenuButton.addListener(new ClickListener() {
@@ -198,7 +223,8 @@ public class Menu {
 				game.startGame();
 			}
 		});
-
+		
+		stage.addActor(background_label);
 		stage.addActor(mainMenuButton);
 		stage.addActor(newGameButton);
 
@@ -217,6 +243,9 @@ public class Menu {
 				* button_space))
 				/ 2 - button_h;
 		
+		Label background_label = new Label("",background_skin);
+		background_label.setSize(w, h);
+		
 		Label label0 = new Label("Score " + score + "!", skin);
 		label0.setPosition(left, bottom);
 		
@@ -234,7 +263,7 @@ public class Menu {
 		
 		textfield = new TextField("", skin);
 		textfield.setPosition(left, bottom);
-		textfield.setMaxLength(10);
+		textfield.setMaxLength(15);
 		textfield.clearListeners();
 		textfield.addListener(textfield.new TextFieldClickListener(){
 			@Override
@@ -252,6 +281,18 @@ public class Menu {
 		
 		bottom -= button_h + button_space;
 		
+		TextButton proceedButton = new TextButton("PROCEED", skin);
+		proceedButton.setPosition(left, bottom);
+		proceedButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				highscore.enterHighscore(textfield.getText(), score_to_save);
+				loadHighscoreScreen(true);
+			}
+		});
+		
+		bottom -= button_h + button_space;
+		
 		TextButton cancelButton = new TextButton("CANCEL", skin);
 		cancelButton.setPosition(left, bottom);
 		cancelButton.addListener(new ClickListener(){
@@ -261,10 +302,13 @@ public class Menu {
 			}
 		});
 		
+		
+		stage.addActor(background_label);
 		stage.addActor(label0);
 		stage.addActor(label1);
 		stage.addActor(label2);
 		stage.addActor(textfield);
+		stage.addActor(proceedButton);
 		stage.addActor(cancelButton);
 		
 		stage.setKeyboardFocus(textfield);
@@ -278,11 +322,22 @@ public class Menu {
 		int w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
 		int left = (w - button_w - button_space) / 2, bottom = h - (button_h + 80);
 		
+//		if(gameover){
+			Label background_label = new Label("",background_skin);
+			background_label.setSize(w, h);
+			stage.addActor(background_label);
+//		}
+		
 		for(int i = 0; i < highscore.numItems(); ++i){
+				String namestr = "";
 			if(!highscore.getScoreString(i).isEmpty()){
-				Label nameLabel = new Label("(" + (i + 1) + ")   " + highscore.getName(i), skin);
+				namestr = "(" + (i + 1) + ")   " + highscore.getName(i);
+			}
+			
+				Label nameLabel = new Label(namestr, skin);
 				nameLabel.setPosition(left, bottom);
 				nameLabel.setSize(button_w, button_h);
+				
 				
 				Label scoreLabel = new Label(highscore.getScoreString(i), skin);
 				scoreLabel.setPosition(left + button_w + button_space, bottom);
@@ -292,7 +347,7 @@ public class Menu {
 				stage.addActor(scoreLabel);
 				
 				bottom -= button_h;
-			}
+			
 		}
 		
 		bottom -= 20;
@@ -387,8 +442,7 @@ public class Menu {
 
 	public void render() {
 		if (game.getState() == GameState.MAINMENU) {
-			Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			game.renderLogo();
 		}
 
 		stage.act();
