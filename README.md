@@ -29,3 +29,7 @@ Benutzt wurde das libGDX framework (https://libgdx.badlogicgames.com). Auf der P
 - Windows/Mac OsX: Doppelklick auf die jar-Datei startet das Spiel
 - Linux: Das Spiel kann über die Konsole gestartet werden durch Eingabe von <i>java -jar "Waterlily.jar"</i>
 
+<h2>Browserversion</h2>
+
+Unter wresr123.github.io kann eine Browserversion von Waterlily online gespielt werden.
+
