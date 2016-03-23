@@ -1263,6 +1263,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			state = GameState.LOWERWORLD;
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 100, 0);
+			
 	
 			//Unterwasser-Hindernis initialisieren
 			//TODO: -> Dynamisch annpassen -> Obstacle ueber init_Obstacle_lowerworld-Methode erzeugen
@@ -1570,8 +1571,10 @@ public class MyGdxGame extends ApplicationAdapter {
 				}, 1000);
 				
 			}
-		}	
-			
+		}
+		
+		//auftauchen
+		if(hindernis_lowerworld_lower.getLaenge() <= (-10)) body.setLinearVelocity(0, 1000);
 		// GameOver check
 		if (health <= 0) {
 			setGameOver();
