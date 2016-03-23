@@ -120,9 +120,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private float zeit_unter_wasser;
 
 	// Hindernis-Array-Swim
-	private Obstacle[] hindernis = new Obstacle[40];
+	private Obstacle[] hindernis = new Obstacle[50];
 	// Positionen aktiver Hindernisse in array
-	private boolean[] hindernis_aktiv = new boolean[40];
+	private boolean[] hindernis_aktiv = new boolean[50];
 
 	// Hindernis Dive
 	private Obstacle hindernis_lowerworld_upper;
@@ -160,7 +160,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//Poisson-Verteilung für Anzahl Hindernisse einer Zeile
 	private double[] p = new double[8];
 	//Hindernis-Buffer als queue zur Speicherung von zukünftigen Hindernissen
-	private ObstacleQueue buffer = new ObstacleQueue();
+	private ObstacleQueue buffer = new ObstacleQueue(20);
 
 	// Variablen für Schwimmer, Hintergrund, Hindernis
 	private float geschwindigkeit;
@@ -387,10 +387,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		ufer_rechts.setSize(width/9, height);
 		ufer_rechts.flip(true, false);
 		ufer_rechts.setOrigin(width - ufer_rechts.getWidth(), 0);
-
-	
-		//init geschwindigkeit
-		geschwindigkeit = 1.0f;
 		
 		//init swimmer_position
 		swimmer_position_swim = 4;
@@ -473,8 +469,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	// setzt alle Variablen für den Spielstart
 	public void resetGameVariables() {
-		geschwindigkeit = 1.0f;
-		beschleunigung = 0.03f;
+		geschwindigkeit = 1.7f;
+		beschleunigung = 0.02f;
 
 		swimmer_position_swim = 4;
 
@@ -486,6 +482,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		paused = false;
 		game_over = false;
 		
+		//lösche Hindernis buffer
+		buffer.clear();
+		
 		//init Hindernisgenerator
 		generation_probability = 2;
 		p[0]=0;
@@ -496,9 +495,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		init_obstacle_type(1,1,0.8,2);
 		init_obstacle_type(2,2,0.8,2);
 		init_obstacle_type(3,2,0.8,1);
-		init_obstacle_type(4,5,0.03,0);
+		init_obstacle_type(4,5,0.02,0);
 		init_obstacle_type(5,1,0.25,0);
-		init_obstacle_type(6,7,0.05,0);
+		init_obstacle_type(6,7,0.02,0);
 		init_obstacle_type(7,5,0.03,0);
 		init_obstacle_type(8,4,0.8,2);
 		for (int k=0;k<n_obstacles;k++){
@@ -554,9 +553,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 		// Hindernisse
-		for (int i = 0; i < 40; i++) {
+		for (int i = 0; i < 50; i++) {
 			if (hindernis_aktiv[i]) {
-
 				Obstacle aktiv = hindernis[i];
 				int aktiv_type = aktiv.getType();
 				switch (aktiv_type) {
@@ -918,10 +916,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i=0;i<n;i++){
 			gen_obstacle(choice(p_typ,n_obstacles,1)-1,bahnen_final[i]);
 		}
-		for (int i=0;i<40;i++){
+		for (int i=0;i<50;i++){
 			//wenn ein Schwan generiert wurde, entferne alle anderen Hindernisse dieser Zeile
 			if (hindernis_aktiv[i]&&(hindernis[i].getType()==3)&&(hindernis[i].getLine()==score)){
-				for (int k=0;k<40;k++){
+				for (int k=0;k<50;k++){
 					if (hindernis_aktiv[k]&&(hindernis[k].getLine()==score)&&(i!=k)){
 						hindernis_aktiv[k] = false;
 					}
@@ -929,7 +927,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 			//teste, ob es einen path für den swimmer gibt, falls nicht, lösche ausgewählte Hindernisse
 			else if (hindernis_aktiv[i]&&(hindernis[i].getType()!=3)&&(hindernis[i].getLine()==score)){
-				for (int k=0;k<40;k++){
+				for (int k=0;k<50;k++){
 					if(hindernis_aktiv[k]&&(hindernis[k].getLine()==score-1)&&((hindernis[i].getBahn()==hindernis[k].getBahn()+1)||(hindernis[i].getBahn()==hindernis[k].getBahn()-1))){
 						hindernis_aktiv[i] = false;
 					}
@@ -968,12 +966,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		while (hindernis_aktiv[i]){
 			i++;
 		}
-		if (i<40){
+		if (i<50){
 			hindernis[i] = init_obstacle(type,bahn);
 			hindernis[i].setLine(score);
-			if (hindernis[i].getType()!=6){
-				hindernis_aktiv[i]=true;
-			}
+			hindernis_aktiv[i] = true;
 		}
 	}
 	
@@ -1053,8 +1049,43 @@ public class MyGdxGame extends ApplicationAdapter {
 		distribution_type[type] = dist_type;
 	}
 	
+	private void generate_boss_obstacle(int type, int size){
+		switch(type){
+		//zufällig generierter enger Pfad der Länge size
+		case 0:
+			buffer.changeSize(buffer.getSize()+2*size+6);
+			buffer.addLeerzeilen(5);
+			int current_bahn = (int)(Math.random()*7);
+			int[][] w = new int[2*size][7];
+			for (int i=0;i<size;i++){
+				int r = (int)(Math.random()*3)-1;
+				Arrays.fill(w[2*i],0);
+				w[2*i][current_bahn] = -1;
+				buffer.addZeile(w[2*i]);
+				Arrays.fill(w[2*i+1],0);
+				if (r!=0){
+					w[2*i+1][current_bahn] = -1;
+				}
+				current_bahn += r;
+				if (current_bahn<0){
+					current_bahn = 0;
+				}
+				if (current_bahn>6){
+					current_bahn = 6;
+				}
+				w[2*i+1][current_bahn] = -1;
+				buffer.addZeile(w[2*i+1]);
+			}
+			int[] z = new int[7];
+			Arrays.fill(z,-1);
+			z[current_bahn] = 4;
+			buffer.addZeile(z);
+			break;
+		}
+	}
+	
 	private void reset_obstacles(){
-		for(int i=0;i<40;i++){
+		for(int i=0;i<50;i++){
 		    hindernis_aktiv[i]=false;
 		}
 	}
@@ -1298,7 +1329,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			
 			
 			// Update Hindernisse
-			for (int i = 0; i < 40; i++) {
+			for (int i = 0; i < 50; i++) {
 				if (hindernis_aktiv[i]) {
 
 					Obstacle aktiv = hindernis[i];
@@ -1408,60 +1439,46 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (realtime==schwan_speed){
 			realtime = 0;
 		}
+		//Boss-Hindernis
+		if (level<(score/50)+1&&level%10==9){
+			generate_boss_obstacle(0,(int)(2*level));
+		}
 		//Andere Game-Variablen
 		level = (score/50)+1;
 		swimmer_offset = ((width-2) / 9) * 1/8;
 		swimmer_width = ((width-2) / 9) * 3/4;
 
 		// Kollisionsabfrage
-		for (int i = 0; i < 40; i++) {
+		for (int i = 0; i < 50; i++) {
 			if (hindernis_aktiv[i]) {
 				if (meetObstacle(hindernis[i], swimmer)) {
 					if (hindernis[i].getType()==4) {
-						if (health < 5) {
-						health++;
-									}
+						if (health < 5){
+							health++;
+						}
 					}
-					
 					else if (hindernis[i].getType()==5) {
 						score += 10; 
 				} 
-					
-					else if (hindernis[i].getType()==6){geschwindigkeit -= 1.0f;
+					else if (hindernis[i].getType()==6){
+						if (geschwindigkeit > 1f){
+							geschwindigkeit -= 0.7f;
+						}
 					}
 					else if (hindernis[i].getType()==7){
 						if (brillen < 3){
 						brillen ++;
 					}
-						}
-					
+						}	
 					else {
 					health--;
-					shark.play ();
+					shark.play();
 					freeze = true;
 					}
-				
-				    hindernis_aktiv[i]=false;
-				    
+				    hindernis_aktiv[i]=false;  
 				} 
 			}
-	}
-		
-		//Unsterblichkeit test
-	//	for (int i = 0; i < 40; i++) {
-	//	if (freeze == true) {
-	//	if (elapsedTime/1000 < 1000){
-		//	{
-
-			//	hindernis_aktiv[i]=false;
-		//	}
-//		 if (elapsedTime > 2000){
-//		meetObstacle() = false;
-			 
-	//	}
-	//	}
-	//	}
-		
+		}
 		
 		// GameOver check
 		if (health <= 0) {
