@@ -16,15 +16,11 @@ public class Obstacle {
 	 *3	:= Schwan 
 	 *4 := Herzen
 	 *5 := Coins
-<<<<<<< HEAD
-	 *6 := tauchbares Hindernis1
-=======
 	 *6 := Stopwatch
 	 *7 := Taucherbrille
-	 *8:= Loch tauchbares Hindernis
+	 *8 := Loch / Strudel
 	 *100:= Unterwasserhindernis
->>>>>>> upstream/master
-	 * */
+	 */
 	private int type;
 	private long line;
 

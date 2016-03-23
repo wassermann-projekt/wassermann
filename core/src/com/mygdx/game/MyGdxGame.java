@@ -495,9 +495,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		init_obstacle_type(0,1,0.8,2);
 		init_obstacle_type(1,1,0.8,2);
 		init_obstacle_type(2,2,0.8,2);
-		init_obstacle_type(3,2,0.8,2);
-		init_obstacle_type(4,5,0.05,0);
-		init_obstacle_type(5,1,0.3,0);
+		init_obstacle_type(3,2,0.8,1);
+		init_obstacle_type(4,5,0.03,0);
+		init_obstacle_type(5,1,0.25,0);
+		init_obstacle_type(6,7,0.05,0);
+		init_obstacle_type(7,5,0.03,0);
+		init_obstacle_type(8,4,0.8,2);
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
 				for (int i=0; i<obstacle_ausdauer;i++){
@@ -839,6 +842,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		//zukünftige Hindernisse können in den "Hindernis-buffer" geladen werden
 		//Falls dieser nichtleer ist, werden die Hindernisse aus dem buffer generiert, ansonsten mit oben beschriebener Zufälligkeit
 		
+
 		//Hindernisse aus buffer laden
 		if (buffer.getSize()!=0){
 			int[] akt_zeile = buffer.getNextZeile();
@@ -850,6 +854,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		//Auswahl Anzahl Bahnen wo ein Hindernis generiert wird
 		//sei p array mit Poissonverteilung bereits initialisiert
 		//init p[0]=0;
+
+
 
 
 		int[] counts = new int[]{6,21,35};
@@ -1082,6 +1088,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	public GameState getState() {
 		return state;
 	}
+	
+	public int getBrillen(){
+		return brillen;
+	}
+	
 	public boolean isFrozen(){
 		return freeze;
 	}
