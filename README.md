@@ -24,7 +24,7 @@ Auf die Spiel-Anleitung kann vom Hauptmenü des Spieles aus zugegriffen werden.
 
 <h2>Technisches</h2>
 
-Benutzt wurde das libGDX framework (https://libgdx.badlogicgames.com). Auf der Projektseite (TODO: Link einfuegen!) kann die ausführbare jar-Datei heruntergeladen werden. Voraussetzung für die Ausführung der Datei ist eine lauffähige Java-Version (Version 8 – https://www.java.com/de/download/). 
+Benutzt wurde das libGDX framework (https://libgdx.badlogicgames.com). Auf der Projektseite (http://luisehenriette.github.io/wassermann/) kann die ausführbare jar-Datei heruntergeladen werden. Voraussetzung für die Ausführung der Datei ist eine lauffähige Java-Version (Version 8 – https://www.java.com/de/download/). 
 
 <h2>Ausführung</h2>
 
