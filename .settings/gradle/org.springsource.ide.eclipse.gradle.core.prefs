@@ -1,11 +1,15 @@
 #org.springsource.ide.eclipse.gradle.core.preferences.GradleProjectPreferences
 <<<<<<< HEAD
+#Wed Mar 09 15:31:01 CET 2016
+=======
+<<<<<<< HEAD
 #Tue Mar 22 13:19:55 CET 2016
 =======
 <<<<<<< HEAD
 #Wed Mar 09 18:58:36 CET 2016
 =======
 #Fri Mar 11 15:33:24 CET 2016
+>>>>>>> upstream/master
 >>>>>>> upstream/master
 >>>>>>> upstream/master
 build.family.org.gradle.tooling.model.eclipse.HierarchicalEclipseProject=;core;desktop;html;

@@ -1,0 +1,30 @@
+package com.mygdx.game;
+
+public class Collision {
+	private boolean blockedBahn;
+	private boolean tooNear;
+	private boolean accident;
+
+	public boolean blockedB(Sprite s, int swimmer_position){
+		if(swimmer_position == getY(Sprite s)){
+			blockedBahn= true;
+		}else{
+			blockedBahn= false;
+		}
+		return blockedBahn;
+	}
+	public boolean near(Sprite s, int swimmer_offset){
+		if(swimmer_offset == getX(Sprite s)){
+			tooNear= true;
+		}else{
+			tooNear= false;
+		}
+		return tooNear;
+	}
+	public boolean collision(){
+		if(	tooNear==){
+			
+		}
+		
+	}
+}

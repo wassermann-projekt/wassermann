@@ -14,7 +14,7 @@ public class EventListener implements InputProcessor {
 	public boolean keyDown(int keycode) {
 
 		// keine Steuerung wenn das Spiel pausiert/Gameover/Gefrohren ist
-		if (!game.isPaused() && !game.isGameOver()) {
+		if (!game.isPaused() && !game.isGameOver() && !game.isFrozen()) {
 
 			if (game.getState() == GameState.UPPERWORLD) {
 
@@ -36,10 +36,10 @@ public class EventListener implements InputProcessor {
 				case Keys.UP:
 					break;
 				case Keys.DOWN:
+					if (game.getBrillen()>0){
+						game.changeDiveState();
+					}
 					break;
-				case Keys.ALT_LEFT:
-					game.changeDiveState();
-
 				}
 			}
 
