@@ -810,7 +810,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 30 < 2) {
+		
+		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -1704,11 +1705,15 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
 
+		//Andere Game-Variablen
+		level = (score/50)+1;
+		if (h >= width / 9) {
+			score++;
+			h = 0;
+		}
+		h += hindernis_geschwindigkeit;
 
 		// Kollisionsabfrage
-
-		
-		//System.out.println(hindernis_lowerworld_upper.getX());
 
 		
 		if(invulnerable == false){
