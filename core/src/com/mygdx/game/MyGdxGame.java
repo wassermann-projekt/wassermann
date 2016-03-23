@@ -1272,9 +1272,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 	public boolean collision_dive(){
 		
-		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + 2*width/8) {
-						
-			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[0]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[1])){
+		if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 2*width/8) {
+				
+			System.out.println(0);
+			
+			if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[3])){
 				
 				return true;
 				
@@ -1282,16 +1284,18 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		}
 		
-		if(body.getPosition().x >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x <= hindernis_lowerworld_upper.getX() + 3*width/8) {
-						
-			if((body.getPosition().y + 0.25*width/9 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/9 > wand_punkte[3])){
+		if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 3*width/8) {
+			
+			System.out.println(1);
+			
+			if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[4]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[5])){
+				
 				
 				return true;
 				
 			}
 			
 		}
-		
 		
 		else {
 			
@@ -1511,7 +1515,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// Kollisionsabfrage
 		
-		System.out.println(collision_dive());
+		//System.out.println(hindernis_lowerworld_upper.getX());
 		
 		if(invulnerable == false){
 			
@@ -1520,7 +1524,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				health--;
 				//freeze = true;
 				invulnerable = true;
-				
+								
 				timer.schedule(new TimerTask(){
 					
 					public void run() {
