@@ -1322,9 +1322,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		if(hindernis_lowerworld_lower.getLaenge() > -10){
 		
 			if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 2*width/8) {
-					
-				System.out.println(0);
-				
+								
 				if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[3])){
 					
 					return true;
@@ -1334,9 +1332,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 			
 			if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 3*width/8) {
-				
-				System.out.println(1);
-				
+								
 				if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[4]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[5])){
 					
 					
