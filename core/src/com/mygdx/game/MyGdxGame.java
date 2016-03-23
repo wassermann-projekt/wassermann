@@ -1364,6 +1364,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
+			if(music_enabled){
+				current_music.play();
+			}
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1393,6 +1396,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			// music_lower ändern
 			current_music.stop();
 			current_music = music_upper;
+			if(music_enabled){
+				current_music.play();
+			}
 		}
 	
 	}
