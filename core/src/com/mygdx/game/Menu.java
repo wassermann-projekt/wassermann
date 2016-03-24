@@ -83,15 +83,14 @@ public class Menu {
 		TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
 		textFieldStyle.font = skin.getFont("default");
 		textFieldStyle.fontColor = Color.BLUE;
-		textFieldStyle.focusedFontColor = Color.BLACK;
-		textFieldStyle.cursor = skin.newDrawable("cursor", Color.BLACK);
+		textFieldStyle.focusedFontColor = Color.WHITE;
+		textFieldStyle.cursor = skin.newDrawable("cursor", Color.WHITE);
 		textFieldStyle.cursor.setMinWidth(2f);
 		skin.add("default", textFieldStyle);
 
 		Label.LabelStyle labelStyle = new Label.LabelStyle();
 		labelStyle.font = skin.getFont("default");
 		labelStyle.fontColor = Color.WHITE;
-//		labelStyle.background = skin.newDrawable("background", new Color(1f, 1f, 1f, 0.5f));
 		skin.add("default", labelStyle);
 		
 		background_skin = new Skin();

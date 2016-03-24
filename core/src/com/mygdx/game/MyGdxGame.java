@@ -254,6 +254,10 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	Timer timer = new Timer();
 	private float Timestep;
+	
+	// feedback
+	long anim_feedback_time;
+	long anim_down_to_dive_time;
 
 
 	@Override
@@ -410,7 +414,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		FreeTypeFontParameter parameter2 = new FreeTypeFontParameter();
 		parameter1.size = 27;
 		parameter2.size = 50;
-		parameter1.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?: ";
+		parameter1.characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!'()>?:+ ";
 		font = generator.generateFont(parameter1);
 		gameover = generator.generateFont(parameter2);
 
@@ -522,7 +526,7 @@ if (state == GameState.MAINMENU){
 		score = 0;
 		level = 1;
 		health = 5;
-		brillen = 0; 
+		brillen = 0;
 
 		paused = false;
 		game_over = false;
@@ -786,7 +790,16 @@ if (state == GameState.MAINMENU){
 			batch.draw(herz_leer, 160, 440, width / 18, height / 18);
 			geschwindigkeit = 0;
 		}
-
+		
+		long t = TimeUtils.timeSinceMillis(anim_feedback_time);
+		if(t < 500 && (t % 200 < 100)){
+			font.draw(batch, "SCORE +10!", width/2 - 40, 400);
+		}
+		t = TimeUtils.timeSinceMillis(anim_down_to_dive_time);
+		if(t < 1000){
+			font.draw(batch, "Press DOWN to dive!", width / 2 - 80, 350);
+		}
+		
 		batch.end();
 	}
 
@@ -816,10 +829,12 @@ if (state == GameState.MAINMENU){
   		
         // Taucher
   		//Animation
-        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_body_width/3 +width/10, tauchersprite.getY() + taucher_body_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_body_width/2, taucher_body_width/4);
-        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_body_width/3 +width/10, tauchersprite.getY() + taucher_body_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_body_width/2, taucher_body_width/4);             
-        batch.draw(tauchersprite, tauchersprite.getX()+width/10, tauchersprite.getY(), taucher_body_width, taucher_body_width);
-        
+  		if(!blinkInvuln())
+  		{
+	        batch.draw(taucher_linkes_bein, tauchersprite.getX()-taucher_body_width/3 +width/10, tauchersprite.getY() + taucher_body_width/2 + 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_body_width/2, taucher_body_width/4);
+	        batch.draw(taucher_rechtes_bein, tauchersprite.getX()-taucher_body_width/3 +width/10, tauchersprite.getY() + taucher_body_width/2.5f - 3.5f*(float) Math.sin(8*unter_wasser_textur_pos), taucher_body_width/2, taucher_body_width/4);             
+	        batch.draw(tauchersprite, tauchersprite.getX()+width/10, tauchersprite.getY(), taucher_body_width, taucher_body_width);
+  		}
         //Luftblasen
         if(luftblasen_x_pos<(0-luftblasen.getWidth()) || luftblasen_y_pos>height) init_luftblasen();
         batch.draw(luftblasen, luftblasen_x_pos, luftblasen_y_pos, taucher_width/2, taucher_width);
@@ -1650,7 +1665,7 @@ if (state == GameState.MAINMENU){
 			public void run(){
 				invulnerable = false;
 			}
-		}, 1400);
+		}, 1900);
 	}
 	
 	private boolean blinkInvuln(){
@@ -1697,7 +1712,9 @@ if (state == GameState.MAINMENU){
 						}
 					}
 					else if (hindernis[i].getType()==5) {
-						score += 10; 
+						score += 10;
+						anim_feedback_time = TimeUtils.millis();
+
 						if(music_enabled){
 							coin_collected.play();
 						}
@@ -1713,12 +1730,13 @@ if (state == GameState.MAINMENU){
 					else if (hindernis[i].getType()==7){
 						if (brillen < 3){
 						brillen ++;
+						anim_down_to_dive_time = TimeUtils.millis();
 						if(music_enabled){
 							brille_collected.play();
 						}
 					}
 						}	
-					else {
+					else if(!invulnerable){
 					health--;
 					if(music_enabled){
 						shark.play();
