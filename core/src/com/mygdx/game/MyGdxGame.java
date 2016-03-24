@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -14,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 
 import com.badlogic.gdx.utils.TimeUtils;
+
+
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -62,6 +65,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture brille;
 	Texture logo_mit_traegerform;
 
+
 	private GameState state;
 
 	// Hintergrund Schwimmwelt
@@ -91,6 +95,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Sprite coin_sprite;
 
 	private Sprite taucherbrille_sprite; 
+	public Sprite logo; 
 	
 	//Hindernis unter Wasser
 	private Sprite hindernis_lowerworld_up;
@@ -145,7 +150,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private double[] first_probability = new double[n_obstacles];
 
 	//Nach so vielen Leveln ist probability des Hindernisses auf 0.1
-	private int obstacle_ausdauer = 20;
+	private int obstacle_ausdauer = 50;
 	//Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
 	private double[][] obstacle_probability = new double[n_obstacles][obstacle_ausdauer];
 	//Art der W-Verteilung des Hindernisses
@@ -219,7 +224,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Music shark;
 	private Music music_lower;
 	private Music current_music;
-	private boolean music_enabled;
+	public boolean music_enabled;
+	private Music coin_collected;
+	private Music clock; 
+	private Music brille_collected;
+
 	
 
 	// shortcuts for graphics fields
@@ -263,6 +272,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		music_lower.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
+		coin_collected = Gdx.audio.newMusic(Gdx.files.internal("coin_collected.wav"));
+		coin_collected.setVolume(0.3f);
+		clock = Gdx.audio.newMusic(Gdx.files.internal("clock.wav"));
+		clock.setVolume(0.3f);
+		brille_collected = Gdx.audio.newMusic(Gdx.files.internal("brille_collected.wav"));
+		brille_collected.setVolume(1.0f);
 		
 		current_music = music_upper;
 		music_enabled = true;
@@ -271,13 +286,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		// init state
 		state = GameState.LOGO;
 
+
 		// Infos Screen;
 		readGraphics();
 
 		// New Sprite Batch
 		batch = new SpriteBatch();
 
-		// Textures laden
+		
+		
+		//Textures laden
+
 		anzeige = new Texture("anzeige.png");
 		felsen_unter_wasser = new Texture("felsen_unter_wasser.png");
 		hai_1 = new Texture("hai_1.png");
@@ -317,11 +336,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		coin = new Texture("muenze.png");
 		stopwatch = new Texture("uhr.png");
 		guteherzen_sprite = new Sprite(guteherzen);
-		coin_sprite = new Sprite(guteherzen);
+		coin_sprite = new Sprite(coin);
 		brille = new Texture ("taucherbrille.png");
 		taucherbrille_sprite = new Sprite(new Texture("taucherbrille.png"));
 		taucherbrille_sprite.setSize(width/12, height/11);
-	
+		
 
 
 		// init Wellentextur
@@ -423,6 +442,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		score = 0;
 		level = 1;
 
+
 		// init Highscore
 		highscore = new Highscore("highscore.txt");
 		highscore.load();
@@ -433,6 +453,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// input
 		paused = false;
 		multiplexer = new InputMultiplexer();
+		
+		
 		// erstelle menu
 		menu = new Menu(multiplexer, this, highscore, font);
 		//menu.loadMainMenu();
@@ -447,6 +469,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// initialisiere Spielvariablen
 		resetGameVariables();
 	}
+
+
 
 	@Override
 	public void render() {
@@ -482,6 +506,11 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 
+if (state == GameState.MAINMENU){
+
+}
+
+
 		menu.render();
 
 	}
@@ -490,6 +519,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void resetGameVariables() {
 		geschwindigkeit = 1.7f;
 		beschleunigung = 0.02f;
+
 
 		swimmer_position_swim = 4;
 
@@ -511,15 +541,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i=1; i<8;i++){
 			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
 		}
-		init_obstacle_type(0,1,0.8,2);
-		init_obstacle_type(1,1,0.8,2);
-		init_obstacle_type(2,2,0.8,2);
+		init_obstacle_type(0,1,0.5,1);
+		init_obstacle_type(1,1,0.5,1);
+		init_obstacle_type(2,2,0.5,1);
 		init_obstacle_type(3,2,0.8,1);
 		init_obstacle_type(4,5,0.02,0);
 		init_obstacle_type(5,1,0.25,0);
 		init_obstacle_type(6,7,0.02,0);
-		init_obstacle_type(7,1,0.03,0);
-		init_obstacle_type(8,4,0.8,2);
+		init_obstacle_type(7,5,0.03,0);
+		init_obstacle_type(8,4,0.5,1);
+
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
 				for (int i=0; i<obstacle_ausdauer;i++){
@@ -554,9 +585,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Hintergrundfarbe
 		Gdx.gl.glClearColor(0, 0.6f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		
 		batch.begin();
 
+		
 		// Hintergrund
 		batch.draw(wellen1, 0, wellen_y_pos % height, width, height);
 		batch.draw(wellen2, 0, (wellen_y_pos % (height)) + height, width,
@@ -564,6 +596,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(ufer_links, 0, 0, width / 9, height);
 		batch.draw(ufer_rechts, ufer_rechts.getOriginX(),
 				ufer_rechts.getOriginY(), width / 9, height);
+
 
 		// Animation Schwimmer
 		if(!blinkInvuln()){
@@ -581,6 +614,7 @@ public class MyGdxGame extends ApplicationAdapter {
 					* (swimmer_position_swim - 1) + swimmer_offset + width / 9, 0,
 					swimmer_width, swimmer_width);
 		}
+
 
 		// Hindernisse
 		for (int i = 0; i < 50; i++) {
@@ -695,12 +729,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		if (brillen == 2){
 			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
-			batch.draw(taucherbrille_sprite, 90, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 95, 10, width/12, height/12);
 		}
 		if (brillen == 3){
 			batch.draw(taucherbrille_sprite, 40, 10, width/12, height/12);
-			batch.draw(taucherbrille_sprite, 90, 10, width/12, height/12);
-			batch.draw(taucherbrille_sprite, 130, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 95, 10, width/12, height/12);
+			batch.draw(taucherbrille_sprite, 150, 10, width/12, height/12);
 		}
         
 		// Herzen update
@@ -825,7 +859,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 30 < 2) {
+
+		
+		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -1284,6 +1320,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void startGame() {
+
 		resetGameVariables();
 		state = GameState.UPPERWORLD;
 		current_music.stop();
@@ -1379,6 +1416,14 @@ public class MyGdxGame extends ApplicationAdapter {
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
+			
+			if(music_enabled){
+				current_music.play();
+			}
+
+			//Brille verbrauchen
+			brillen--;
+
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1408,6 +1453,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			// music_lower ändern
 			current_music.stop();
 			current_music = music_upper;
+			if(music_enabled){
+				current_music.play();
+			}
 		}
 	
 	}
@@ -1445,9 +1493,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		if(hindernis_lowerworld_lower.getLaenge() > -10){
 		
 			if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 2*width/8) {
-					
-				System.out.println(0);
-				
+								
 				if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[3])){
 					
 					return true;
@@ -1459,10 +1505,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 			
 			if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 3*width/8) {
-				
 
-				System.out.println(1);
-				
 				if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[4]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[5])){
 					
 					
@@ -1638,6 +1681,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			geschwindigkeit += beschleunigung;
 			if (geschwindigkeit > max_speed) {
 				geschwindigkeit = max_speed;
+		
 			}
 		}
 		h += geschwindigkeit;
@@ -1670,21 +1714,33 @@ public class MyGdxGame extends ApplicationAdapter {
 					else if (hindernis[i].getType()==5) {
 						score += 10;
 						anim_feedback_time = TimeUtils.millis();
+
+						if(music_enabled){
+							coin_collected.play();
+						}
 				} 
 					else if (hindernis[i].getType()==6){
 						if (geschwindigkeit > 1f){
 							geschwindigkeit -= 0.7f;
+							if(music_enabled){
+								clock.play();
+							}
 						}
 					}
 					else if (hindernis[i].getType()==7){
 						if (brillen < 3){
 						brillen ++;
 						anim_down_to_dive_time = TimeUtils.millis();
+						if(music_enabled){
+							brille_collected.play();
+						}
 					}
 						}	
 					else if(!invulnerable){
 					health--;
-					shark.play();
+					if(music_enabled){
+						shark.play();
+					}	
 					startFreeze();
 					startInvuln();
 					}
@@ -1715,11 +1771,16 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setTransform(0, 0, 0);
 		}
 
+		//Andere Game-Variablen
+		level = (score/50)+1;
+		if (h >= width / 9) {
+			score++;
+			h = 0;
+		}
+		h += hindernis_geschwindigkeit;
+
 
 		// Kollisionsabfrage
-
-		
-		//System.out.println(hindernis_lowerworld_upper.getX());
 
 		
 		if(invulnerable == false){
@@ -1848,6 +1909,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		music_upper.dispose();
 		music_lower.dispose();
 		batch.dispose();
+
 
 	}
 
