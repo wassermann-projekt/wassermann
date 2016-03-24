@@ -219,7 +219,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Music shark;
 	private Music music_lower;
 	private Music current_music;
-	private boolean music_enabled;
+	public boolean music_enabled;
 	
 
 	// shortcuts for graphics fields
@@ -810,7 +810,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 50 < 2) {
+
+		
+		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -1367,9 +1369,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 			
 		if (state == GameState.UPPERWORLD) {
+			
+			if(music_enabled){
+				current_music.play();
+			}
+
 			//Brille verbrauchen
 			brillen--;
-			
+
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1399,6 +1406,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			// music_lower ändern
 			current_music.stop();
 			current_music = music_upper;
+			if(music_enabled){
+				current_music.play();
+			}
 		}
 	
 	}
@@ -1668,7 +1678,9 @@ public class MyGdxGame extends ApplicationAdapter {
 						}	
 					else {
 					health--;
-					shark.play();
+					if(music_enabled){
+						shark.play();
+					}	
 					startFreeze();
 					startInvuln();
 					}
@@ -1707,10 +1719,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		h += hindernis_geschwindigkeit;
 
-		// Kollisionsabfrage
 
-		
-		//System.out.println(hindernis_lowerworld_upper.getX());
+		// Kollisionsabfrage
 
 		
 		if(invulnerable == false){
