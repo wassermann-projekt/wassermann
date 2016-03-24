@@ -145,7 +145,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private double[] first_probability = new double[n_obstacles];
 
 	//Nach so vielen Leveln ist probability des Hindernisses auf 0.1
-	private int obstacle_ausdauer = 20;
+	private int obstacle_ausdauer = 50;
 	//Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
 	private double[][] obstacle_probability = new double[n_obstacles][obstacle_ausdauer];
 	//Art der W-Verteilung des Hindernisses
@@ -507,15 +507,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i=1; i<8;i++){
 			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
 		}
-		init_obstacle_type(0,1,0.8,2);
-		init_obstacle_type(1,1,0.8,2);
-		init_obstacle_type(2,2,0.8,2);
+		init_obstacle_type(0,1,0.5,1);
+		init_obstacle_type(1,1,0.5,1);
+		init_obstacle_type(2,2,0.5,1);
 		init_obstacle_type(3,2,0.8,1);
 		init_obstacle_type(4,5,0.02,0);
 		init_obstacle_type(5,1,0.25,0);
 		init_obstacle_type(6,7,0.02,0);
 		init_obstacle_type(7,5,0.03,0);
-		init_obstacle_type(8,4,0.8,2);
+		init_obstacle_type(8,4,0.5,1);
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
 				for (int i=0; i<obstacle_ausdauer;i++){
@@ -810,7 +810,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 30 < 2) {
+		if (score % 50 < 2) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -1360,10 +1360,16 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void changeDiveState() {
 	
+<<<<<<< HEAD
 		if (state == GameState.UPPERWORLD) {	
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
+=======
+		if (state == GameState.UPPERWORLD) {
+			//Brille verbrauchen
+			brillen--;
+>>>>>>> aed8f04f8abcb09b9ef53f3628623d1dbbd3500c
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1692,7 +1698,18 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
+<<<<<<< HEAD
 
+=======
+		
+		//Andere Game-Variablen
+		level = (score/50)+1;
+		if (h >= width / 9) {
+			score++;
+			h = 0;
+		}
+		h += hindernis_geschwindigkeit;
+>>>>>>> aed8f04f8abcb09b9ef53f3628623d1dbbd3500c
 
 		// Kollisionsabfrage
 
