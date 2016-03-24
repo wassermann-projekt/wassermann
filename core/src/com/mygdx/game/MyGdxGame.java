@@ -272,11 +272,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		music_lower.setVolume(0.3f);
 		shark = Gdx.audio.newMusic(Gdx.files.internal("shark_bite.mp3"));
 		shark.setVolume(0.3f);
-		coin_collected = Gdx.audio.newMusic(Gdx.files.internal("coin_collected.wav"));
+		coin_collected = Gdx.audio.newMusic(Gdx.files.internal("coin_collected.mp3"));
 		coin_collected.setVolume(0.3f);
-		clock = Gdx.audio.newMusic(Gdx.files.internal("clock.wav"));
+		clock = Gdx.audio.newMusic(Gdx.files.internal("clock.mp3"));
 		clock.setVolume(0.3f);
-		brille_collected = Gdx.audio.newMusic(Gdx.files.internal("brille_collected.wav"));
+		brille_collected = Gdx.audio.newMusic(Gdx.files.internal("brille_collected.mp3"));
 		brille_collected.setVolume(1.0f);
 		
 		current_music = music_upper;
@@ -1416,9 +1416,11 @@ if (state == GameState.MAINMENU){
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
+
 		}
 			
 		if (state == GameState.UPPERWORLD) {
+
 			
 			if(music_enabled){
 				current_music.play();
