@@ -219,7 +219,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Music shark;
 	private Music music_lower;
 	private Music current_music;
-	private boolean music_enabled;
+	public boolean music_enabled;
 	
 
 	// shortcuts for graphics fields
@@ -810,7 +810,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 50 < 2) {
+
+		
+		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -1360,16 +1362,18 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void changeDiveState() {
 	
-<<<<<<< HEAD
 		if (state == GameState.UPPERWORLD) {	
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
-=======
-		if (state == GameState.UPPERWORLD) {
+			
+			if(music_enabled){
+				current_music.play();
+			}
+
 			//Brille verbrauchen
 			brillen--;
->>>>>>> aed8f04f8abcb09b9ef53f3628623d1dbbd3500c
+
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1399,6 +1403,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			// music_lower ändern
 			current_music.stop();
 			current_music = music_upper;
+			if(music_enabled){
+				current_music.play();
+			}
 		}
 	
 	}
@@ -1668,7 +1675,9 @@ public class MyGdxGame extends ApplicationAdapter {
 						}	
 					else {
 					health--;
-					shark.play();
+					if(music_enabled){
+						shark.play();
+					}	
 					startFreeze();
 					startInvuln();
 					}
@@ -1698,10 +1707,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
-<<<<<<< HEAD
 
-=======
-		
 		//Andere Game-Variablen
 		level = (score/50)+1;
 		if (h >= width / 9) {
@@ -1709,12 +1715,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			h = 0;
 		}
 		h += hindernis_geschwindigkeit;
->>>>>>> aed8f04f8abcb09b9ef53f3628623d1dbbd3500c
+
 
 		// Kollisionsabfrage
-
-		
-		//System.out.println(hindernis_lowerworld_upper.getX());
 
 		
 		if(invulnerable == false){
