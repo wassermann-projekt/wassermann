@@ -155,7 +155,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private double[] first_probability = new double[n_obstacles];
 
 	//Nach so vielen Leveln ist probability des Hindernisses auf 0.1
-	private int obstacle_ausdauer = 20;
+	private int obstacle_ausdauer = 50;
 	//Wahrscheinlichkeits-Verteilung des gemeinen Hindernisses: [Hindernis,lvl]
 	private double[][] obstacle_probability = new double[n_obstacles][obstacle_ausdauer];
 	//Art der W-Verteilung des Hindernisses
@@ -229,10 +229,11 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Music shark;
 	private Music music_lower;
 	private Music current_music;
-	private boolean music_enabled;
+	public boolean music_enabled;
 	private Music coin_collected;
 	private Music clock; 
 	private Music brille_collected;
+
 	
 
 	// shortcuts for graphics fields
@@ -541,15 +542,16 @@ if (state == GameState.MAINMENU){
 		for (int i=1; i<8;i++){
 			p[i] = Math.exp(-generation_probability)*Math.pow(generation_probability,i-1)/fact(i-1);
 		}
-		init_obstacle_type(0,1,0.8,2);
-		init_obstacle_type(1,1,0.8,2);
-		init_obstacle_type(2,2,0.8,2);
+		init_obstacle_type(0,1,0.5,1);
+		init_obstacle_type(1,1,0.5,1);
+		init_obstacle_type(2,2,0.5,1);
 		init_obstacle_type(3,2,0.8,1);
 		init_obstacle_type(4,5,0.02,0);
 		init_obstacle_type(5,1,0.25,0);
-		init_obstacle_type(6,1,0.02,0);
-		init_obstacle_type(7,1,0.5,0);
-		init_obstacle_type(8,4,0.8,2);
+		init_obstacle_type(6,7,0.02,0);
+		init_obstacle_type(7,5,0.03,0);
+		init_obstacle_type(8,4,0.5,1);
+
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
 				for (int i=0; i<obstacle_ausdauer;i++){
@@ -847,7 +849,9 @@ if (state == GameState.MAINMENU){
 		// Level-Anzeigen
 		font.setColor(Color.BLACK);
 		font.draw(batch, "Level " + level, 360, 465);
-		if (score % 30 < 2) {
+
+		
+		if (score % 50 < 4) {
 			gameover.draw(batch, "Level " + level, width / 2, height / 2);
 		}
 
@@ -1402,6 +1406,14 @@ if (state == GameState.MAINMENU){
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
+			
+			if(music_enabled){
+				current_music.play();
+			}
+
+			//Brille verbrauchen
+			brillen--;
+
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1431,6 +1443,9 @@ if (state == GameState.MAINMENU){
 			// music_lower ändern
 			current_music.stop();
 			current_music = music_upper;
+			if(music_enabled){
+				current_music.play();
+			}
 		}
 	
 	}
@@ -1468,9 +1483,7 @@ if (state == GameState.MAINMENU){
 		if(hindernis_lowerworld_lower.getLaenge() > -10){
 		
 			if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 2*width/8) {
-					
-				System.out.println(0);
-				
+								
 				if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[2]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[3])){
 					
 					return true;
@@ -1482,10 +1495,7 @@ if (state == GameState.MAINMENU){
 
 			
 			if(body.getPosition().x + width/10 - width/36 >= hindernis_lowerworld_upper.getX() + 2*width/8 - width/9 && body.getPosition().x + width/10 - width/36 <= hindernis_lowerworld_upper.getX() + 3*width/8) {
-				
 
-				System.out.println(1);
-				
 				if((body.getPosition().y + 0.25*width/12 < height - wand_punkte[4]) || (body.getPosition().y + 0.75*width/12 > wand_punkte[5])){
 					
 					
@@ -1666,7 +1676,6 @@ if (state == GameState.MAINMENU){
 		}
 		h += geschwindigkeit;
 		realtime++;
-		System.out.println(geschwindigkeit);
 		if (realtime == schwan_speed) {
 			realtime = 0;
 		}
@@ -1716,7 +1725,9 @@ if (state == GameState.MAINMENU){
 						}	
 					else {
 					health--;
-					shark.play();
+					if(music_enabled){
+						shark.play();
+					}	
 					startFreeze();
 					startInvuln();
 					}
@@ -1747,11 +1758,16 @@ if (state == GameState.MAINMENU){
 			body.setTransform(0, 0, 0);
 		}
 
+		//Andere Game-Variablen
+		level = (score/50)+1;
+		if (h >= width / 9) {
+			score++;
+			h = 0;
+		}
+		h += hindernis_geschwindigkeit;
+
 
 		// Kollisionsabfrage
-
-		
-		//System.out.println(hindernis_lowerworld_upper.getX());
 
 		
 		if(invulnerable == false){
