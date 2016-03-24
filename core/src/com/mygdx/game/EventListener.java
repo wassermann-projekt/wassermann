@@ -24,14 +24,18 @@ public class EventListener implements InputProcessor {
 					bewegungmusic = Gdx.audio.newMusic(Gdx.files
 							.internal("button-21.mp3"));
 					bewegungmusic.setVolume(0.05f);
-					bewegungmusic.play();
+					if(game.music_enabled){
+						bewegungmusic.play();
+					}
 					break;
 				case Keys.RIGHT:
 					game.changeSwimmerPosition_swim(1);
 					bewegungmusic = Gdx.audio.newMusic(Gdx.files
 							.internal("button-21.mp3"));
 					bewegungmusic.setVolume(0.05f);
-					bewegungmusic.play();
+					if(game.music_enabled){
+						bewegungmusic.play();
+					}
 					break;
 				case Keys.UP:
 					break;

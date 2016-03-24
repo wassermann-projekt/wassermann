@@ -219,7 +219,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Music shark;
 	private Music music_lower;
 	private Music current_music;
-	private boolean music_enabled;
+	public boolean music_enabled;
 	
 
 	// shortcuts for graphics fields
@@ -1674,7 +1674,9 @@ public class MyGdxGame extends ApplicationAdapter {
 						}	
 					else {
 					health--;
-					shark.play();
+					if(music_enabled){
+						shark.play();
+					}	
 					startFreeze();
 					startInvuln();
 					}
