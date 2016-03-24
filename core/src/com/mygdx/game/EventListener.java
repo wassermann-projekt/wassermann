@@ -23,7 +23,7 @@ public class EventListener implements InputProcessor {
 					game.changeSwimmerPosition_swim(-1);
 					bewegungmusic = Gdx.audio.newMusic(Gdx.files
 							.internal("button-21.mp3"));
-					bewegungmusic.setVolume(0.05f);
+					bewegungmusic.setVolume(0.06f);
 					bewegungmusic.play();
 					break;
 				case Keys.RIGHT:

@@ -231,6 +231,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Music current_music;
 	private boolean music_enabled;
 	private Music coin_collected;
+	private Music clock; 
+	private Music brille_collected;
 	
 
 	// shortcuts for graphics fields
@@ -272,6 +274,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		shark.setVolume(0.3f);
 		coin_collected = Gdx.audio.newMusic(Gdx.files.internal("coin_collected.wav"));
 		coin_collected.setVolume(0.3f);
+		clock = Gdx.audio.newMusic(Gdx.files.internal("clock.wav"));
+		clock.setVolume(0.3f);
+		brille_collected = Gdx.audio.newMusic(Gdx.files.internal("brille_collected.wav"));
+		brille_collected.setVolume(1.0f);
 		
 		current_music = music_upper;
 		music_enabled = true;
@@ -514,6 +520,7 @@ if (state == GameState.MAINMENU){
 		geschwindigkeit = 1.7f;
 		beschleunigung = 0.02f;
 
+
 		swimmer_position_swim = 4;
 
 		score = 0;
@@ -540,8 +547,8 @@ if (state == GameState.MAINMENU){
 		init_obstacle_type(3,2,0.8,1);
 		init_obstacle_type(4,5,0.02,0);
 		init_obstacle_type(5,1,0.25,0);
-		init_obstacle_type(6,7,0.02,0);
-		init_obstacle_type(7,5,0.03,0);
+		init_obstacle_type(6,1,0.02,0);
+		init_obstacle_type(7,1,0.5,0);
 		init_obstacle_type(8,4,0.8,2);
 		for (int k=0;k<n_obstacles;k++){
 			if (distribution_type[k]==2){
@@ -1654,10 +1661,12 @@ if (state == GameState.MAINMENU){
 			geschwindigkeit += beschleunigung;
 			if (geschwindigkeit > max_speed) {
 				geschwindigkeit = max_speed;
+		
 			}
 		}
 		h += geschwindigkeit;
 		realtime++;
+		System.out.println(geschwindigkeit);
 		if (realtime == schwan_speed) {
 			realtime = 0;
 		}
@@ -1685,16 +1694,24 @@ if (state == GameState.MAINMENU){
 					}
 					else if (hindernis[i].getType()==5) {
 						score += 10; 
-						coin_collected.play();
+						if(music_enabled){
+							coin_collected.play();
+						}
 				} 
 					else if (hindernis[i].getType()==6){
 						if (geschwindigkeit > 1f){
 							geschwindigkeit -= 0.7f;
+							if(music_enabled){
+								clock.play();
+							}
 						}
 					}
 					else if (hindernis[i].getType()==7){
 						if (brillen < 3){
 						brillen ++;
+						if(music_enabled){
+							brille_collected.play();
+						}
 					}
 						}	
 					else {
