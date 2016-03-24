@@ -4,5 +4,5 @@ public enum GameState {
 	LOGO,
 	MAINMENU,
 	UPPERWORLD,
-	LOWERWORLD
+	LOWERWORLD,
 }

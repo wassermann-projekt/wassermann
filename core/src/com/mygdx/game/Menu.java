@@ -2,7 +2,9 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -12,6 +14,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -24,7 +28,9 @@ public class Menu {
 		PAUSE,
 		INPUT_HIGHSCORE,
 		HIGHSCORE_SCREEN,
-		GAMEOVER
+		GAMEOVER,
+		LOGO
+		
 	}
 	
 	private Skin skin;
@@ -37,6 +43,9 @@ public class Menu {
 	private MenuState state;
 	private TextField textfield;
 	private long score_to_save;
+	private Label heading; 
+	private SpriteBatch batch;
+	private Sprite logo; 
 	
 	
 	
@@ -53,6 +62,7 @@ public class Menu {
 		loadSkin(font);
 		mp.addProcessor(stage);
 	}
+
 
 	public void loadSkin(BitmapFont font) {
 		skin = new Skin();
@@ -73,15 +83,14 @@ public class Menu {
 		TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
 		textFieldStyle.font = skin.getFont("default");
 		textFieldStyle.fontColor = Color.BLUE;
-		textFieldStyle.focusedFontColor = Color.BLACK;
-		textFieldStyle.cursor = skin.newDrawable("cursor", Color.BLACK);
+		textFieldStyle.focusedFontColor = Color.WHITE;
+		textFieldStyle.cursor = skin.newDrawable("cursor", Color.WHITE);
 		textFieldStyle.cursor.setMinWidth(2f);
 		skin.add("default", textFieldStyle);
 
 		Label.LabelStyle labelStyle = new Label.LabelStyle();
 		labelStyle.font = skin.getFont("default");
 		labelStyle.fontColor = Color.WHITE;
-//		labelStyle.background = skin.newDrawable("background", new Color(1f, 1f, 1f, 0.5f));
 		skin.add("default", labelStyle);
 		
 		background_skin = new Skin();
@@ -97,7 +106,15 @@ public class Menu {
 	public void loadMainMenu() {
 		stage.clear();
 		state = MenuState.MAIN;
+		
+		batch = new SpriteBatch();
+	
+		
+//		Image logo = new Image(new Texture(Gdx.files.internal("logo-ohne-traegerform.png")));
+//		logo.setPosition(210, 320);
+//		logo.setSize(Gdx.graphics.getWidth()/3, Gdx.graphics.getWidth()/3);
 
+	
 		int num_buttons = 3;
 		int w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
 		int left = (w - button_w) / 2;
@@ -136,9 +153,14 @@ public class Menu {
 			}
 		});
 
+ 
 		stage.addActor(startButton);
 		stage.addActor(hallofButton);
 		stage.addActor(exitButton);
+
+//		stage.addActor(logo);
+
+
 	}
 
 	public void loadPauseMenu() {
