@@ -264,7 +264,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 
 		// init Sounds
-		music_upper = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper.mp3"));
+		music_upper = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-upper-new.mp3"));
 		music_upper.setLooping(true);
 		music_upper.setVolume(0.3f);
 		music_lower = Gdx.audio.newMusic(Gdx.files.internal("wasserlily-under.mp3"));
@@ -277,6 +277,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		clock = Gdx.audio.newMusic(Gdx.files.internal("clock.mp3"));
 		clock.setVolume(0.3f);
 		brille_collected = Gdx.audio.newMusic(Gdx.files.internal("brille_collected.mp3"));
+		coin_collected.setVolume(0.3f);
+		clock.setVolume(0.3f);
 		brille_collected.setVolume(1.0f);
 		
 		current_music = music_upper;
