@@ -26,7 +26,8 @@ Benutzt wurde das libGDX framework (https://libgdx.badlogicgames.com). Auf der P
 
 <h2>Ausführung</h2>
 
-- Windows/Mac OsX: Doppelklick auf die jar-Datei startet das Spiel
+- Windows: Doppelklick auf die jar-Datei startet das Spiel
+- Mac OsX: Rechtsklick auf die jar-Datei. "Öffnen" wählen. Es erscheint ein Fenster mit der Anzeige: "„Waterlily.jar“ stammt von einem nicht verifizierten Entwickler. Möchten Sie es wirklich öffnen?". "Öffnen" anklicken. Danach kann die Datei ´ durch Doppelklick geöffnet werden. 
 - Linux: Das Spiel kann über die Konsole gestartet werden durch Eingabe von <i>java -jar "Waterlily.jar"</i>
 
 <h2>Browserversion</h2>
