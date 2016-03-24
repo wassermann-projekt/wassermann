@@ -1360,16 +1360,16 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void changeDiveState() {
 	
-<<<<<<< HEAD
 		if (state == GameState.UPPERWORLD) {	
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
-=======
+		}
+			
 		if (state == GameState.UPPERWORLD) {
 			//Brille verbrauchen
 			brillen--;
->>>>>>> aed8f04f8abcb09b9ef53f3628623d1dbbd3500c
+			
 			//wand_punkte = wand_punkte_init;
 			
 			Timestep = Gdx.graphics.getDeltaTime();
@@ -1698,10 +1698,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			body.setLinearVelocity(0, 0);
 			body.setTransform(0, 0, 0);
 		}
-<<<<<<< HEAD
 
-=======
-		
 		//Andere Game-Variablen
 		level = (score/50)+1;
 		if (h >= width / 9) {
@@ -1709,7 +1706,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			h = 0;
 		}
 		h += hindernis_geschwindigkeit;
->>>>>>> aed8f04f8abcb09b9ef53f3628623d1dbbd3500c
 
 		// Kollisionsabfrage
 
