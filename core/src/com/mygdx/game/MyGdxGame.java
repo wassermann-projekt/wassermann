@@ -1418,6 +1418,11 @@ if (state == GameState.MAINMENU){
 			//music ändern
 			current_music.stop();
 			current_music = music_lower;
+
+		}
+			
+		if (state == GameState.UPPERWORLD) {
+
 			
 			if(music_enabled){
 				current_music.play();
